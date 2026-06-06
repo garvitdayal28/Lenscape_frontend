@@ -1,8 +1,22 @@
 import React from 'react';
+import ShapeGrid from './ShapeGrid';
 
 export default function HomeSection({ onExploreGallery }) {
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 md:px-edge-margin-desktop py-24 select-none">
+      
+      {/* Background ShapeGrid */}
+      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-auto">
+        <ShapeGrid 
+          speed={0.33}
+          squareSize={40}
+          direction='diagonal'
+          borderColor="rgba(5, 58, 69, 0.3)"
+          hoverFillColor='rgba(34, 34, 34, 0.4)'
+          shape='hexagon'
+          hoverTrailAmount={5}
+        />
+      </div>
       
       {/* Decorative Viewfinder Borders & Elements */}
       {/* 1. Wireframe Geometric Ring (Thin, floating) */}
