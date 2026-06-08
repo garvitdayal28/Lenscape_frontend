@@ -26,7 +26,8 @@ const ExhibitionNav: React.FC = () => {
     menuItems.push({ name: 'Enter Exhibition', path: '/auth', icon: Lock })
   }
 
-
+  // Add Admin if curator
+  const isAdmin = currentUser?.id === 'user_admin'
 
   const activeItem = menuItems.find((item) => item.path === path)
   const roomName = activeItem ? activeItem.name : 'Exhibition'
@@ -93,7 +94,21 @@ const ExhibitionNav: React.FC = () => {
                 )
               })}
 
-
+              {/* curator dashboard link */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2 text-sm font-mono transition-colors ${
+                    path === '/admin'
+                      ? 'text-exhibition-gold bg-exhibition-gold/5 border-l-2 border-exhibition-gold'
+                      : 'text-zinc-400 hover:text-exhibition-bone hover:bg-white/5'
+                  }`}
+                >
+                  <Lock size={16} />
+                  <span>Curator Dashboard</span>
+                </Link>
+              )}
             </nav>
 
             {/* Logout Action */}

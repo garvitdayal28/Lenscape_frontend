@@ -89,7 +89,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) => {
             {/* The Logo with Glow */}
             <motion.h1
               variants={itemVariants}
-              className="text-6xl md:text-8xl font-extrabold tracking-[0.2em] text-exhibition-bone uppercase drop-shadow-[0_0_35px_rgba(201,168,76,0.3)] mb-4"
+              className="text-3xl sm:text-6xl md:text-8xl font-extrabold tracking-[0.2em] text-exhibition-bone uppercase drop-shadow-[0_0_35px_rgba(201,168,76,0.3)] mb-4 text-center block w-full"
             >
               Lenscape
             </motion.h1>
