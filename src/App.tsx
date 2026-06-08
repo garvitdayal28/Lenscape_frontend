@@ -8,6 +8,7 @@ import SubmitPage from './pages/SubmitPage'
 import SmoothScroll from './components/SmoothScroll'
 import { AppProvider } from './context/AppContext'
 import GrainOverlay from './components/GrainOverlay'
+import ThreeExhibitionScene from './components/ThreeExhibitionScene'
 
 function App() {
   return (

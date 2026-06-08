@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageSquare, ArrowRight, Sparkles, Send } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { Heart, ArrowRight, Send } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Artwork } from '../types'
@@ -8,7 +8,6 @@ import CinematicIntro from '../components/CinematicIntro'
 import ExhibitionNav from '../components/ExhibitionNav'
 import ThreeExhibitionScene from '../components/ThreeExhibitionScene'
 import ArtworkFrame from '../components/ArtworkFrame'
-import SpotlightCursor from '../components/SpotlightCursor'
 
 export default function LandingPage() {
   const { artworks, categories, currentUser, voteArtwork, commentArtwork } = useApp()
@@ -66,8 +65,13 @@ export default function LandingPage() {
     }
   }
 
+  // Scroll-driven fade + lift for the corridor overlay text
+  const { scrollY } = useScroll()
+  const useScrollFade = useTransform(scrollY, [0, 400], [1, 0])
+  const useScrollY = useTransform(scrollY, [0, 400], [0, -80])
+
   return (
-    <div className="min-h-screen bg-exhibition-void text-exhibition-bone overflow-x-hidden selection:bg-exhibition-gold selection:text-exhibition-void relative">
+    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold selection:text-exhibition-void relative">
       {/* 1. Cinematic Preloader Intro */}
       <AnimatePresence>
         {!introComplete && (
@@ -80,25 +84,23 @@ export default function LandingPage() {
           {/* Navigation Guide */}
           <ExhibitionNav />
 
-          {/* Flashlight Spotlight Mouse Cursor tracking */}
-          <SpotlightCursor />
+          {/* 
+            Scroll-jacked 3D corridor.
+            The outer div is 300vh tall — this is the "scroll budget" for the camera walk.
+            The inner div is sticky, so the canvas stays fixed while the user scrolls
+            through the 300vh. Once past it, normal page content resumes.
+          */}
+          <div className="relative" style={{ height: '300vh' }} data-corridor="true">
+            <div className="sticky top-0 w-full h-screen overflow-hidden">
+              {/* 3D scene fills the sticky viewport */}
+              <div className="absolute inset-0 w-full h-full pointer-events-auto">
+                <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} />
+              </div>
 
-          {/* 3D Exhibition Corridor container */}
-          {/* We make it sticky or fixed so it scrolls dynamically while sections roll over */}
-          <div className="fixed inset-0 w-full h-full -z-10 pointer-events-auto">
-            <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} />
-          </div>
-
-          {/* Spacer to allow scrolling through 3D corridor */}
-          {/* Height is 300vh, matching ThreeExhibitionScene scroll length */}
-          <div className="h-[250vh] relative pointer-events-none">
-            {/* Scroll cues overlay */}
-            <div className="absolute inset-x-0 top-32 flex flex-col items-center justify-center text-center px-4">
+              {/* Text overlay — fades + moves up as user starts scrolling */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 0.8, y: 0 }}
-                transition={{ duration: 1.5, delay: 0.5 }}
-                className="flex flex-col items-center"
+                style={{ opacity: useScrollFade, y: useScrollY }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
               >
                 <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
                   Curated Digital Hallway
@@ -112,19 +114,13 @@ export default function LandingPage() {
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-[1px] h-12 bg-exhibition-gold/50 mt-12"
+                  className="w-[1px] h-12 bg-exhibition-gold/50 mt-10"
                 />
               </motion.div>
             </div>
-
-            <div className="absolute inset-x-0 bottom-12 flex flex-col items-center justify-center text-center">
-              <span className="font-mono text-[9px] text-zinc-600 uppercase tracking-widest">
-                Entering featured collections
-              </span>
-            </div>
           </div>
 
-          {/* Main scrollable section overlays (z-10, background overrides canvas) */}
+          {/* Main scrollable section overlays */}
           <div className="relative z-10 bg-exhibition-void/90 backdrop-blur-md border-t border-exhibition-gold/15 py-32 px-6 md:px-12">
             
             {/* Section: Featured Artworks */}
