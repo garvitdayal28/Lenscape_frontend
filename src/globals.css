@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+
+  body {
+    @apply bg-y2k-black text-white antialiased selection:bg-y2k-pink selection:text-black;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(255, 105, 180, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(0, 255, 255, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(148, 0, 211, 0.04) 0%, transparent 60%);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FF69B4, #00FFFF, #39FF14);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00FFFF, #FF69B4, #FFFF00);
+}
+
+/* Y2K Museum Grid Layout */
+.y2k-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.y2k-dots {
+  background-size: 20px 20px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+/* Glassmorphism panels with Y2K flair */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(25px) saturate(140%);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 105, 180, 0.3);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(255, 105, 180, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.glass-panel-cyan {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+.glass-panel-cyan:hover {
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.glass-panel-dark {
+  background: rgba(3, 3, 3, 0.85);
+  backdrop-filter: blur(30px);
+  border: 1.5px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+/* Chrome/Skeuomorphic Liquid Metal Effect */
+.y2k-chrome-btn {
+  background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 40%, #a0a0a0 60%, #cecece 100%);
+  color: #000000;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 2px solid #808080;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.3),
+    0 0 20px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 #ffffff;
+  transition: all 0.2s ease;
+}
+
+.y2k-chrome-btn:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 30%, #c0c0c0 70%, #e8e8e8 100%);
+  box-shadow: 
+    0 6px 15px rgba(0,0,0,0.4),
+    0 0 30px rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 #ffffff;
+  transform: translateY(-1px);
+}
+
+.y2k-chrome-btn:active {
+  background: linear-gradient(180deg, #a0a0a0 0%, #dcdcdc 100%);
+  border-color: #ffffff;
+  border-top-color: #505050;
+  border-left-color: #505050;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+  transform: translateY(1px);
+}
+
+/* Y2K Colorful Glossy Button */
+.y2k-glossy-purple {
+  background: linear-gradient(180deg, #d880ff 0%, #9400d3 50%, #660099 100%);
+  border: 2px solid #5d0087;
+  border-top-color: #f3ccff;
+  border-left-color: #f3ccff;
+  box-shadow: 
+    0 4px 15px rgba(148, 0, 211, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+}
+
+.y2k-glossy-purple:hover {
+  background: linear-gradient(180deg, #e5a3ff 0%, #aa00f5 50%, #7d00bd 100%);
+  box-shadow: 
+    0 6px 20px rgba(148, 0, 211, 0.6),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #FF69B4 10%, #00FFFF 50%, #39FF14 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-blue-purple {
+  background: linear-gradient(135deg, #00FFFF, #9400D3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-orange-yellow {
+  background: linear-gradient(135deg, #FF6600, #FFFF00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neon Glow Outline */
+.neon-glow-pink {
+  box-shadow: 
+    0 0 15px rgba(255, 105, 180, 0.4),
+    0 0 30px rgba(255, 105, 180, 0.2);
+}
+
+.neon-glow-cyan {
+  box-shadow: 
+    0 0 15px rgba(0, 255, 255, 0.4),
+    0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+.neon-glow-lime {
+  box-shadow: 
+    0 0 15px rgba(57, 255, 20, 0.4),
+    0 0 30px rgba(57, 255, 20, 0.2);
+}
+
+/* Star Sparkle Keyframes */
+.star-sparkle {
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.8));
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 10px rgba(0,255,255,0.8));
+  }
+}
+
+/* Retro CRT scanline effect */
+.crt-scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Bubbly Y2K metallic borders */
+.y2k-border {
+  border: 1.5px solid transparent;
+  background: linear-gradient(#0c0c0c, #0c0c0c) padding-box,
+              linear-gradient(135deg, #FF69B4, #00FFFF, #39FF14) border-box;
+}
+
+.y2k-border-pink {
+  border: 1.5px solid transparent;
+  background: linear-gradient(#050505, #050505) padding-box,
+              linear-gradient(135deg, #FF69B4, #9400D3) border-box;
+}
+
+.y2k-border-cyan {
+  border: 1.5px solid transparent;
+  background: linear-gradient(#050505, #050505) padding-box,
+              linear-gradient(135deg, #00FFFF, #39FF14) border-box;
+}
+
+/* Digital glitch keyframe */
+.glitch-hover:hover {
+  animation: glitch-anim 0.3s steps(2) infinite;
+}
+
+@keyframes glitch-anim {
+  0% {
+    text-shadow: 2px -2px 0 #FF69B4, -2px 2px 0 #00FFFF;
+  }
+  50% {
+    text-shadow: -2px 2px 0 #FF69B4, 2px -2px 0 #00FFFF;
+  }
+  100% {
+    text-shadow: 2px 2px 0 #39FF14, -2px -2px 0 #9400D3;
+  }
+}
