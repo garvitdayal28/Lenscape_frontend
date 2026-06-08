@@ -7,11 +7,13 @@ import AdminPage from './pages/AdminPage'
 import SubmitPage from './pages/SubmitPage'
 import SmoothScroll from './components/SmoothScroll'
 import { AppProvider } from './context/AppContext'
+import GrainOverlay from './components/GrainOverlay'
 
 function App() {
   return (
     <AppProvider>
       <Router>
+        <GrainOverlay />
         <SmoothScroll>
           <Routes>
             <Route path="/" element={<LandingPage />} />
