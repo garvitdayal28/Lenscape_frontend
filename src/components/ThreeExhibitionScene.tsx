@@ -11,9 +11,10 @@ interface PaintingProps {
   position: [number, number, number]
   rotation: [number, number, number]
   onSelect: (artwork: Artwork) => void
+  isMobile: boolean
 }
 
-const PaintingTexture: React.FC<{ url: string; hovered: boolean }> = ({ url, hovered }) => {
+const PaintingTexture: React.FC<{ url: string; hovered: boolean; isMobile: boolean }> = ({ url, hovered, isMobile }) => {
   const texture = useLoader(TextureLoader, url)
   return (
     <mesh position={[0, 0, 0.06]}>
@@ -21,7 +22,7 @@ const PaintingTexture: React.FC<{ url: string; hovered: boolean }> = ({ url, hov
       <meshBasicMaterial
         map={texture}
         toneMapped={false}
-        opacity={hovered ? 1 : 0.92}
+        opacity={hovered ? 1 : (isMobile ? 0.98 : 0.92)}
         transparent
       />
     </mesh>
@@ -35,7 +36,7 @@ const FallbackPlane: React.FC = () => (
   </mesh>
 )
 
-const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSelect }) => {
+const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSelect, isMobile }) => {
   const meshRef = useRef<THREE.Mesh>(null)
   const [hovered, setHovered] = useState(false)
 
@@ -70,21 +71,25 @@ const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSele
 
       {/* Artwork image as texture — no Html portal */}
       <Suspense fallback={<FallbackPlane />}>
-        <PaintingTexture url={imageUrl} hovered={hovered} />
+        <PaintingTexture url={imageUrl} hovered={hovered} isMobile={isMobile} />
       </Suspense>
 
       {/* Wall wash light */}
       <pointLight
         position={[0, -1.5, 0.5]}
-        intensity={hovered ? 3 : 1}
-        distance={4}
+        intensity={hovered ? 4.5 : (isMobile ? 2.5 : 1.2)}
+        distance={isMobile ? 5.5 : 4.5}
         color="#C9A84C"
       />
     </group>
   )
 }
 
-const GalleryEnvironment: React.FC = () => {
+interface GalleryEnvironmentProps {
+  isMobile: boolean
+}
+
+const GalleryEnvironment: React.FC<GalleryEnvironmentProps> = ({ isMobile }) => {
   const lightRef = useRef<THREE.SpotLight>(null)
 
   useFrame((state) => {
@@ -94,36 +99,39 @@ const GalleryEnvironment: React.FC = () => {
     }
   })
 
+  const wallX = isMobile ? 3.4 : 5.0
+  const floorCeilingWidth = isMobile ? 6.8 : 10.0
+
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[0, 10, 0]} intensity={0.5} color="#fff" />
+      <ambientLight intensity={isMobile ? 0.65 : 0.4} />
+      <directionalLight position={[0, 10, 0]} intensity={isMobile ? 0.75 : 0.5} color="#fff" />
       <spotLight
         ref={lightRef}
         position={[0, 6, -10]}
         angle={0.6}
         penumbra={1}
-        intensity={8}
+        intensity={isMobile ? 12 : 8}
         color="#C9A84C"
         castShadow
       />
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, -20]}>
-        <planeGeometry args={[10, 80]} />
+        <planeGeometry args={[floorCeilingWidth, 80]} />
         <meshStandardMaterial color="#050505" roughness={0.9} />
       </mesh>
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4, -20]}>
-        <planeGeometry args={[10, 80]} />
+        <planeGeometry args={[floorCeilingWidth, 80]} />
         <meshStandardMaterial color="#030303" roughness={1} />
       </mesh>
       {/* Left Wall */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-5, 1, -20]}>
+      <mesh rotation={[0, Math.PI / 2, 0]} position={[-wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
         <meshStandardMaterial color="#090909" roughness={0.8} />
       </mesh>
       {/* Right Wall */}
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[5, 1, -20]}>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
         <meshStandardMaterial color="#090909" roughness={0.8} />
       </mesh>
@@ -173,6 +181,7 @@ interface ThreeExhibitionSceneProps {
 const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSelect }) => {
   const { artworks } = useApp()
   const [scrollPercent, setScrollPercent] = useState(0)
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth / window.innerHeight < 1.25)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const approvedArtworks = artworks.filter((art) => art.status === 'approved')
@@ -193,8 +202,16 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSe
       setScrollPercent(percent)
     }
 
+    const handleResize = () => {
+      setIsMobile(window.innerWidth / window.innerHeight < 1.25)
+    }
+
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   const maxZ = 5
@@ -208,9 +225,11 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSe
     }[] = []
     const stepZ = (maxZ - minZ - 10) / Math.max(approvedArtworks.length, 1)
 
+    const paintingX = isMobile ? 3.25 : 4.85
+
     approvedArtworks.forEach((artwork, index) => {
       const isLeft = index % 2 === 0
-      const xPos = isLeft ? -4.85 : 4.85
+      const xPos = isLeft ? -paintingX : paintingX
       const zPos = maxZ - 6 - index * stepZ
       const yRot = isLeft ? Math.PI / 2 : -Math.PI / 2
 
@@ -234,7 +253,7 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSe
         style={{ background: '#080808' }}
       >
         <fog attach="fog" args={['#080808', 5, 25]} />
-        <GalleryEnvironment />
+        <GalleryEnvironment isMobile={isMobile} />
 
         {paintings.map((p) => (
           <Painting
@@ -243,6 +262,7 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSe
             position={p.pos}
             rotation={p.rot}
             onSelect={onArtworkSelect}
+            isMobile={isMobile}
           />
         ))}
 
