@@ -120,7 +120,6 @@
 /* ═══════════════════════════════════════════════════════════════════
    MUSEUM CEILING SPOTLIGHT SYSTEM
    ::before = combined beam + edge shadow in one gradient layer
-   mix-blend-mode: overlay works on both light and dark surfaces
    ═══════════════════════════════════════════════════════════════════ */
 
 .spot-sm,
@@ -129,7 +128,7 @@
 .spot-xl {
   position: relative;
   isolation: isolate;
-  overflow: hidden; /* keep beam inside bounds */
+  overflow: hidden;
 }
 
 .spot-sm::before,
@@ -147,14 +146,12 @@
 /* ── sm: tight top-down cone, sharp falloff ── */
 .spot-sm::before {
   background:
-    /* beam from top-centre */
     radial-gradient(
-      ellipse 65% 55% at var(--spot-x, 50%) var(--spot-y, 0%),
+      ellipse 65% 55% at 50% 0%,
       rgba(201, 168, 76, 0.45) 0%,
       rgba(201, 168, 76, 0.12) 40%,
       transparent 70%
     ),
-    /* edge shadow — darkens left/right perimeter */
     radial-gradient(
       ellipse 120% 100% at 50% 50%,
       transparent 55%,
@@ -166,7 +163,7 @@
 .spot-md::before {
   background:
     radial-gradient(
-      ellipse 70% 60% at var(--spot-x, 50%) var(--spot-y, 0%),
+      ellipse 70% 60% at 50% 0%,
       rgba(201, 168, 76, 0.50) 0%,
       rgba(201, 168, 76, 0.14) 35%,
       transparent 68%
@@ -182,26 +179,23 @@
 .spot-lg::before {
   background:
     radial-gradient(
-      ellipse 75% 65% at var(--spot-x, 50%) var(--spot-y, 0%),
+      ellipse 75% 65% at 50% 0%,
       rgba(201, 168, 76, 0.60) 0%,
       rgba(255, 235, 180, 0.20) 25%,
       rgba(201, 168, 76, 0.05) 52%,
       transparent 70%
     ),
-    /* bottom shadow pool */
     radial-gradient(
       ellipse 100% 50% at 50% 100%,
       rgba(0, 0, 0, 0.65) 0%,
       rgba(0, 0, 0, 0.20) 50%,
       transparent 75%
     ),
-    /* left edge shadow */
     radial-gradient(
       ellipse 25% 100% at 0% 50%,
       rgba(0, 0, 0, 0.50) 0%,
       transparent 65%
     ),
-    /* right edge shadow */
     radial-gradient(
       ellipse 25% 100% at 100% 50%,
       rgba(0, 0, 0, 0.50) 0%,
@@ -213,7 +207,7 @@
 .spot-xl::before {
   background:
     radial-gradient(
-      ellipse 80% 70% at var(--spot-x, 50%) var(--spot-y, 0%),
+      ellipse 80% 70% at 50% 0%,
       rgba(201, 168, 76, 0.65) 0%,
       rgba(255, 235, 180, 0.22) 20%,
       rgba(201, 168, 76, 0.06) 48%,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Heart, ArrowRight, Send } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -24,6 +24,26 @@ export default function LandingPage() {
 
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
+  const [showNav, setShowNav] = useState(false)
+  const chambersRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (chambersRef.current) {
+        const top = chambersRef.current.getBoundingClientRect().top
+        // Show nav when chambers section enters viewport
+        if (top < window.innerHeight - 100) {
+          setShowNav(true)
+        } else {
+          setShowNav(false)
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    // Trigger once on mount to set initial state
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleIntroComplete = () => {
     sessionStorage.setItem('lenscape_intro_complete', 'true')
@@ -86,7 +106,7 @@ export default function LandingPage() {
       {introComplete && (
         <>
           {/* Navigation Guide */}
-          <ExhibitionNav />
+          <ExhibitionNav isVisible={showNav} />
 
           {/* 
             Scroll-jacked 3D corridor.
@@ -167,10 +187,10 @@ export default function LandingPage() {
             </section>
 
             {/* Section: Typographic Statistics */}
-            <section className="max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
+            <section className="spot-xl max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
                 {stats.map((stat, idx) => (
-                  <div key={idx} className="spot-md flex flex-col items-center">
+                  <div key={idx} className="flex flex-col items-center">
                     <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">
                       {stat.value}
                     </span>
@@ -183,7 +203,7 @@ export default function LandingPage() {
             </section>
 
             {/* Section: Exhibition Rooms CTA */}
-            <section className="max-w-5xl mx-auto mb-32">
+            <section ref={chambersRef} className="max-w-5xl mx-auto mb-32">
               <div className="text-center mb-20">
                 <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
                   Select a Room
