@@ -4,7 +4,6 @@ import { Search, Heart, MessageSquare, Send, Compass } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Artwork, Category } from '../types'
-import SpotlightCursor from '../components/SpotlightCursor'
 import ArtworkFrame from '../components/ArtworkFrame'
 import ExhibitionNav from '../components/ExhibitionNav'
 
@@ -17,6 +16,8 @@ export default function GalleryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
+
+  // Activate ceiling spotlights on artwork frames and nav items
 
   // Handle category query param from landing page clicks
   useEffect(() => {
@@ -167,7 +168,7 @@ export default function GalleryPage() {
       className={`min-h-screen transition-colors duration-1000 overflow-x-hidden relative select-none ${currentTheme.bg} ${currentTheme.text} ${currentTheme.extraClasses}`}
     >
       {/* Spotlight Flashlight cursor */}
-      <SpotlightCursor />
+      {/* <SpotlightCursor /> */}
 
       {/* Navigation Guide */}
       <ExhibitionNav />
@@ -197,7 +198,9 @@ export default function GalleryPage() {
 
       {/* Architectural Room-Switch UI (Instead of filter pills) */}
       <div className="w-full border-t border-b border-zinc-900 bg-black/25 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center justify-start md:justify-center gap-6 py-4">
+        {/* Fade mask on right edge — signals more content to scroll */}
+        <div className="relative">
+          <div className="max-w-6xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center justify-start md:justify-center gap-6 py-4">
           <button
             onClick={() => setSelectedCategory('all')}
             className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-1 px-3 ${
@@ -221,6 +224,9 @@ export default function GalleryPage() {
               0{idx + 1} / {cat.replace('-', ' ')}
             </button>
           ))}
+        </div>
+          {/* Right fade — indicates more tabs to scroll */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-black/80 to-transparent md:hidden" />
         </div>
       </div>
 

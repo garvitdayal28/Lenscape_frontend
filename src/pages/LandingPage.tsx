@@ -8,10 +8,14 @@ import CinematicIntro from '../components/CinematicIntro'
 import ExhibitionNav from '../components/ExhibitionNav'
 import ThreeExhibitionScene from '../components/ThreeExhibitionScene'
 import ArtworkFrame from '../components/ArtworkFrame'
+import { useSpotlightAll } from '../hooks/useSpotlight'
 
 export default function LandingPage() {
   const { artworks, categories, currentUser, voteArtwork, commentArtwork } = useApp()
   const navigate = useNavigate()
+  
+  // Activate dynamic spotlights for spot-md elements
+  useSpotlightAll('.spot-md, .spot-lg, .spot-xl')
   
   // Cinematic intro session state
   const [introComplete, setIntroComplete] = useState<boolean>(() => {
@@ -166,7 +170,7 @@ export default function LandingPage() {
             <section className="max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
                 {stats.map((stat, idx) => (
-                  <div key={idx} className="flex flex-col items-center">
+                  <div key={idx} className="spot-md flex flex-col items-center">
                     <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">
                       {stat.value}
                     </span>
@@ -193,7 +197,7 @@ export default function LandingPage() {
                 {/* Photography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=photography')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 01</span>
@@ -212,7 +216,7 @@ export default function LandingPage() {
                 {/* Digital Art wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=digital-art')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 02</span>
@@ -231,7 +235,7 @@ export default function LandingPage() {
                 {/* Filmmaking wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=filmmaking')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 03</span>
@@ -250,7 +254,7 @@ export default function LandingPage() {
                 {/* Animation wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=animation')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 04</span>
