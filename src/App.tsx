@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage'
 import GalleryPage from './pages/GalleryPage'
 import AuthPage from './pages/AuthPage'
 import ProfilePage from './pages/ProfilePage'
+import ProfileSetupPage from './pages/ProfileSetupPage'
 import AdminPage from './pages/AdminPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import SubmitPage from './pages/SubmitPage'
@@ -21,6 +22,7 @@ function App() {
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/setup" element={<ProfileSetupPage />} />
             <Route path="/submit" element={<SubmitPage />} />
             {/* Admin — no link from nav, direct URL only */}
             <Route path="/admin" element={<AdminPage />} />

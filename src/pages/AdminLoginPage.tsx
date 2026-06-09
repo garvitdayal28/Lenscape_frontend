@@ -7,6 +7,7 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function AdminLoginPage() {
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [secretKey, setSecretKey] = useState('')
@@ -24,7 +25,7 @@ export default function AdminLoginPage() {
       const res = await fetch(`${API}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, secretKey }),
+        body: JSON.stringify({ name, email, password, secretKey }),
       })
       const data = await res.json()
 
@@ -78,6 +79,20 @@ export default function AdminLoginPage() {
           {['top-2 left-2','top-2 right-2','bottom-2 left-2','bottom-2 right-2'].map(pos => (
             <div key={pos} className={`absolute ${pos} w-1.5 h-1.5 bg-exhibition-gold/25 rounded-full`} />
           ))}
+
+          {/* Name */}
+          <div>
+            <label className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-2">
+              Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Your name (required for first login)"
+              className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
+            />
+          </div>
 
           {/* Email */}
           <div>
