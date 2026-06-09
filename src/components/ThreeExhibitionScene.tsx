@@ -252,7 +252,7 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSe
         camera={{ position: [0, 1.0, maxZ], fov: 60 }}
         style={{ background: '#080808' }}
       >
-        <fog attach="fog" args={['#080808', 5, 25]} />
+        <fog attach="fog" args={['#080808', isMobile ? 8 : 5, isMobile ? 40 : 25]} />
         <GalleryEnvironment isMobile={isMobile} />
 
         {paintings.map((p) => (
