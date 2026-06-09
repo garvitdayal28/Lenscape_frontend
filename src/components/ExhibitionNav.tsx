@@ -26,7 +26,7 @@ const ExhibitionNav: React.FC<ExhibitionNavProps> = ({ isVisible = true }) => {
   if (currentUser) {
     menuItems.push({ name: 'Artist Portfolio', path: '/profile', icon: Award })
   } else {
-    menuItems.push({ name: 'Enter Exhibition', path: '/auth', icon: Lock })
+    menuItems.push({ name: 'Enter Exhibition', path: '/auth/login', icon: Lock })
   }
 
   return (

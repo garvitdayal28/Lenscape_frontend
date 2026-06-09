@@ -21,18 +21,15 @@ export default function ProfileSetupPage() {
 
   const avatarSeeds = ['pixel', 'glitch', 'neon', 'matrix', 'terminal', 'cyber']
 
-  // Must be logged in to be here
+// ProfileSetupPage — check auth purely from localStorage, no backend roundtrip needed
   useEffect(() => {
-    const run = async () => {
-      const session = await verifySession()
-      if (!session) { navigate('/auth'); return }
-      if (session.profileComplete) { navigate('/profile'); return }
-      // Pre-fill name if Google provided one
-      const storedName = localStorage.getItem('lenscape_user_name')
-      if (storedName) setName(storedName)
-      setChecking(false)
-    }
-    run()
+    const token = getToken()
+    if (!token) { navigate('/auth/login'); return }
+    const profileComplete = localStorage.getItem('lenscape_profile_complete')
+    if (profileComplete === 'true') { navigate('/profile'); return }
+    const storedName = localStorage.getItem('lenscape_user_name')
+    if (storedName) setName(storedName)
+    setChecking(false)
   }, [navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,7 +45,6 @@ export default function ProfileSetupPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Failed to save profile'); setLoading(false); return }
-      // Re-issue token (now profileComplete = true)
       saveSession({
         token: data.token,
         userId: localStorage.getItem('lenscape_user_id') || '',
@@ -56,6 +52,12 @@ export default function ProfileSetupPage() {
         email: localStorage.getItem('lenscape_user_email') || '',
         profileComplete: true,
       })
+      // Also persist profile fields for ProfilePage display
+      localStorage.setItem('lenscape_user_name', name)
+      localStorage.setItem('lenscape_user_college', college)
+      localStorage.setItem('lenscape_user_branch', branch)
+      localStorage.setItem('lenscape_user_bio', bio)
+      localStorage.setItem('lenscape_user_avatar', avatar)
       navigate('/profile')
     } catch {
       setError('Cannot reach server.')

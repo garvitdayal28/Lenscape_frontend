@@ -447,7 +447,7 @@ export default function GalleryPage() {
                   </form>
                 ) : (
                   <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
-                    <Link to="/auth" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
+                    <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                   </div>
                 )}
               </div>

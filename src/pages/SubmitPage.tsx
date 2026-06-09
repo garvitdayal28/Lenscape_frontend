@@ -59,7 +59,7 @@ export default function SubmitPage() {
             Please sync your student credentials at the gateway to upload artworks to the exhibition.
           </p>
 
-          <Link to="/auth">
+          <Link to="/auth/signup">
             <button className="w-full py-3 bg-exhibition-gold text-exhibition-void font-mono text-xs uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors">
               Access Gateway
             </button>

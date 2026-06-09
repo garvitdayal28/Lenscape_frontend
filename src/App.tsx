@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import GalleryPage from './pages/GalleryPage'
-import AuthPage from './pages/AuthPage'
+import AuthLoginPage from './pages/AuthLoginPage'
+import AuthSignupPage from './pages/AuthSignupPage'
 import ProfilePage from './pages/ProfilePage'
 import ProfileSetupPage from './pages/ProfileSetupPage'
 import AdminPage from './pages/AdminPage'
@@ -20,7 +21,9 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/auth" element={<Navigate to="/auth/signup" replace />} />
+            <Route path="/auth/login" element={<AuthLoginPage />} />
+            <Route path="/auth/signup" element={<AuthSignupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/setup" element={<ProfileSetupPage />} />
             <Route path="/submit" element={<SubmitPage />} />
