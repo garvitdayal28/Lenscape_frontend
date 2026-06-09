@@ -139,7 +139,19 @@ interface CameraControllerProps {
 }
 
 const CameraController: React.FC<CameraControllerProps> = ({ scrollPercent, maxZ, minZ }) => {
-  const { camera } = useThree()
+  const { camera, size } = useThree()
+
+  useEffect(() => {
+    const aspect = size.width / size.height
+    if (aspect < 1.25) {
+      // Scale fov wider on portrait viewports to keep walls visible
+      const targetFov = Math.min(100, Math.max(60, 2 * Math.atan(0.72 / aspect) * 180 / Math.PI))
+      camera.fov = targetFov
+    } else {
+      camera.fov = 60
+    }
+    camera.updateProjectionMatrix()
+  }, [size.width, size.height, camera])
 
   useFrame(() => {
     const targetZ = maxZ - scrollPercent * (maxZ - minZ)
