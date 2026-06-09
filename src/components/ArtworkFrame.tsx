@@ -56,7 +56,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
       </div>
 
       {/* Placard / Museum Tag */}
-      <div className="mt-4 px-4 py-3 bg-[#0d0d0d] border border-exhibition-gold/20 w-80 text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
+      <div className="mt-4 px-4 py-3 bg-[#0d0d0d] border border-exhibition-gold/20 w-full max-w-[20rem] text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
         {/* Small screw heads in corners to look like a metal placard */}
         <div className="absolute top-1 left-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />
         <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />

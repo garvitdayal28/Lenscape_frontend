@@ -99,21 +99,28 @@
 
 /* Spotlight cursor base */
 .spotlight-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 998;
-  background: radial-gradient(
-    circle 450px at var(--x, 50%) var(--y, 50%),
-    rgba(255, 235, 180, 0.08) 0%,
-    rgba(0, 0, 0, 0) 35%,
-    rgba(8, 8, 8, 0.65) 70%,
-    rgba(8, 8, 8, 0.98) 100%
-  );
-  transition: background 0.1s ease-out;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .spotlight-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 998;
+    background: radial-gradient(
+      circle 450px at var(--x, 50%) var(--y, 50%),
+      rgba(255, 235, 180, 0.08) 0%,
+      rgba(0, 0, 0, 0) 35%,
+      rgba(8, 8, 8, 0.65) 70%,
+      rgba(8, 8, 8, 0.98) 100%
+    );
+    transition: background 0.1s ease-out;
+  }
 }
 
 /* Editorial Serif typography class */

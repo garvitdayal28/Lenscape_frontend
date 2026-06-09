@@ -304,7 +304,7 @@ export default function GalleryPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative w-full max-w-5xl h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-hidden"
+              className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
@@ -316,7 +316,7 @@ export default function GalleryPage() {
               </button>
 
               {/* Left Side: Media display */}
-              <div className="w-full md:w-[65%] h-[50%] md:h-full bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
                 <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                 
                 {selectedArtwork.category === 'filmmaking' && selectedArtwork.videoUrl ? (
@@ -343,12 +343,12 @@ export default function GalleryPage() {
               </div>
 
               {/* Right Side: details & comment feedbacks */}
-              <div className="w-full md:w-[35%] h-[50%] md:h-full flex flex-col bg-[#0b0b0b]">
+              <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-[#0b0b0b] flex-grow">
                 <div className="p-6 border-b border-zinc-900">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
                     {selectedArtwork.category.replace('-', ' ')}
                   </span>
-                  <h3 className="editorial-text text-3xl font-light text-exhibition-bone">
+                  <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
                     {selectedArtwork.title}
                   </h3>
                   <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
@@ -387,7 +387,7 @@ export default function GalleryPage() {
                 </div>
 
                 {/* Feedbacks list */}
-                <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-[30vh] md:max-h-none">
+                <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
                   <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
                     Feedbacks ({selectedArtwork.comments?.length || 0})
                   </h4>
