@@ -138,18 +138,11 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              if (onVote) onVote(e)
+              if (onClick) onClick()
             }}
-            className={`flex items-center gap-1.5 transition-colors ${
-              isVoted
-                ? 'text-exhibition-gold font-bold'
-                : 'hover:text-exhibition-gold'
-            }`}
+            className={`flex items-center gap-1.5 transition-colors hover:text-exhibition-gold`}
           >
-            <Heart
-              size={14}
-              className={isVoted ? 'fill-exhibition-gold stroke-exhibition-gold' : ''}
-            />
+            <Heart size={14} />
             <span>{votes}</span>
           </button>
         </div>

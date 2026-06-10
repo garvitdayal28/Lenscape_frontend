@@ -31,6 +31,11 @@ export default function GalleryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
+  const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
+  const [showAlreadyVotedWarning, setShowAlreadyVotedWarning] = useState(false)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Fetch approved artworks from backend
   useEffect(() => {
@@ -114,12 +119,74 @@ export default function GalleryPage() {
       const res = await fetch(`${API}/api/artworks/${artId}/vote`, {
         method: 'POST', headers: authHeaders(),
       })
+      const data = await res.json()
+      
       if (res.ok) {
-        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, votes: a.votes + 1 } : a))
-        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+        // Don't update UI here - already done optimistically
+        return true
+      } else {
+        setErrorMessage(data.error || 'Failed to cast vote')
+        setShowErrorToast(true)
+        setTimeout(() => setShowErrorToast(false), 4000)
+        return false
       }
-    } catch {}
+    } catch (error) {
+      setErrorMessage('Network error. Please try again.')
+      setShowErrorToast(true)
+      setTimeout(() => setShowErrorToast(false), 4000)
+      return false
+    }
   }
+
+  // Handle vote button click - show confirmation or warning
+  const handleVoteClick = () => {
+    if (!user || !selectedArtwork) return
+    // Check if user has already voted
+    if (user.votedArtworks && user.votedArtworks.length > 0) {
+      setShowAlreadyVotedWarning(true)
+      return
+    }
+    setShowVoteConfirmation(true)
+  }
+
+  // Confirm vote
+  const confirmVote = async () => {
+    if (!selectedArtwork || !user) return
+    
+    const artworkId = selectedArtwork.id
+    
+    // Optimistic update - update UI immediately
+    setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes + 1 } : a))
+    if (selectedArtwork?.id === artworkId) {
+      setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+    }
+    
+    // Update user state optimistically
+    const { updateProfile } = useAuthStore.getState()
+    updateProfile({ votedArtworks: [artworkId] })
+    
+    // Close confirmation modal
+    setShowVoteConfirmation(false)
+    
+    // Show success toast
+    setShowSuccessToast(true)
+    setTimeout(() => setShowSuccessToast(false), 3000)
+    
+    // Make API call in background
+    const success = await handleVote(artworkId)
+    
+    // If failed, revert optimistic update
+    if (!success) {
+      setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes - 1 } : a))
+      if (selectedArtwork?.id === artworkId) {
+        setSelectedArtwork(a => a ? { ...a, votes: a.votes - 1 } : a)
+      }
+      updateProfile({ votedArtworks: [] })
+    }
+  }
+
+  // Check if user has already voted
+  const hasVoted = Boolean(user?.votedArtworks && user.votedArtworks.length > 0)
 
   const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
     e.preventDefault()
@@ -240,9 +307,6 @@ export default function GalleryPage() {
         {sortedArtworks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
             {sortedArtworks.map((artwork, idx) => {
-              const isVoted = user
-                ? user.votedCategories?.includes(artwork.category)
-                : false
               return (
                 <motion.div
                   key={artwork.id}
@@ -254,8 +318,6 @@ export default function GalleryPage() {
                   <ArtworkFrame
                     artwork={artwork}
                     onClick={() => setSelectedArtwork(artwork)}
-                    onVote={() => handleVote(artwork.id)}
-                    isVoted={isVoted}
                   />
                 </motion.div>
               )
@@ -363,14 +425,16 @@ export default function GalleryPage() {
                     </span>
                     {user ? (
                       <button
-                        onClick={() => handleVote(selectedArtwork.id)}
-                        className="px-4 py-1.5 border border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold text-xs font-mono uppercase tracking-wider flex items-center gap-1.5"
+                        onClick={handleVoteClick}
+                        disabled={hasVoted}
+                        className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                          hasVoted
+                            ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                            : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
+                        }`}
                       >
-                        <Heart
-                          size={12}
-                          className={user.votedCategories?.includes(selectedArtwork.category) ? 'fill-exhibition-gold stroke-exhibition-gold' : ''}
-                        />
-                        <span>VOTE</span>
+                        <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
+                        <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
                       </button>
                     ) : (
                       <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
@@ -437,6 +501,171 @@ export default function GalleryPage() {
                 )}
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Vote Confirmation Modal */}
+      <AnimatePresence>
+        {showVoteConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowVoteConfirmation(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-md bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Warning Icon */}
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-full border-2 border-exhibition-gold/40 flex items-center justify-center">
+                  <Heart size={28} className="text-exhibition-gold" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h3 className="editorial-text text-2xl font-light text-exhibition-bone text-center mb-3">
+                Confirm Your Vote
+              </h3>
+
+              {/* Message */}
+              <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
+                You can only vote <span className="text-exhibition-gold font-bold">once</span> per artwork.
+              </p>
+              <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
+                This action cannot be undone. Are you sure you want to cast your vote?
+              </p>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowVoteConfirmation(false)}
+                  className="flex-1 px-4 py-3 border border-zinc-700 text-zinc-400 font-mono text-xs uppercase tracking-wider hover:border-zinc-500 hover:text-zinc-300 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmVote}
+                  className="flex-1 px-4 py-3 bg-exhibition-gold text-exhibition-void font-mono text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all font-bold flex items-center justify-center gap-2"
+                >
+                  <Heart size={14} className="fill-current" />
+                  Confirm Vote
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Already Voted Warning Modal */}
+      <AnimatePresence>
+        {showAlreadyVotedWarning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowAlreadyVotedWarning(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-md bg-[#0d0d0d] border border-zinc-700 shadow-2xl p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Warning Icon */}
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-full border-2 border-zinc-600 flex items-center justify-center">
+                  <Heart size={28} className="text-zinc-500 fill-zinc-600" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h3 className="editorial-text text-2xl font-light text-zinc-300 text-center mb-3">
+                Already Voted
+              </h3>
+
+              {/* Message */}
+              <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
+                You have already cast your vote.
+              </p>
+              <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
+                Each user can only vote once across all artworks.
+              </p>
+
+              {/* Button */}
+              <button
+                onClick={() => setShowAlreadyVotedWarning(false)}
+                className="w-full px-4 py-3 bg-zinc-800 text-zinc-300 font-mono text-xs uppercase tracking-wider hover:bg-zinc-700 transition-all"
+              >
+                Understood
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Toast */}
+      <AnimatePresence>
+        {showSuccessToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-8 right-8 z-[1200] max-w-md"
+          >
+            <div className="bg-green-900/90 backdrop-blur-md border border-green-700 shadow-2xl p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-700/50 flex items-center justify-center">
+                <Heart size={20} className="text-green-300 fill-green-300" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-mono text-sm font-bold text-green-100 mb-1">Vote Cast Successfully!</h4>
+                <p className="font-mono text-xs text-green-200">Your vote has been recorded. Thank you for participating!</p>
+              </div>
+              <button
+                onClick={() => setShowSuccessToast(false)}
+                className="text-green-300 hover:text-green-100 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Toast */}
+      <AnimatePresence>
+        {showErrorToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-8 right-8 z-[1200] max-w-md"
+          >
+            <div className="bg-red-900/90 backdrop-blur-md border border-red-700 shadow-2xl p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-700/50 flex items-center justify-center">
+                <Heart size={20} className="text-red-300" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-mono text-sm font-bold text-red-100 mb-1">Vote Failed</h4>
+                <p className="font-mono text-xs text-red-200">{errorMessage}</p>
+              </div>
+              <button
+                onClick={() => setShowErrorToast(false)}
+                className="text-red-300 hover:text-red-100 transition-colors"
+              >
+                ×
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

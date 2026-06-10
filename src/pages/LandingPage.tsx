@@ -10,6 +10,11 @@ import ExhibitionNav from '../components/ExhibitionNav'
 import ThreeExhibitionScene from '../components/ThreeExhibitionScene'
 import ArtworkFrame from '../components/ArtworkFrame'
 import { useSpotlightAll } from '../hooks/useSpotlight'
+import ArtworkViewerModal from '../components/UI/ArtworkViewerModal'
+import VoteConfirmationModal from '../components/UI/VoteConfirmationModal'
+import AlreadyVotedModal from '../components/UI/AlreadyVotedModal'
+import SuccessToast from '../components/UI/SuccessToast'
+import ErrorToast from '../components/UI/ErrorToast'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -28,6 +33,11 @@ export default function LandingPage() {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
   const [showNav, setShowNav] = useState(false)
+  const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
+  const [showAlreadyVotedWarning, setShowAlreadyVotedWarning] = useState(false)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const chambersRef = useRef<HTMLElement>(null)
 
   // Fetch approved artworks from backend
@@ -206,17 +216,80 @@ export default function LandingPage() {
     { value: `${(totalVotes / 1000).toFixed(1)}K+`, label: 'VOTES CAST' },
   ]
 
-  // Handle voting from modal/frames
+  // Handle voting from modal/frames - only for backend sync, no UI update
   const handleVote = async (artId: string) => {
     if (!user) return
     try {
       const res = await fetch(`${API}/api/artworks/${artId}/vote`, { method: 'POST', headers: authHeaders() })
+      const data = await res.json()
+      
       if (res.ok) {
-        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, votes: a.votes + 1 } : a))
-        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+        // Don't update UI here - already done optimistically
+        return true
+      } else {
+        // Show error message
+        setErrorMessage(data.error || 'Failed to cast vote')
+        setShowErrorToast(true)
+        setTimeout(() => setShowErrorToast(false), 4000)
+        return false
       }
-    } catch {}
+    } catch (error) {
+      setErrorMessage('Network error. Please try again.')
+      setShowErrorToast(true)
+      setTimeout(() => setShowErrorToast(false), 4000)
+      return false
+    }
   }
+
+  // Handle vote button click - show confirmation or warning
+  const handleVoteClick = () => {
+    if (!user || !selectedArtwork) return
+    // Check if user has already voted
+    if (user.votedArtworks && user.votedArtworks.length > 0) {
+      setShowAlreadyVotedWarning(true)
+      return
+    }
+    setShowVoteConfirmation(true)
+  }
+
+  // Confirm vote
+  const confirmVote = async () => {
+    if (!selectedArtwork || !user) return
+    
+    const artworkId = selectedArtwork.id
+    
+    // Optimistic update - update UI immediately
+    setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes + 1 } : a))
+    if (selectedArtwork?.id === artworkId) {
+      setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+    }
+    
+    // Update user state optimistically
+    const { updateProfile } = useAuthStore.getState()
+    updateProfile({ votedArtworks: [artworkId] })
+    
+    // Close confirmation modal
+    setShowVoteConfirmation(false)
+    
+    // Show success toast
+    setShowSuccessToast(true)
+    setTimeout(() => setShowSuccessToast(false), 3000)
+    
+    // Make API call in background
+    const success = await handleVote(artworkId)
+    
+    // If failed, revert optimistic update
+    if (!success) {
+      setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes - 1 } : a))
+      if (selectedArtwork?.id === artworkId) {
+        setSelectedArtwork(a => a ? { ...a, votes: a.votes - 1 } : a)
+      }
+      updateProfile({ votedArtworks: [] })
+    }
+  }
+
+  // Check if user has already voted
+  const hasVoted = Boolean(user?.votedArtworks && user.votedArtworks.length > 0)
 
   // Handle comment submit
   const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
@@ -341,8 +414,6 @@ export default function LandingPage() {
                         <ArtworkFrame
                           artwork={artwork}
                           onClick={() => setSelectedArtwork(artwork)}
-                          onVote={undefined}
-                          isVoted={false}
                         />
                       </motion.div>
                     )
@@ -362,8 +433,6 @@ export default function LandingPage() {
                       <ArtworkFrame
                         artwork={featured[4]}
                         onClick={() => setSelectedArtwork(featured[4])}
-                        onVote={undefined}
-                        isVoted={false}
                       />
                     </div>
                   </motion.div>
@@ -558,167 +627,54 @@ export default function LandingPage() {
           {/* Immersive Artwork Viewer Modal (Full Screen Exhibition focus) */}
           <AnimatePresence>
             {selectedArtwork && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[1000] bg-[#000000]/98 backdrop-blur-md flex items-center justify-center p-4"
-                onClick={() => setSelectedArtwork(null)}
-              >
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.95, opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Close button */}
-                  <button
-                    onClick={() => setSelectedArtwork(null)}
-                    className="absolute top-4 right-4 z-50 w-10 h-10 border border-exhibition-gold/20 flex items-center justify-center hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-gold transition-colors font-mono"
-                  >
-                    ×
-                  </button>
+              <ArtworkViewerModal
+                selectedArtwork={selectedArtwork}
+                setSelectedArtwork={setSelectedArtwork}
+                user={user}
+                handleVoteClick={handleVoteClick}
+                hasVoted={hasVoted}
+                handleCommentSubmit={handleCommentSubmit}
+                commentContent={commentContent}
+                setCommentContent={setCommentContent}
+              />
+            )}
+          </AnimatePresence>
 
-                  {/* Left Side: Art display */}
-                  <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
-                    {/* Top wash light */}
-                    <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
-                    
-                    {selectedArtwork.videoUrl ? (
-                      <div className="w-full h-full flex items-center justify-center">
-                        {/* Check if it's a Google Drive embed (legacy) or Cloudinary video (new) */}
-                        {selectedArtwork.videoUrl.includes('drive.google.com') || selectedArtwork.videoUrl.includes('/preview') ? (
-                          <iframe
-                            src={selectedArtwork.videoUrl}
-                            title={selectedArtwork.title}
-                            className="w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        ) : (
-                          <video
-                            src={selectedArtwork.videoUrl}
-                            poster={selectedArtwork.imageUrl || undefined}
-                            controls
-                            autoPlay
-                            className="w-full h-full max-h-full object-contain shadow-2xl border border-white/5"
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                        )}
-                      </div>
-                    ) : selectedArtwork.imageUrl ? (
-                      <img
-                        src={selectedArtwork.imageUrl}
-                        alt={selectedArtwork.title}
-                        className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
-                      />
-                    ) : (
-                      <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
-                    )}
-                  </div>
+          {/* Vote Confirmation Modal */}
+          <AnimatePresence>
+            {showVoteConfirmation && (
+              <VoteConfirmationModal
+                setShowVoteConfirmation={setShowVoteConfirmation}
+                confirmVote={confirmVote}
+              />
+            )}
+          </AnimatePresence>
 
-                  {/* Right Side: Information / Placard details & comments */}
-                  <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-[#0b0b0b] flex-grow">
-                    {/* Art Details */}
-                    <div className="p-6 border-b border-zinc-900">
-                      <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
-                        {selectedArtwork.category.replace('-', ' ')}
-                      </span>
-                      <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
-                        {selectedArtwork.title}
-                      </h3>
-                      <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
-                        By {selectedArtwork.artist.name}
-                      </p>
-                      <p className="text-[10px] text-zinc-500 font-mono">
-                        {selectedArtwork.artist.college}
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed max-h-24 overflow-y-auto pr-2">
-                        {selectedArtwork.description}
-                      </p>
+          {/* Already Voted Warning Modal */}
+          <AnimatePresence>
+            {showAlreadyVotedWarning && (
+              <AlreadyVotedModal
+                setShowAlreadyVotedWarning={setShowAlreadyVotedWarning}
+              />
+            )}
+          </AnimatePresence>
 
-                      {/* Vote statistics and button */}
-                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
-                        <span className="text-zinc-500 text-xs font-mono">
-                          {selectedArtwork.votes} votes logged
-                        </span>
-                        {user ? (
-                          <button
-                            onClick={() => selectedArtwork && handleVote(selectedArtwork.id)}
-                            className="px-4 py-1.5 border border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold text-xs font-mono uppercase tracking-wider flex items-center gap-1.5"
-                          >
-                            <Heart size={12} />
-                            <span>VOTE</span>
-                          </button>
-                        ) : (
-                          <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
-                        )}
-                      </div>
-                    </div>
+          {/* Success Toast */}
+          <AnimatePresence>
+            {showSuccessToast && (
+              <SuccessToast
+                setShowSuccessToast={setShowSuccessToast}
+              />
+            )}
+          </AnimatePresence>
 
-                    {/* Feedbacks / Comments section - HIDDEN (kept for future use) */}
-                    {false && selectedArtwork && (
-                      <>
-                        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
-                          <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
-                            Feedbacks ({selectedArtwork?.comments?.length || 0})
-                          </h4>
-
-                          <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
-                            {selectedArtwork?.comments?.length && selectedArtwork!.comments.length > 0 ? (
-                              selectedArtwork!.comments.map((comment) => (
-                                <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
-                                  <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
-                                    <span>{comment.userName}</span>
-                                    <span className="text-zinc-600">
-                                      {new Date(comment.createdAt).toLocaleDateString()}
-                                    </span>
-                                  </div>
-                                  <p className="text-zinc-300 font-sans">{comment.content}</p>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="flex-1 flex items-center justify-center text-zinc-600 text-xs font-mono py-6">
-                                No feedbacks logged yet.
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Submit comments bar */}
-                        {user ? (
-                          <form
-                            onSubmit={(e) => selectedArtwork && handleCommentSubmit(e, selectedArtwork.id)}
-                            className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
-                          >
-                            <input
-                              type="text"
-                              value={commentContent}
-                              onChange={(e) => setCommentContent(e.target.value)}
-                              placeholder="Write a feedback..."
-                              className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
-                            />
-                            <button
-                              type="submit"
-                              disabled={!commentContent.trim()}
-                              className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <Send size={12} />
-                            </button>
-                          </form>
-                        ) : (
-                          <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
-                            <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              </motion.div>
+          {/* Error Toast */}
+          <AnimatePresence>
+            {showErrorToast && (
+              <ErrorToast
+                setShowErrorToast={setShowErrorToast}
+                errorMessage={errorMessage}
+              />
             )}
           </AnimatePresence>
         </>
