@@ -56,11 +56,11 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
         className={`museum-frame cursor-pointer w-full ${aspectClass} relative overflow-hidden group select-none`}
       >
         {/* Visual highlight on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-[45] pointer-events-none" />
 
         {/* The Media - Video or Image */}
         {isVideo ? (
-          <div className="w-full h-full bg-black relative">
+          <div className="w-full h-full bg-black relative z-[40]">
             {/* Video thumbnail with play button overlay */}
             {displayImage ? (
               <>
@@ -71,7 +71,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
                   loading="lazy"
                 />
                 {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <div className="absolute inset-0 flex items-center justify-center z-[45] pointer-events-none">
                   <div className="w-16 h-16 bg-exhibition-gold/90 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-[0_0_30px_rgba(201,168,76,0.4)]">
                     <svg className="w-8 h-8 text-exhibition-void ml-1" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -80,7 +80,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
                 </div>
                 {/* Duration badge */}
                 {videoDuration && (
-                  <div className="absolute bottom-3 right-3 z-10 px-2 py-1 bg-exhibition-void/90 backdrop-blur-sm text-[10px] font-mono text-exhibition-gold border border-exhibition-gold/30">
+                  <div className="absolute bottom-3 right-3 z-[45] px-2 py-1 bg-exhibition-void/90 backdrop-blur-sm text-[10px] font-mono text-exhibition-gold border border-exhibition-gold/30">
                     {formatDuration(videoDuration)}
                   </div>
                 )}
@@ -102,7 +102,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-contain bg-black transition-transform duration-700 ease-out group-hover:scale-105"
+            className="w-full h-full object-contain bg-black transition-transform duration-700 ease-out group-hover:scale-105 relative z-[40]"
             loading="lazy"
           />
         ) : (
@@ -112,7 +112,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
         )}
 
         {/* Small subtle badge on frame corner */}
-        <div className="absolute top-3 right-3 z-10 px-2 py-0.5 bg-exhibition-void/80 text-[10px] uppercase tracking-widest text-exhibition-gold border border-exhibition-gold/30">
+        <div className="absolute top-3 right-3 z-[45] px-2 py-0.5 bg-exhibition-void/80 text-[10px] uppercase tracking-widest text-exhibition-gold border border-exhibition-gold/30">
           {categoryLabel}
         </div>
       </div>

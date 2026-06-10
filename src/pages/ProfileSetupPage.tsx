@@ -35,13 +35,19 @@ export default function ProfileSetupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name || !college || !branch) { setError('Name, college and branch are required'); return }
+    
+    // Auto-format JEC to full name
+    const finalCollege = college.trim().toLowerCase() === 'jec' 
+      ? 'Jabalpur Engineering College' 
+      : college.trim();
+
     setError('')
     setLoading(true)
     try {
       const res = await fetch(`${API}/api/auth/complete-profile`, {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify({ name, college, branch, year, bio, avatar }),
+        body: JSON.stringify({ name, college: finalCollege, branch, year, bio, avatar }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Failed to save profile'); setLoading(false); return }
@@ -51,7 +57,7 @@ export default function ProfileSetupPage() {
         name,
         email: localStorage.getItem('lenscape_user_email') || '',
         profileComplete: true,
-        college,
+        college: finalCollege,
         branch,
         bio,
         avatar,

@@ -43,6 +43,8 @@ export default function ArtworkViewerModal({
         className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Localized film grain for the modal */}
+        <div className="film-grain" style={{ position: 'absolute', zIndex: 10 }} />
         {/* Close button */}
         <button
           onClick={() => setSelectedArtwork(null)}
@@ -52,7 +54,7 @@ export default function ArtworkViewerModal({
         </button>
 
         {/* Left Side: Art display */}
-        <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+        <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative z-[20] p-6 border-b md:border-b-0 md:border-r border-zinc-900">
           {/* Top wash light */}
           <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
           

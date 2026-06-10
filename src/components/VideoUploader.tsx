@@ -146,7 +146,7 @@ export default function VideoUploader({
               <video
                 src={videoPreview}
                 controls
-                className="w-full max-h-64 bg-black mb-3"
+                className="w-full max-h-64 bg-black mb-3 relative z-[40]"
               />
             )}
             
@@ -199,7 +199,7 @@ export default function VideoUploader({
               <img
                 src={coverPreview}
                 alt="Cover preview"
-                className="w-full h-48 object-cover bg-black mb-3"
+                className="w-full h-48 object-cover bg-black mb-3 relative z-[40]"
               />
             )}
             
