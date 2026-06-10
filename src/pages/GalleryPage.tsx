@@ -141,8 +141,9 @@ export default function GalleryPage() {
   // Handle vote button click - show confirmation or warning
   const handleVoteClick = () => {
     if (!user || !selectedArtwork) return
-    // Check if user has already voted
-    if (user.votedArtworks && user.votedArtworks.length > 0) {
+    // Check if user has already voted in this category
+    const category = selectedArtwork.category
+    if (user.votedCategories && user.votedCategories.includes(category)) {
       setShowAlreadyVotedWarning(true)
       return
     }
@@ -154,6 +155,7 @@ export default function GalleryPage() {
     if (!selectedArtwork || !user) return
     
     const artworkId = selectedArtwork.id
+    const category = selectedArtwork.category
     
     // Optimistic update - update UI immediately
     setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes + 1 } : a))
@@ -163,7 +165,8 @@ export default function GalleryPage() {
     
     // Update user state optimistically
     const { updateProfile } = useAuthStore.getState()
-    updateProfile({ votedArtworks: [artworkId] })
+    const currentVoted = user.votedCategories || []
+    updateProfile({ votedCategories: [...currentVoted, category] })
     
     // Close confirmation modal
     setShowVoteConfirmation(false)
@@ -181,12 +184,14 @@ export default function GalleryPage() {
       if (selectedArtwork?.id === artworkId) {
         setSelectedArtwork(a => a ? { ...a, votes: a.votes - 1 } : a)
       }
-      updateProfile({ votedArtworks: [] })
+      updateProfile({ votedCategories: currentVoted })
     }
   }
 
-  // Check if user has already voted
-  const hasVoted = Boolean(user?.votedArtworks && user.votedArtworks.length > 0)
+  // Check if user has already voted in the selected artwork's category
+  const hasVoted = selectedArtwork 
+    ? Boolean(user?.votedCategories?.includes(selectedArtwork.category))
+    : false
 
   const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
     e.preventDefault()

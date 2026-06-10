@@ -12,8 +12,8 @@ export interface AuthUser {
   branch?: string
   bio?: string
   avatar?: string
-  // voting tracking
-  votedArtworks?: string[]
+  // voting tracking - one vote per category
+  votedCategories?: string[]
 }
 
 interface AuthState {

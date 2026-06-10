@@ -244,8 +244,9 @@ export default function LandingPage() {
   // Handle vote button click - show confirmation or warning
   const handleVoteClick = () => {
     if (!user || !selectedArtwork) return
-    // Check if user has already voted
-    if (user.votedArtworks && user.votedArtworks.length > 0) {
+    // Check if user has already voted in this category
+    const category = selectedArtwork.category
+    if (user.votedCategories && user.votedCategories.includes(category)) {
       setShowAlreadyVotedWarning(true)
       return
     }
@@ -257,6 +258,7 @@ export default function LandingPage() {
     if (!selectedArtwork || !user) return
     
     const artworkId = selectedArtwork.id
+    const category = selectedArtwork.category
     
     // Optimistic update - update UI immediately
     setArtworks(prev => prev.map(a => a.id === artworkId ? { ...a, votes: a.votes + 1 } : a))
@@ -266,7 +268,8 @@ export default function LandingPage() {
     
     // Update user state optimistically
     const { updateProfile } = useAuthStore.getState()
-    updateProfile({ votedArtworks: [artworkId] })
+    const currentVoted = user.votedCategories || []
+    updateProfile({ votedCategories: [...currentVoted, category] })
     
     // Close confirmation modal
     setShowVoteConfirmation(false)
@@ -284,12 +287,14 @@ export default function LandingPage() {
       if (selectedArtwork?.id === artworkId) {
         setSelectedArtwork(a => a ? { ...a, votes: a.votes - 1 } : a)
       }
-      updateProfile({ votedArtworks: [] })
+      updateProfile({ votedCategories: currentVoted })
     }
   }
 
-  // Check if user has already voted
-  const hasVoted = Boolean(user?.votedArtworks && user.votedArtworks.length > 0)
+  // Check if user has already voted in the selected artwork's category
+  const hasVoted = selectedArtwork 
+    ? Boolean(user?.votedCategories?.includes(selectedArtwork.category))
+    : false
 
   // Handle comment submit
   const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
@@ -414,6 +419,7 @@ export default function LandingPage() {
                         <ArtworkFrame
                           artwork={artwork}
                           onClick={() => setSelectedArtwork(artwork)}
+                          hideVoteButton={true}
                         />
                       </motion.div>
                     )
@@ -433,10 +439,57 @@ export default function LandingPage() {
                       <ArtworkFrame
                         artwork={featured[4]}
                         onClick={() => setSelectedArtwork(featured[4])}
+                        hideVoteButton={true}
                       />
                     </div>
                   </motion.div>
                 )}
+              </div>
+            </section>
+
+            {/* Section: Event Info */}
+            <section className="max-w-4xl mx-auto mb-40">
+              <div className="border border-exhibition-gold/20 bg-black/40 p-10 md:p-12">
+                <div className="text-center mb-8">
+                  <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.3em] block mb-3">
+                    Lenscape 2026 Competition
+                  </span>
+                  <h2 className="editorial-text text-3xl md:text-5xl font-light text-exhibition-bone">
+                    How It Works
+                  </h2>
+                </div>
+
+                <div className="space-y-6 text-sm font-mono text-zinc-400 leading-relaxed">
+                  <div className="flex gap-4">
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">01</span>
+                    <div>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Submit Your Work</h3>
+                      <p>Create and submit your artwork in any of our 4 categories. Each submission goes through curation before being displayed in the gallery.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">02</span>
+                    <div>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Community Voting</h3>
+                      <p>Vote for your favorite artwork in each category. <span className="text-exhibition-bone font-bold">You can cast one vote per category</span> — choose wisely!</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">03</span>
+                    <div>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Winners Announced</h3>
+                      <p>The artworks with the most votes in each category will be crowned winners and showcased in our Hall of Honor.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-10 pt-8 border-t border-zinc-800 text-center">
+                  <p className="text-xs font-mono text-zinc-500">
+                    <span className="text-exhibition-gold">4 Categories</span> · <span className="text-exhibition-gold">4 Votes Total</span> · <span className="text-exhibition-gold">Fair Competition</span>
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -636,6 +689,7 @@ export default function LandingPage() {
                 handleCommentSubmit={handleCommentSubmit}
                 commentContent={commentContent}
                 setCommentContent={setCommentContent}
+                hideVoteButton={lenscape2025Winners.some(w => w.id === selectedArtwork.id)}
               />
             )}
           </AnimatePresence>

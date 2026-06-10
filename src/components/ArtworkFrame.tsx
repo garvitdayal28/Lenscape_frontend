@@ -7,6 +7,7 @@ interface ArtworkFrameProps {
   onClick?: () => void
   onVote?: (e: React.MouseEvent) => void
   isVoted?: boolean
+  hideVoteButton?: boolean
 }
 
 // Format video duration from seconds to MM:SS
@@ -30,6 +31,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   onClick,
   onVote,
   isVoted = false,
+  hideVoteButton = false,
 }) => {
   const { title, artist, imageUrl, videoUrl, thumbnailUrl, videoDuration, votes, comments, category } = artwork
   const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
@@ -135,16 +137,23 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
 
         {/* Quick stats / Interaction bar */}
         <div className="flex items-center justify-center gap-6 mt-3 pt-2 border-t border-zinc-800 text-zinc-400 text-xs font-mono">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              if (onClick) onClick()
-            }}
-            className={`flex items-center gap-1.5 transition-colors hover:text-exhibition-gold`}
-          >
-            <Heart size={14} />
-            <span>{votes}</span>
-          </button>
+          {hideVoteButton ? (
+            <div className="flex items-center gap-1.5">
+              <Heart size={14} className="opacity-50" />
+              <span>{votes}</span>
+            </div>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onClick) onClick()
+              }}
+              className={`flex items-center gap-1.5 transition-colors hover:text-exhibition-gold`}
+            >
+              <Heart size={14} />
+              <span>{votes}</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

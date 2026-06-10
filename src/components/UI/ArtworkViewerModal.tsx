@@ -13,6 +13,7 @@ interface ArtworkViewerModalProps {
   handleCommentSubmit: (e: React.FormEvent, artId: string) => void;
   commentContent: string;
   setCommentContent: (content: string) => void;
+  hideVoteButton?: boolean;
 }
 
 export default function ArtworkViewerModal({
@@ -23,7 +24,8 @@ export default function ArtworkViewerModal({
   hasVoted,
   handleCommentSubmit,
   commentContent,
-  setCommentContent
+  setCommentContent,
+  hideVoteButton = false
 }: ArtworkViewerModalProps) {
   return (
     <motion.div
@@ -113,21 +115,23 @@ export default function ArtworkViewerModal({
               <span className="text-zinc-500 text-xs font-mono">
                 {selectedArtwork.votes} votes logged
               </span>
-              {user ? (
-                <button
-                  onClick={handleVoteClick}
-                  disabled={hasVoted}
-                  className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                    hasVoted
-                      ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
-                      : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
-                  }`}
-                >
-                  <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
-                  <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
-                </button>
-              ) : (
-                <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
+              {!hideVoteButton && (
+                user ? (
+                  <button
+                    onClick={handleVoteClick}
+                    disabled={hasVoted}
+                    className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                      hasVoted
+                        ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                        : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
+                    }`}
+                  >
+                    <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
+                    <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
+                )
               )}
             </div>
           </div>
