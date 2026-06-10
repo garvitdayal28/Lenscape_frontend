@@ -9,6 +9,15 @@ interface ArtworkFrameProps {
   isVoted?: boolean
 }
 
+// Map orientation id → Tailwind aspect class
+const ASPECT: Record<string, string> = {
+  landscape:  'aspect-[3/2]',
+  portrait:   'aspect-[2/3]',
+  square:     'aspect-square',
+  widescreen: 'aspect-video',
+  vertical:   'aspect-[9/16]',
+}
+
 const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   artwork,
   onClick,
@@ -16,6 +25,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   isVoted = false,
 }) => {
   const { title, artist, imageUrl, votes, comments, category } = artwork
+  const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
   // Format category to readable text
   const categoryLabel = category
@@ -24,13 +34,11 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center py-6 w-full max-w-xl mx-auto">
-      {/* Spotlight beam effect from above */}
-      <div className="w-16 h-24 bg-gradient-to-b from-exhibition-gold/20 to-transparent blur-md -mb-4 opacity-75 pointer-events-none" />
 
-      {/* Frame Container */}
+      {/* Frame Container — dynamic ratio */}
       <div
         onClick={onClick}
-        className="museum-frame cursor-pointer w-full aspect-[4/3] relative overflow-hidden group select-none"
+        className={`museum-frame cursor-pointer w-full ${aspectClass} relative overflow-hidden group select-none`}
       >
         {/* Visual highlight on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
@@ -40,7 +48,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="w-full h-full object-contain bg-black transition-transform duration-700 ease-out group-hover:scale-105"
             loading="lazy"
           />
         ) : (
