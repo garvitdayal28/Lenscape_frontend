@@ -588,13 +588,26 @@ export default function LandingPage() {
                     
                     {selectedArtwork.videoUrl ? (
                       <div className="w-full h-full flex items-center justify-center">
-                        <iframe
-                          src={selectedArtwork.videoUrl}
-                          title={selectedArtwork.title}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
+                        {/* Check if it's a Google Drive embed (legacy) or Cloudinary video (new) */}
+                        {selectedArtwork.videoUrl.includes('drive.google.com') || selectedArtwork.videoUrl.includes('/preview') ? (
+                          <iframe
+                            src={selectedArtwork.videoUrl}
+                            title={selectedArtwork.title}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video
+                            src={selectedArtwork.videoUrl}
+                            poster={selectedArtwork.imageUrl || undefined}
+                            controls
+                            autoPlay
+                            className="w-full h-full max-h-full object-contain shadow-2xl border border-white/5"
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        )}
                       </div>
                     ) : selectedArtwork.imageUrl ? (
                       <img
@@ -651,12 +664,12 @@ export default function LandingPage() {
                       <>
                         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
                           <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
-                            Feedbacks ({selectedArtwork.comments?.length || 0})
+                            Feedbacks ({selectedArtwork?.comments?.length || 0})
                           </h4>
 
                           <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
-                            {selectedArtwork.comments?.length > 0 ? (
-                              selectedArtwork.comments.map((comment) => (
+                            {selectedArtwork?.comments?.length && selectedArtwork!.comments.length > 0 ? (
+                              selectedArtwork!.comments.map((comment) => (
                                 <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
                                   <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
                                     <span>{comment.userName}</span>
@@ -678,7 +691,7 @@ export default function LandingPage() {
                         {/* Submit comments bar */}
                         {user ? (
                           <form
-                            onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
+                            onSubmit={(e) => selectedArtwork && handleCommentSubmit(e, selectedArtwork.id)}
                             className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
                           >
                             <input

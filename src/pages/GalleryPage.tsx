@@ -304,26 +304,37 @@ export default function GalleryPage() {
               <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
                 <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                 
-                {selectedArtwork.category === 'filmmaking' && selectedArtwork.videoUrl ? (
-                  <div className="aspect-video w-full max-w-2xl bg-black border border-zinc-800 shadow-2xl relative">
-                    <iframe
-                      src={selectedArtwork.videoUrl}
-                      title={selectedArtwork.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                {selectedArtwork.videoUrl ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    {/* Check if it's a Google Drive embed (legacy) or Cloudinary video (new) */}
+                    {selectedArtwork.videoUrl.includes('drive.google.com') || selectedArtwork.videoUrl.includes('/preview') ? (
+                      <iframe
+                        src={selectedArtwork.videoUrl}
+                        title={selectedArtwork.title}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        src={selectedArtwork.videoUrl}
+                        poster={selectedArtwork.imageUrl || undefined}
+                        controls
+                        autoPlay
+                        className="w-full h-full max-h-full object-contain shadow-2xl border border-white/5"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
                   </div>
+                ) : selectedArtwork.imageUrl ? (
+                  <img
+                    src={selectedArtwork.imageUrl}
+                    alt={selectedArtwork.title}
+                    className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
+                  />
                 ) : (
-                  selectedArtwork.imageUrl ? (
-                    <img
-                      src={selectedArtwork.imageUrl}
-                      alt={selectedArtwork.title}
-                      className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
-                    />
-                  ) : (
-                    <div className="text-zinc-500 font-mono text-sm">Image Unavailable</div>
-                  )
+                  <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
                 )}
               </div>
 

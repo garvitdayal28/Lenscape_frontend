@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, AlertTriangle, Sparkles, UploadCloud, X } from 'lucide-react'
 import ExhibitionNav from '../components/ExhibitionNav'
+import VideoUploader from '../components/VideoUploader'
 import { authHeaders, getToken } from '../lib/session'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
@@ -34,8 +35,15 @@ export default function SubmitPage() {
   const [orientation, setOrientation] = useState(ORIENTATIONS[0].id)
   const [videoUrl, setVideoUrl]       = useState('')
 
+  // Video upload states
+  const [videoFile, setVideoFile]     = useState<File | null>(null)
+  const [coverFile, setCoverFile]     = useState<File | null>(null)
+
   const selectedCat = EVENT_CATEGORIES.find(c => c.id === category) || EVENT_CATEGORIES[0]
   const selectedOrient = ORIENTATIONS.find(o => o.id === orientation) || ORIENTATIONS[0]
+  
+  // Check if current category requires video upload
+  const isVideoCategory = category === 'cinematography' || category === 'motion-graphics'
 
   const handleCategoryChange = (id: string) => {
     setCategory(id)
@@ -91,29 +99,99 @@ export default function SubmitPage() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim() || !description.trim()) { setError('Title and description are required.'); return }
-    if (!uploadedUrl && !(category === 'cinematography' && videoUrl.trim())) {
-      setError('Please upload a cover image.'); return
+    
+    if (!title.trim() || !description.trim()) { 
+      setError('Title and description are required.'); 
+      return 
     }
+    
+    // Check if video category requires video files
+    if (isVideoCategory) {
+      if (!videoFile || !coverFile) {
+        setError('Both video file and cover image are required for video categories.')
+        return
+      }
+      await handleVideoSubmission()
+    } else {
+      // Regular image submission
+      if (!uploadedUrl) {
+        setError('Please upload a cover image.')
+        return
+      }
+      await handleImageSubmission()
+    }
+  }
+  
+  const handleVideoSubmission = async () => {
     setSubmitting(true)
+    
+    const formData = new FormData()
+    formData.append('video', videoFile!)
+    formData.append('cover', coverFile!)
+    formData.append('title', title.trim())
+    formData.append('description', description.trim())
+    formData.append('category', category)
+    formData.append('subCategory', subcategory)
+    formData.append('orientation', orientation)
+    
+    try {
+      const res = await fetch(`${API}/api/artworks/submit-video`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: formData
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        setError(data.error || 'Video submission failed')
+        setSubmitting(false)
+        return
+      }
+      
+      setSuccess(true)
+      setTimeout(() => navigate('/profile'), 1500)
+    } catch (err) {
+      setError('Cannot reach server. Please check your connection.')
+    }
+    
+    setSubmitting(false)
+  }
+  
+  const handleImageSubmission = async () => {
+    setSubmitting(true)
+    
     try {
       const res = await fetch(`${API}/api/artworks`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
-          title: title.trim(), description: description.trim(),
-          category, subcategory, orientation,
+          title: title.trim(), 
+          description: description.trim(),
+          category, 
+          subcategory, 
+          orientation,
           imageUrl: uploadedUrl || null,
           videoUrl: videoUrl.trim() || null,
         }),
       })
+      
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Submission failed'); setSubmitting(false); return }
+      
+      if (!res.ok) { 
+        setError(data.error || 'Submission failed'); 
+        setSubmitting(false); 
+        return 
+      }
+      
       setSuccess(true)
       setTimeout(() => navigate('/profile'), 1500)
     } catch {
       setError('Cannot reach server.')
     }
+    
     setSubmitting(false)
   }
 
@@ -180,34 +258,45 @@ export default function SubmitPage() {
                   className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
               </div>
 
-              {/* Image upload */}
-              <div>
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Cover Image</label>
-                {!imagePreview ? (
-                  <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-zinc-800 cursor-pointer hover:border-exhibition-gold/50 transition-colors">
-                    <UploadCloud className="w-8 h-8 text-zinc-600 mb-3" />
-                    <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">Click to upload</span>
-                    <span className="font-mono text-[8px] text-zinc-600 mt-1">PNG, JPG, GIF · max 10MB</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                  </label>
-                ) : (
-                  <div className="relative w-full h-44 border border-zinc-800 overflow-hidden">
-                    <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
-                    {uploading && (
-                      <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                        <span className="font-mono text-[10px] text-exhibition-gold animate-pulse uppercase tracking-widest">Uploading...</span>
-                      </div>
-                    )}
-                    {uploadedUrl && !uploading && (
-                      <div className="absolute bottom-2 left-2 bg-exhibition-gold text-exhibition-void px-2 py-0.5 text-[8px] font-mono font-bold uppercase">Uploaded ✓</div>
-                    )}
-                    <button type="button" onClick={clearImage}
-                      className="absolute top-2 right-2 w-7 h-7 bg-black/80 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white">
-                      <X size={14} />
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Image/Video upload - conditional based on category */}
+              {isVideoCategory ? (
+                <VideoUploader
+                  videoFile={videoFile}
+                  coverFile={coverFile}
+                  onVideoSelect={setVideoFile}
+                  onCoverSelect={setCoverFile}
+                  onRemoveVideo={() => setVideoFile(null)}
+                  onRemoveCover={() => setCoverFile(null)}
+                />
+              ) : (
+                <div>
+                  <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Cover Image</label>
+                  {!imagePreview ? (
+                    <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-zinc-800 cursor-pointer hover:border-exhibition-gold/50 transition-colors">
+                      <UploadCloud className="w-8 h-8 text-zinc-600 mb-3" />
+                      <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">Click to upload</span>
+                      <span className="font-mono text-[8px] text-zinc-600 mt-1">PNG, JPG, GIF · max 10MB</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                    </label>
+                  ) : (
+                    <div className="relative w-full h-44 border border-zinc-800 overflow-hidden">
+                      <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                      {uploading && (
+                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                          <span className="font-mono text-[10px] text-exhibition-gold animate-pulse uppercase tracking-widest">Uploading...</span>
+                        </div>
+                      )}
+                      {uploadedUrl && !uploading && (
+                        <div className="absolute bottom-2 left-2 bg-exhibition-gold text-exhibition-void px-2 py-0.5 text-[8px] font-mono font-bold uppercase">Uploaded ✓</div>
+                      )}
+                      <button type="button" onClick={clearImage}
+                        className="absolute top-2 right-2 w-7 h-7 bg-black/80 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ── Orientation / Dimension ── */}
               <div>
@@ -266,15 +355,6 @@ export default function SubmitPage() {
                 </div>
               </div>
 
-              {/* Video URL for cinematography/motion */}
-              {(category === 'cinematography' || category === 'motion-graphics') && (
-                <div>
-                  <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">YouTube Embed URL</label>
-                  <input type="url" placeholder="https://www.youtube.com/embed/..." value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
-                    className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
-                </div>
-              )}
-
               {/* Description */}
               <div>
                 <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Conceptual Statement</label>
@@ -284,7 +364,7 @@ export default function SubmitPage() {
 
               {error && <p className="font-mono text-[10px] text-red-400 bg-red-500/5 border border-red-500/20 px-3 py-2">{error}</p>}
 
-              <button type="submit" disabled={submitting || uploading}
+              <button type="submit" disabled={submitting || uploading || (isVideoCategory && (!videoFile || !coverFile))}
                 className="w-full py-4 bg-exhibition-gold text-exhibition-void font-mono font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors disabled:opacity-50">
                 {submitting ? 'Submitting...' : uploading ? 'Wait for upload...' : 'Submit for Curation Review'}
               </button>

@@ -9,6 +9,13 @@ interface ArtworkFrameProps {
   isVoted?: boolean
 }
 
+// Format video duration from seconds to MM:SS
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
 // Map orientation id → Tailwind aspect class
 const ASPECT: Record<string, string> = {
   landscape:  'aspect-[3/2]',
@@ -24,7 +31,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   onVote,
   isVoted = false,
 }) => {
-  const { title, artist, imageUrl, videoUrl, votes, comments, category } = artwork
+  const { title, artist, imageUrl, videoUrl, thumbnailUrl, videoDuration, votes, comments, category } = artwork
   const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
   // Format category to readable text
@@ -33,7 +40,10 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
     : 'Art'
 
   // Check if this is a video artwork
-  const isVideo = category === 'cinematography' || category === 'motion-graphics' || videoUrl
+  const isVideo = Boolean(videoUrl)
+  
+  // For video artworks, use thumbnailUrl or imageUrl as poster
+  const displayImage = isVideo ? (thumbnailUrl || imageUrl) : imageUrl
 
   return (
     <div className="flex flex-col items-center justify-center py-6 w-full max-w-xl mx-auto">
@@ -47,18 +57,34 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
 
         {/* The Media - Video or Image */}
-        {isVideo && videoUrl ? (
+        {isVideo ? (
           <div className="w-full h-full bg-black relative">
-            {/* Video thumbnail/preview */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              {imageUrl ? (
+            {/* Video thumbnail with play button overlay */}
+            {displayImage ? (
+              <>
                 <img
-                  src={imageUrl}
+                  src={displayImage}
                   alt={title}
                   className="w-full h-full object-contain"
                   loading="lazy"
                 />
-              ) : (
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                  <div className="w-16 h-16 bg-exhibition-gold/90 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-[0_0_30px_rgba(201,168,76,0.4)]">
+                    <svg className="w-8 h-8 text-exhibition-void ml-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                  </div>
+                </div>
+                {/* Duration badge */}
+                {videoDuration && (
+                  <div className="absolute bottom-3 right-3 z-10 px-2 py-1 bg-exhibition-void/90 backdrop-blur-sm text-[10px] font-mono text-exhibition-gold border border-exhibition-gold/30">
+                    {formatDuration(videoDuration)}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-zinc-500 text-center">
                   <div className="w-20 h-20 mx-auto mb-3 border-2 border-zinc-700 rounded-full flex items-center justify-center">
                     <svg className="w-8 h-8 text-exhibition-gold" fill="currentColor" viewBox="0 0 20 20">
@@ -67,16 +93,8 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
                   </div>
                   <p className="text-xs font-mono uppercase tracking-wider">Video Artwork</p>
                 </div>
-              )}
-            </div>
-            {/* Play button overlay */}
-            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <div className="w-16 h-16 bg-exhibition-gold/90 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-8 h-8 text-exhibition-void ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
               </div>
-            </div>
+            )}
           </div>
         ) : imageUrl ? (
           <img
