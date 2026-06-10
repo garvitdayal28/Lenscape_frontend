@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, AlertTriangle, Sparkles, UploadCloud, X } from 'lucide-react'
 import { ArrowLeft, AlertTriangle, Sparkles, UploadCloud, X } from 'lucide-react'
 import ExhibitionNav from '../components/ExhibitionNav'
 import { authHeaders, getToken } from '../lib/session'
@@ -323,11 +322,6 @@ export default function SubmitPage() {
                   className="w-full bg-[#121212] border border-zinc-800 text-xs font-sans px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 resize-none" />
               </div>
 
-              {error && <p className="font-mono text-[10px] text-red-400 bg-red-500/5 border border-red-500/20 px-3 py-2">{error}</p>}
-
-              <button type="submit" disabled={submitting || uploading}
-                className="w-full py-4 bg-exhibition-gold text-exhibition-void font-mono font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors disabled:opacity-50">
-                {submitting ? 'Submitting...' : uploading ? 'Wait for upload...' : 'Submit for Curation Review'}
               {error && <p className="font-mono text-[10px] text-red-400 bg-red-500/5 border border-red-500/20 px-3 py-2">{error}</p>}
 
               <button type="submit" disabled={submitting || uploading}
