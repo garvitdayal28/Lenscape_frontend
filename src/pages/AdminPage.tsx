@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, Users, UploadCloud, CheckCircle, Ban, Trash2, Plus, TrendingUp, BarChart2, LogOut } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { ShieldCheck, Users, UploadCloud, CheckCircle, Ban, TrendingUp, LogOut, Eye } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -14,13 +14,14 @@ export default function AdminPage() {
   const navigate = useNavigate()
   const [checking, setChecking] = useState(true)
   const [adminName, setAdminName] = useState('')
-  const [activeTab, setActiveTab] = useState<'moderation' | 'users' | 'categories'>('moderation')
 
   const [pendingArtworks, setPendingArtworks] = useState<any[]>([])
   const [allUsers, setAllUsers] = useState<any[]>([])
-  const [categories, setCategories] = useState<string[]>([])
-  const [newCatName, setNewCatName] = useState('')
-  const [stats, setStats] = useState({ users: 0, uploads: 0, votes: 0, comments: 0 })
+  const [stats, setStats] = useState({ users: 0, totalUploads: 0, votes: 0, pending: 0 })
+  const [activeTab, setActiveTab] = useState<'moderation' | 'users'>('moderation')
+  const [rejecting, setRejecting] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+  const [previewArtwork, setPreviewArtwork] = useState<any | null>(null)
 
   // ── Verify admin token on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -48,12 +49,15 @@ export default function AdminPage() {
     if (checking) return
     fetchPending()
     fetchUsers()
-    fetchCategories()
   }, [checking])
 
   const fetchPending = async () => {
     const res = await fetch(`${API}/api/artworks/pending`, { headers: authHeaders() })
-    if (res.ok) setPendingArtworks(await res.json())
+    if (res.ok) {
+      const data = await res.json()
+      setPendingArtworks(data)
+      setStats(prev => ({ ...prev, pending: data.length }))
+    }
   }
 
   const fetchUsers = async () => {
@@ -62,13 +66,10 @@ export default function AdminPage() {
       const data = await res.json()
       setAllUsers(data)
       const votes = data.reduce((s: number, u: any) => s + (u.votedCategories?.length || 0), 0)
-      setStats(prev => ({ ...prev, users: data.length, votes }))
+      // total uploads = sum of submissions across all users
+      const totalUploads = data.reduce((s: number, u: any) => s + (u.submissions?.length || 0), 0)
+      setStats(prev => ({ ...prev, users: data.length, votes, totalUploads }))
     }
-  }
-
-  const fetchCategories = async () => {
-    const res = await fetch(`${API}/api/categories`)
-    if (res.ok) setCategories(await res.json())
   }
 
   const approveArtwork = async (id: string) => {
@@ -81,6 +82,19 @@ export default function AdminPage() {
     fetchPending()
   }
 
+  const rejectWithReason = async () => {
+    if (!rejecting) return
+    await fetch(`${API}/api/artworks/${rejecting}/reject`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ reason: rejectReason.trim() }),
+    })
+    setRejecting(null)
+    setRejectReason('')
+    setPreviewArtwork(null)
+    fetchPending()
+  }
+
   const banUser = async (userId: string) => {
     await fetch(`${API}/api/admin/users/${userId}/ban`, { method: 'POST', headers: authHeaders() })
     fetchUsers()
@@ -89,23 +103,6 @@ export default function AdminPage() {
   const unbanUser = async (userId: string) => {
     await fetch(`${API}/api/admin/users/${userId}/unban`, { method: 'POST', headers: authHeaders() })
     fetchUsers()
-  }
-
-  const addCategory = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newCatName.trim()) return
-    await fetch(`${API}/api/categories`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ category: newCatName }),
-    })
-    setNewCatName('')
-    fetchCategories()
-  }
-
-  const removeCategory = async (name: string) => {
-    await fetch(`${API}/api/categories/${name}`, { method: 'DELETE', headers: authHeaders() })
-    fetchCategories()
   }
 
   const handleLogout = () => {
@@ -125,6 +122,7 @@ export default function AdminPage() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-[#020202] text-exhibition-bone py-12 px-4 md:px-12">
       <div className="max-w-6xl mx-auto">
 
@@ -149,12 +147,11 @@ export default function AdminPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {[
             { label: 'Participants', value: stats.users, Icon: Users, color: 'text-cyan-400' },
-            { label: 'Pending', value: pendingArtworks.length, Icon: UploadCloud, color: 'text-exhibition-gold' },
+            { label: 'Pending', value: stats.pending, Icon: UploadCloud, color: 'text-exhibition-gold' },
             { label: 'Votes Cast', value: stats.votes, Icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Categories', value: categories.length, Icon: BarChart2, color: 'text-pink-400' },
           ].map(({ label, value, Icon, color }) => (
             <div key={label} className="border border-zinc-900 bg-[#0c0c0c] p-5 flex items-center justify-between">
               <div>
@@ -169,9 +166,8 @@ export default function AdminPage() {
         {/* Tabs */}
         <div className="flex border-b border-zinc-900 mb-8 font-mono text-[10px] uppercase tracking-widest overflow-x-auto">
           {[
-            { id: 'moderation', label: `Queue (${pendingArtworks.length})` },
+            { id: 'moderation', label: `Queue (${stats.pending})` },
             { id: 'users', label: 'Users' },
-            { id: 'categories', label: 'Categories' },
           ].map(tab => (
             <button
               key={tab.id}
@@ -201,11 +197,15 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-3">
+                  <button onClick={() => setPreviewArtwork(art)}
+                    className="px-4 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
+                    <Eye size={12} /> View
+                  </button>
                   <button onClick={() => approveArtwork(art.id)}
                     className="px-5 py-2 bg-exhibition-gold text-exhibition-void font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors">
                     Approve
                   </button>
-                  <button onClick={() => rejectArtwork(art.id)}
+                  <button onClick={() => setRejecting(art.id)}
                     className="px-5 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
                     Reject
                   </button>
@@ -264,45 +264,133 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Categories Tab ── */}
-        {activeTab === 'categories' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="border border-zinc-900 bg-[#0c0c0c] p-6">
-              <h3 className="font-mono text-xs uppercase tracking-widest text-exhibition-gold mb-5">Active Categories</h3>
-              <div className="space-y-2">
-                {categories.map(cat => (
-                  <div key={cat} className="flex justify-between items-center bg-black/20 border border-zinc-900 px-4 py-2.5">
-                    <span className="font-mono text-[11px] text-exhibition-bone uppercase tracking-wider">{cat.replace('-', ' ')}</span>
-                    <button onClick={() => removeCategory(cat)} disabled={cat === 'other'}
-                      className="text-zinc-600 hover:text-red-400 transition-colors disabled:opacity-20">
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border border-zinc-900 bg-[#0c0c0c] p-6 h-fit">
-              <h3 className="font-mono text-xs uppercase tracking-widest text-exhibition-gold mb-5">Add Category</h3>
-              <form onSubmit={addCategory} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="e.g. 3D Renders"
-                  value={newCatName}
-                  onChange={e => setNewCatName(e.target.value)}
-                  className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
-                  required
-                />
-                <button type="submit"
-                  className="w-full py-3 bg-exhibition-gold text-exhibition-void font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors flex items-center justify-center gap-1.5">
-                  <Plus size={12} /> Add Domain
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
       </div>
     </div>
+
+      {/* ── Artwork Preview Modal ── */}
+      <AnimatePresence>
+        {previewArtwork && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[2000] bg-black/98 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setPreviewArtwork(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              className="relative w-full max-w-5xl max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close */}
+              <button onClick={() => setPreviewArtwork(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 border border-exhibition-gold/20 flex items-center justify-center hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-gold transition-colors font-mono text-lg">
+                ×
+              </button>
+
+              {/* Image / Video */}
+              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+                <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
+                {previewArtwork.videoUrl ? (
+                  <iframe src={previewArtwork.videoUrl} title={previewArtwork.title}
+                    className="w-full aspect-video bg-black border border-zinc-800"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen />
+                ) : previewArtwork.imageUrl ? (
+                  <img src={previewArtwork.imageUrl} alt={previewArtwork.title}
+                    className="max-w-full max-h-full object-contain shadow-2xl border border-white/5" />
+                ) : (
+                  <div className="text-zinc-500 font-mono text-sm">Image Unavailable</div>
+                )}
+              </div>
+
+              {/* Details */}
+              <div className="w-full md:w-[35%] flex flex-col bg-[#0b0b0b] flex-grow">
+                <div className="p-6 border-b border-zinc-900 flex-1">
+                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
+                    {previewArtwork.category?.replace('-', ' ')}
+                    {previewArtwork.subcategory && ` · ${previewArtwork.subcategory}`}
+                  </span>
+                  <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone mt-1">
+                    {previewArtwork.title}
+                  </h3>
+                  <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
+                    By {previewArtwork.artist?.name}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 font-mono">{previewArtwork.artist?.college}</p>
+                  {previewArtwork.artist?.branch && (
+                    <p className="text-[10px] text-zinc-600 font-mono">{previewArtwork.artist.branch} · {previewArtwork.artist.year}</p>
+                  )}
+                  <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed max-h-32 overflow-y-auto pr-1">
+                    {previewArtwork.description}
+                  </p>
+
+                  <div className="mt-6 pt-4 border-t border-zinc-900 flex items-center justify-between">
+                    <span className="text-zinc-500 text-xs font-mono">{previewArtwork.votes || 0} votes</span>
+                    <span className={`text-[8px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 border ${
+                      previewArtwork.status === 'approved' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5'
+                      : previewArtwork.status === 'rejected' ? 'text-red-400 border-red-500/20 bg-red-500/5'
+                      : 'text-exhibition-gold border-exhibition-gold/20 bg-exhibition-gold/5'
+                    }`}>{previewArtwork.status}</span>
+                  </div>
+                </div>
+
+                {/* Admin quick actions inside modal */}
+                {previewArtwork.status === 'pending' && (
+                  <div className="p-4 border-t border-zinc-900 flex gap-3 bg-black/40">
+                    <button onClick={() => { approveArtwork(previewArtwork.id); setPreviewArtwork(null) }}
+                      className="flex-1 py-2.5 bg-exhibition-gold text-exhibition-void font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors">
+                      Approve
+                    </button>
+                    <button onClick={() => setRejecting(previewArtwork.id)}
+                      className="flex-1 py-2.5 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Rejection Reason Dialog ── */}
+      <AnimatePresence>
+        {rejecting && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[3000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => { setRejecting(null); setRejectReason('') }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md bg-[#0d0d0d] border border-red-500/30 p-8 shadow-2xl relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="editorial-text text-2xl font-light text-exhibition-bone mb-2">Reject Submission</h3>
+              <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-6">
+                Optionally write a reason — it will be shown to the participant.
+              </p>
+              <textarea
+                value={rejectReason}
+                onChange={e => setRejectReason(e.target.value)}
+                rows={4}
+                placeholder="e.g. Image quality too low, does not meet exhibition standards..."
+                className="w-full bg-[#111] border border-zinc-800 text-xs font-sans px-4 py-3 text-exhibition-bone focus:outline-none focus:border-red-500/50 resize-none mb-5"
+              />
+              <div className="flex gap-3">
+                <button onClick={() => { setRejecting(null); setRejectReason('') }}
+                  className="flex-1 py-3 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-zinc-500 transition-colors">
+                  Cancel
+                </button>
+                <button onClick={rejectWithReason}
+                  className="flex-1 py-3 bg-red-500/20 border border-red-500/40 text-red-400 font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-red-500/30 transition-colors">
+                  Confirm Rejection
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }

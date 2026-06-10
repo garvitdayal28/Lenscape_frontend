@@ -51,13 +51,11 @@ export default function ProfileSetupPage() {
         name,
         email: localStorage.getItem('lenscape_user_email') || '',
         profileComplete: true,
+        college,
+        branch,
+        bio,
+        avatar,
       })
-      // Also persist profile fields for ProfilePage display
-      localStorage.setItem('lenscape_user_name', name)
-      localStorage.setItem('lenscape_user_college', college)
-      localStorage.setItem('lenscape_user_branch', branch)
-      localStorage.setItem('lenscape_user_bio', bio)
-      localStorage.setItem('lenscape_user_avatar', avatar)
       navigate('/profile')
     } catch {
       setError('Cannot reach server.')
