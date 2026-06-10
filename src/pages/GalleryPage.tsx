@@ -1,165 +1,130 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Heart, MessageSquare, Send, Compass } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import { Artwork, Category } from '../types'
-import SpotlightCursor from '../components/SpotlightCursor'
+import { useAuthStore } from '../store/authStore'
+import { authHeaders } from '../lib/session'
 import ArtworkFrame from '../components/ArtworkFrame'
 import ExhibitionNav from '../components/ExhibitionNav'
 
-export default function GalleryPage() {
-  const { artworks, categories, voteArtwork, commentArtwork, currentUser } = useApp()
-  const [searchParams, setSearchParams] = useSearchParams()
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all')
+// Minimal local type — avoids dependency on legacy types/index.ts
+interface Artwork {
+  id: string; title: string; description: string; category: string; subcategory?: string
+  imageUrl: string | null; thumbnailUrl: string | null; videoUrl: string | null
+  artist: { id: string; name: string; email: string; college: string; branch: string; year: string; avatar: string | null; bio: string; joinedDate: any }
+  votes: number; comments: any[]; createdAt: any; status: string
+}
+
+export default function GalleryPage() {
+  const user = useAuthStore(s => s.user)
+  const [searchParams] = useSearchParams()
+
+  const categories = ['photography', 'digital-art', 'cinematography', 'motion-graphics'] as const
+  type EventCategory = typeof categories[number]
+
+  const [artworks, setArtworks] = useState<Artwork[]>([])
+  const [loadingArtworks, setLoadingArtworks] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<EventCategory | 'all'>('all')
   const [selectedSort, setSelectedSort] = useState('latest')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
 
+  // Fetch approved artworks from backend
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch(`${API}/api/artworks`)
+        if (res.ok) setArtworks(await res.json())
+      } catch {}
+      setLoadingArtworks(false)
+    }
+    load()
+  }, [])
+
   // Handle category query param from landing page clicks
   useEffect(() => {
     const catParam = searchParams.get('cat')
-    if (catParam) {
-      setSelectedCategory(catParam as Category)
-    }
+    if (catParam) setSelectedCategory(catParam as EventCategory)
   }, [searchParams])
 
-  // Filter approved works only
-  const approvedArtworks = artworks.filter((a) => a.status === 'approved')
-
-  // Filter results
-  const filteredArtworks = approvedArtworks.filter((art) => {
-    const matchesCategory =
-      selectedCategory === 'all' || art.category === selectedCategory
-    const matchesSearch =
-      art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  // Filter + sort
+  const filteredArtworks = artworks.filter(art => {
+    const matchesCategory = selectedCategory === 'all' || art.category === selectedCategory
+    const matchesSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       art.artist.name.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
-  // Sort results
   const sortedArtworks = [...filteredArtworks].sort((a, b) => {
-    if (selectedSort === 'most-voted') {
-      return b.votes - a.votes
-    } else if (selectedSort === 'trending') {
-      return (
-        b.votes +
-        b.comments.length * 2 -
-        (a.votes + a.comments.length * 2)
-      )
-    }
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    if (selectedSort === 'most-voted') return b.votes - a.votes
+    if (selectedSort === 'trending') return (b.votes + b.comments.length * 2) - (a.votes + a.comments.length * 2)
+    // latest — handle Firestore timestamps
+    const toMs = (v: any) => typeof v === 'object' && v?._seconds ? v._seconds * 1000 : new Date(v).getTime()
+    return toMs(b.createdAt) - toMs(a.createdAt)
   })
 
   // Dynamic visual identity mapping based on room (category)
-  const roomThemes: Record<
-    string,
-    {
-      bg: string
-      text: string
-      titleColor: string
-      ambientGlow: string
-      fontClass: string
-      description: string
-      extraClasses: string
-    }
-  > = {
+  const roomThemes: Record<string, { bg: string; text: string; titleColor: string; ambientGlow: string; description: string; extraClasses: string }> = {
     all: {
-      bg: 'bg-[#080808]',
-      text: 'text-exhibition-bone',
-      titleColor: 'text-exhibition-gold',
+      bg: 'bg-[#080808]', text: 'text-exhibition-bone', titleColor: 'text-exhibition-gold',
       ambientGlow: 'from-exhibition-gold/10',
-      fontClass: 'font-mono',
-      description: 'The main hall displaying all creative streams under one dome.',
-      extraClasses: '',
+      description: 'The main hall displaying all creative streams under one dome.', extraClasses: '',
     },
     photography: {
-      bg: 'bg-[#000000]',
-      text: 'text-zinc-100',
-      titleColor: 'text-white',
+      bg: 'bg-[#000000]', text: 'text-zinc-100', titleColor: 'text-white',
       ambientGlow: 'from-zinc-800/25',
-      fontClass: 'font-mono',
-      description: 'Room 01: Focus, high-contrast monochrome studies, and human capturing.',
-      extraClasses: 'contrast-125 saturate-0',
-    },
-    filmmaking: {
-      bg: 'bg-[#050505]',
-      text: 'text-[#e2dac6]',
-      titleColor: 'text-amber-500',
-      ambientGlow: 'from-amber-950/20',
-      fontClass: 'font-mono',
-      description: 'Room 02: Cinematic narrative reels, storyboards, and retro grain.',
-      extraClasses: 'crt-scanlines',
-    },
-    animation: {
-      bg: 'bg-[#0a0512]',
-      text: 'text-pink-100',
-      titleColor: 'text-pink-500',
-      ambientGlow: 'from-pink-900/20',
-      fontClass: 'font-mono',
-      description: 'Room 03: Playful render mechanics, motion, and digital keyframes.',
-      extraClasses: '',
+      description: 'Room 01 · Portrait Photography · Landscape Photography', extraClasses: '',
     },
     'digital-art': {
-      bg: 'bg-[#01040a]',
-      text: 'text-cyan-100',
-      titleColor: 'text-cyan-400',
+      bg: 'bg-[#01040a]', text: 'text-cyan-100', titleColor: 'text-cyan-400',
       ambientGlow: 'from-cyan-900/20',
-      fontClass: 'font-mono',
-      description: 'Room 04: Shader procedural algorithms, VR scapes, and cyberpunk neon.',
-      extraClasses: '',
+      description: 'Room 02 · Concept Art · Character Design', extraClasses: '',
     },
-    illustration: {
-      bg: 'bg-[#0e0e0c]',
-      text: 'text-[#dfd7c3]',
-      titleColor: 'text-amber-700',
-      ambientGlow: 'from-yellow-950/15',
-      fontClass: 'font-serif',
-      description: 'Room 05: Hand-drawn botanical studies, vector concepts, and organic ink.',
-      extraClasses: '',
+    cinematography: {
+      bg: 'bg-[#050505]', text: 'text-[#e2dac6]', titleColor: 'text-amber-500',
+      ambientGlow: 'from-amber-950/20',
+      description: 'Room 03 · Short Film · Travel Film', extraClasses: '',
     },
     'motion-graphics': {
-      bg: 'bg-[#020904]',
-      text: 'text-emerald-100',
-      titleColor: 'text-emerald-400',
+      bg: 'bg-[#020904]', text: 'text-emerald-100', titleColor: 'text-emerald-400',
       ambientGlow: 'from-emerald-900/20',
-      fontClass: 'font-mono',
-      description: 'Room 06: Kinetic typography loops and strobe color transitions.',
-      extraClasses: '',
-    },
-    other: {
-      bg: 'bg-[#0a0a0a]',
-      text: 'text-zinc-300',
-      titleColor: 'text-zinc-400',
-      ambientGlow: 'from-zinc-900/20',
-      fontClass: 'font-mono',
-      description: 'Room 07: Alternative creative mediums and hybrid representations.',
-      extraClasses: '',
+      description: 'Room 04 · Logo Animation · Explainer Video', extraClasses: '',
     },
   }
 
   const currentTheme = roomThemes[selectedCategory] || roomThemes.all
 
-  const handleVote = (artId: string) => {
-    voteArtwork(artId)
-    if (selectedArtwork && selectedArtwork.id === artId) {
-      const updated = artworks.find((a) => a.id === artId)
-      if (updated) setSelectedArtwork(updated)
-    }
+  const handleVote = async (artId: string) => {
+    if (!user) return
+    try {
+      const res = await fetch(`${API}/api/artworks/${artId}/vote`, {
+        method: 'POST', headers: authHeaders(),
+      })
+      if (res.ok) {
+        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, votes: a.votes + 1 } : a))
+        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+      }
+    } catch {}
   }
 
-  const handleCommentSubmit = (e: React.FormEvent, artId: string) => {
+  const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
     e.preventDefault()
-    if (!commentContent.trim()) return
-
-    const success = commentArtwork(artId, commentContent.trim())
-    if (success) {
-      setCommentContent('')
-      const updated = artworks.find((a) => a.id === artId)
-      if (updated) setSelectedArtwork(updated)
-    }
+    if (!commentContent.trim() || !user) return
+    try {
+      const res = await fetch(`${API}/api/artworks/${artId}/comment`, {
+        method: 'POST', headers: authHeaders(),
+        body: JSON.stringify({ content: commentContent.trim() }),
+      })
+      if (res.ok) {
+        const comment = await res.json()
+        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, comments: [...a.comments, comment] } : a))
+        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, comments: [...a.comments, comment] } : a)
+        setCommentContent('')
+      }
+    } catch {}
   }
 
   return (
@@ -167,7 +132,7 @@ export default function GalleryPage() {
       className={`min-h-screen transition-colors duration-1000 overflow-x-hidden relative select-none ${currentTheme.bg} ${currentTheme.text} ${currentTheme.extraClasses}`}
     >
       {/* Spotlight Flashlight cursor */}
-      <SpotlightCursor />
+      {/* <SpotlightCursor /> */}
 
       {/* Navigation Guide */}
       <ExhibitionNav />
@@ -195,32 +160,41 @@ export default function GalleryPage() {
         </p>
       </div>
 
-      {/* Architectural Room-Switch UI (Instead of filter pills) */}
+      {/* Room-Switch Nav */}
       <div className="w-full border-t border-b border-zinc-900 bg-black/25 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center justify-start md:justify-center gap-6 py-4">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-1 px-3 ${
-              selectedCategory === 'all'
-                ? 'text-exhibition-gold border-b border-exhibition-gold'
-                : 'text-zinc-500 hover:text-zinc-300'
-            }`}
-          >
-            00 / Grand Hall
-          </button>
-          {categories.map((cat, idx) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-1 px-3 ${
-                selectedCategory === cat
-                  ? 'text-exhibition-gold border-b border-exhibition-gold'
-                  : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              0{idx + 1} / {cat.replace('-', ' ')}
-            </button>
-          ))}
+        <div className="relative">
+          {/* Left fade for mobile */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-black/80 to-transparent z-10 md:hidden" />
+          {/* Right fade for mobile */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-black/80 to-transparent z-10 md:hidden" />
+
+          <div className="overflow-x-auto no-scrollbar">
+            <div className="flex items-center justify-start md:justify-center gap-0 py-0 px-0 min-w-max md:min-w-0 mx-auto">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-4 px-5 border-b-2 ${
+                  selectedCategory === 'all'
+                    ? 'text-exhibition-gold border-exhibition-gold'
+                    : 'text-zinc-500 hover:text-zinc-300 border-transparent'
+                }`}
+              >
+                00 / Grand Hall
+              </button>
+              {categories.map((cat, idx) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-4 px-5 border-b-2 ${
+                    selectedCategory === cat
+                      ? 'text-exhibition-gold border-exhibition-gold'
+                      : 'text-zinc-500 hover:text-zinc-300 border-transparent'
+                  }`}
+                >
+                  0{idx + 1} / {cat.replace('-', ' ')}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -255,8 +229,8 @@ export default function GalleryPage() {
         {sortedArtworks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
             {sortedArtworks.map((artwork, idx) => {
-              const isVoted = currentUser
-                ? currentUser.votedCategories.includes(artwork.category)
+              const isVoted = user
+                ? user.votedCategories?.includes(artwork.category)
                 : false
               return (
                 <motion.div
@@ -365,18 +339,14 @@ export default function GalleryPage() {
                     <span className="text-zinc-500 text-xs font-mono">
                       {selectedArtwork.votes} votes logged
                     </span>
-                    {currentUser ? (
+                    {user ? (
                       <button
                         onClick={() => handleVote(selectedArtwork.id)}
                         className="px-4 py-1.5 border border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold text-xs font-mono uppercase tracking-wider flex items-center gap-1.5"
                       >
                         <Heart
                           size={12}
-                          className={
-                            currentUser.votedCategories.includes(selectedArtwork.category)
-                              ? 'fill-exhibition-gold stroke-exhibition-gold'
-                              : ''
-                          }
+                          className={user.votedCategories?.includes(selectedArtwork.category) ? 'fill-exhibition-gold stroke-exhibition-gold' : ''}
                         />
                         <span>VOTE</span>
                       </button>
@@ -414,7 +384,7 @@ export default function GalleryPage() {
                 </div>
 
                 {/* Submit Feedback */}
-                {currentUser ? (
+                {user ? (
                   <form
                     onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
                     className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
@@ -423,17 +393,12 @@ export default function GalleryPage() {
                       type="text"
                       value={commentContent}
                       onChange={(e) => setCommentContent(e.target.value)}
-                      placeholder={
-                        currentUser.commentedArtworks.includes(selectedArtwork.id)
-                          ? "Feedback already logged"
-                          : "Write a feedback..."
-                      }
-                      disabled={currentUser.commentedArtworks.includes(selectedArtwork.id)}
-                      className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      placeholder="Write a feedback..."
+                      className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
                     />
                     <button
                       type="submit"
-                      disabled={currentUser.commentedArtworks.includes(selectedArtwork.id) || !commentContent.trim()}
+                      disabled={!commentContent.trim()}
                       className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send size={12} />
@@ -441,7 +406,7 @@ export default function GalleryPage() {
                   </form>
                 ) : (
                   <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
-                    <Link to="/auth" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
+                    <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                   </div>
                 )}
               </div>

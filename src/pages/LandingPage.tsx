@@ -1,25 +1,60 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Heart, ArrowRight, Send } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
+import { useAuthStore } from '../store/authStore'
+import { authHeaders } from '../lib/session'
 import { Artwork } from '../types'
 import CinematicIntro from '../components/CinematicIntro'
 import ExhibitionNav from '../components/ExhibitionNav'
 import ThreeExhibitionScene from '../components/ThreeExhibitionScene'
 import ArtworkFrame from '../components/ArtworkFrame'
+import { useSpotlightAll } from '../hooks/useSpotlight'
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function LandingPage() {
-  const { artworks, categories, currentUser, voteArtwork, commentArtwork } = useApp()
+  const user = useAuthStore(s => s.user)
   const navigate = useNavigate()
   
-  // Cinematic intro session state
+  useSpotlightAll('.spot-md, .spot-lg, .spot-xl')
+
+  const [artworks, setArtworks] = useState<Artwork[]>([])
+  const [categories] = useState(['photography', 'digital-art', 'cinematography', 'motion-graphics'])
   const [introComplete, setIntroComplete] = useState<boolean>(() => {
     return sessionStorage.getItem('lenscape_intro_complete') === 'true'
   })
 
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [commentContent, setCommentContent] = useState('')
+  const [showNav, setShowNav] = useState(false)
+  const chambersRef = useRef<HTMLElement>(null)
+
+  // Fetch approved artworks from backend
+  useEffect(() => {
+    fetch(`${API}/api/artworks`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setArtworks(data) })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (chambersRef.current) {
+        const top = chambersRef.current.getBoundingClientRect().top
+        // Show nav when chambers section enters viewport
+        if (top < window.innerHeight - 100) {
+          setShowNav(true)
+        } else {
+          setShowNav(false)
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    // Trigger once on mount to set initial state
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleIntroComplete = () => {
     sessionStorage.setItem('lenscape_intro_complete', 'true')
@@ -43,26 +78,33 @@ export default function LandingPage() {
   ]
 
   // Handle voting from modal/frames
-  const handleVote = (artId: string) => {
-    voteArtwork(artId)
-    // Refresh selected artwork details in modal
-    if (selectedArtwork && selectedArtwork.id === artId) {
-      const updated = artworks.find((a) => a.id === artId)
-      if (updated) setSelectedArtwork(updated)
-    }
+  const handleVote = async (artId: string) => {
+    if (!user) return
+    try {
+      const res = await fetch(`${API}/api/artworks/${artId}/vote`, { method: 'POST', headers: authHeaders() })
+      if (res.ok) {
+        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, votes: a.votes + 1 } : a))
+        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, votes: a.votes + 1 } : a)
+      }
+    } catch {}
   }
 
   // Handle comment submit
-  const handleCommentSubmit = (e: React.FormEvent, artId: string) => {
+  const handleCommentSubmit = async (e: React.FormEvent, artId: string) => {
     e.preventDefault()
-    if (!commentContent.trim()) return
-
-    const success = commentArtwork(artId, commentContent.trim())
-    if (success) {
-      setCommentContent('')
-      const updated = artworks.find((a) => a.id === artId)
-      if (updated) setSelectedArtwork(updated)
-    }
+    if (!commentContent.trim() || !user) return
+    try {
+      const res = await fetch(`${API}/api/artworks/${artId}/comment`, {
+        method: 'POST', headers: authHeaders(),
+        body: JSON.stringify({ content: commentContent.trim() }),
+      })
+      if (res.ok) {
+        const comment = await res.json()
+        setArtworks(prev => prev.map(a => a.id === artId ? { ...a, comments: [...a.comments, comment] } : a))
+        if (selectedArtwork?.id === artId) setSelectedArtwork(a => a ? { ...a, comments: [...a.comments, comment] } : a)
+        setCommentContent('')
+      }
+    } catch {}
   }
 
   // Scroll-driven fade + lift for the corridor overlay text
@@ -82,7 +124,7 @@ export default function LandingPage() {
       {introComplete && (
         <>
           {/* Navigation Guide */}
-          <ExhibitionNav />
+          <ExhibitionNav isVisible={showNav} />
 
           {/* 
             Scroll-jacked 3D corridor.
@@ -140,7 +182,7 @@ export default function LandingPage() {
               {/* Staggered high-fidelity layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 items-start">
                 {featured.map((artwork, idx) => {
-                  const isVoted = currentUser ? currentUser.votedCategories.includes(artwork.category) : false
+                  const isVoted = user ? user?.votedCategories?.includes(artwork.category) : false
                   return (
                     <motion.div
                       key={artwork.id}
@@ -162,8 +204,69 @@ export default function LandingPage() {
               </div>
             </section>
 
+            {/* Section: Event Themes */}
+            <section className="max-w-6xl mx-auto mb-40">
+              <div className="text-center mb-16">
+                <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
+                  Lenscape 2026
+                </span>
+                <h2 className="editorial-text text-4xl md:text-6xl font-light">
+                  Event Themes
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-exhibition-gold/15">
+                {/* Theme 1 */}
+                <div className="p-10 border-b md:border-b-0 md:border-r border-exhibition-gold/15 relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-exhibition-gold/3 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-4">Theme 01</span>
+                  <h3 className="editorial-text text-3xl md:text-4xl font-light text-exhibition-bone mb-4">
+                    Summer at Your Place
+                  </h3>
+                  <p className="font-mono text-xs text-zinc-500 leading-relaxed">
+                    Capture the warmth, intimacy and vibrancy of summer through your lens — your home, your city, your people.
+                  </p>
+                </div>
+
+                {/* Theme 2 */}
+                <div className="p-10 relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-bl from-exhibition-gold/3 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-4">Theme 02</span>
+                  <h3 className="editorial-text text-3xl md:text-4xl font-light text-exhibition-bone mb-4">
+                    Open Innovation
+                  </h3>
+                  <p className="font-mono text-xs text-zinc-500 leading-relaxed">
+                    No constraints — explore the intersection of technology, design and imagination. Anything goes.
+                  </p>
+                </div>
+              </div>
+
+              {/* Categories overview */}
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-exhibition-gold/10">
+                {[
+                  { room: '01', cat: 'Photography', subs: ['Portrait', 'Landscape'] },
+                  { room: '02', cat: 'Digital Art', subs: ['Concept Art', 'Character Design'] },
+                  { room: '03', cat: 'Cinematography', subs: ['Short Film', 'Travel Film'] },
+                  { room: '04', cat: 'Motion Graphics', subs: ['Logo Animation', 'Explainer Video'] },
+                ].map(item => (
+                  <div key={item.room} className="bg-exhibition-void p-6">
+                    <span className="font-mono text-[9px] text-zinc-600 block mb-2 uppercase tracking-widest">Room {item.room}</span>
+                    <h4 className="font-mono text-sm font-bold text-exhibition-gold uppercase tracking-wide mb-3">{item.cat}</h4>
+                    <ul className="space-y-1">
+                      {item.subs.map(s => (
+                        <li key={s} className="font-mono text-[9px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                          <span className="w-1 h-1 bg-exhibition-gold/40 rounded-full flex-shrink-0" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+
             {/* Section: Typographic Statistics */}
-            <section className="max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
+            <section className="spot-xl max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
                 {stats.map((stat, idx) => (
                   <div key={idx} className="flex flex-col items-center">
@@ -179,7 +282,7 @@ export default function LandingPage() {
             </section>
 
             {/* Section: Exhibition Rooms CTA */}
-            <section className="max-w-5xl mx-auto mb-32">
+            <section ref={chambersRef} className="max-w-5xl mx-auto mb-32">
               <div className="text-center mb-20">
                 <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
                   Select a Room
@@ -193,15 +296,15 @@ export default function LandingPage() {
                 {/* Photography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=photography')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 01</span>
                   <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
-                    Photography Wing
+                    Photography
                   </h3>
                   <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
-                    Exquisite monochromatic and high-contrast capturing of human dynamics.
+                    Portrait Photography · Landscape Photography
                   </p>
                   <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
@@ -212,15 +315,15 @@ export default function LandingPage() {
                 {/* Digital Art wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=digital-art')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 02</span>
                   <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
-                    Digital Art & Shaders
+                    Digital Art
                   </h3>
                   <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
-                    Futuristic WebGL, generative algorithms, and cyberpunk installations.
+                    Concept Art · Character Design
                   </p>
                   <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
@@ -228,18 +331,18 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Filmmaking wing */}
+                {/* Cinematography wing */}
                 <div
-                  onClick={() => navigate('/gallery?cat=filmmaking')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  onClick={() => navigate('/gallery?cat=cinematography')}
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 03</span>
                   <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
-                    Cinematography & Reels
+                    Cinematography
                   </h3>
                   <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
-                    Grainy celluloid aesthetics and narrative storytelling prompts.
+                    Short Film · Travel Film
                   </p>
                   <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
@@ -247,18 +350,18 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Animation wing */}
+                {/* Motion Graphics wing */}
                 <div
-                  onClick={() => navigate('/gallery?cat=animation')}
-                  className="group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  onClick={() => navigate('/gallery?cat=motion-graphics')}
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 04</span>
                   <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
-                    Kinetic Animation
+                    Motion Graphics
                   </h3>
                   <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
-                    Fluid physics loops, 3D renders, and dynamic metallic chrome motion.
+                    Logo Animation · Explainer Video
                   </p>
                   <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
@@ -368,12 +471,12 @@ export default function LandingPage() {
                         <span className="text-zinc-500 text-xs font-mono">
                           {selectedArtwork.votes} votes logged
                         </span>
-                        {currentUser ? (
+                        {user ? (
                           <button
                             onClick={() => handleVote(selectedArtwork.id)}
                             className="px-4 py-1.5 border border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold text-xs font-mono uppercase tracking-wider flex items-center gap-1.5"
                           >
-                            <Heart size={12} className={currentUser.votedCategories.includes(selectedArtwork.category) ? 'fill-exhibition-gold stroke-exhibition-gold' : ''} />
+                            <Heart size={12} className={user?.votedCategories?.includes(selectedArtwork.category) ? 'fill-exhibition-gold stroke-exhibition-gold' : ''} />
                             <span>VOTE</span>
                           </button>
                         ) : (
@@ -410,7 +513,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Submit comments bar */}
-                    {currentUser ? (
+                    {user ? (
                       <form
                         onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
                         className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
@@ -420,16 +523,16 @@ export default function LandingPage() {
                           value={commentContent}
                           onChange={(e) => setCommentContent(e.target.value)}
                           placeholder={
-                            currentUser.commentedArtworks.includes(selectedArtwork.id)
+                            user.commentedArtworks.includes(selectedArtwork.id)
                               ? "Feedback already logged"
                               : "Write a feedback..."
                           }
-                          disabled={currentUser.commentedArtworks.includes(selectedArtwork.id)}
+                          disabled={user.commentedArtworks.includes(selectedArtwork.id)}
                           className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <button
                           type="submit"
-                          disabled={currentUser.commentedArtworks.includes(selectedArtwork.id) || !commentContent.trim()}
+                          disabled={user.commentedArtworks.includes(selectedArtwork.id) || !commentContent.trim()}
                           className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Send size={12} />
@@ -437,7 +540,7 @@ export default function LandingPage() {
                       </form>
                     ) : (
                       <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
-                        <Link to="/auth" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
+                        <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                       </div>
                     )}
                   </div>
@@ -450,3 +553,4 @@ export default function LandingPage() {
     </div>
   )
 }
+

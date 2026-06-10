@@ -37,25 +37,45 @@
 }
 
 /* Elegant minimalist scrollbar for museum theme */
+/* ── Global scrollbar — slimmer but visible, museum-themed ── */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-void);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gold);
-  opacity: 0.3;
-  border-radius: 0px;
+  background: rgba(201, 168, 76, 0.40);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #E5C158;
+  background: rgba(201, 168, 76, 0.65);
 }
 
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 76, 0.4) transparent;
+}
+
+/* ── Fully hidden scrollbar (for horizontal category strips, etc.) ── */
+.no-scrollbar {
+  -ms-overflow-style: none;   /* IE / Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari */
+  width: 0;
+  height: 0;
+}
 /* Film Grain Overlay */
 .film-grain {
   position: fixed;
@@ -97,31 +117,137 @@
   z-index: 999;
 }
 
-/* Spotlight cursor base */
-.spotlight-overlay {
-  display: none;
+/* ═══════════════════════════════════════════════════════════════════
+   MUSEUM CEILING SPOTLIGHT SYSTEM
+   ::before = combined beam + edge shadow in one gradient layer
+   ═══════════════════════════════════════════════════════════════════ */
+
+.spot-sm,
+.spot-md,
+.spot-lg,
+.spot-xl {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .spotlight-overlay {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 998;
-    background: radial-gradient(
-      circle 450px at var(--x, 50%) var(--y, 50%),
-      rgba(255, 235, 180, 0.08) 0%,
-      rgba(0, 0, 0, 0) 35%,
-      rgba(8, 8, 8, 0.65) 70%,
-      rgba(8, 8, 8, 0.98) 100%
-    );
-    transition: background 0.1s ease-out;
-  }
+.spot-sm::before,
+.spot-md::before,
+.spot-lg::before,
+.spot-xl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
 }
+
+/* ── sm: tight top-down cone, sharp falloff ── */
+.spot-sm::before {
+  background:
+    radial-gradient(
+      ellipse 65% 55% at 50% 0%,
+      rgba(201, 168, 76, 0.45) 0%,
+      rgba(201, 168, 76, 0.12) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 120% 100% at 50% 50%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+}
+
+/* ── md: wider cone, softer shadow ── */
+.spot-md::before {
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 50% 0%,
+      rgba(201, 168, 76, 0.50) 0%,
+      rgba(201, 168, 76, 0.14) 35%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 130% 100% at 50% 50%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.50) 100%
+    );
+}
+
+/* ── lg: artwork frames — broad beam, strong perimeter shadow ── */
+.spot-lg::before {
+  background:
+    radial-gradient(
+      ellipse 75% 65% at 50% 0%,
+      rgba(201, 168, 76, 0.60) 0%,
+      rgba(255, 235, 180, 0.20) 25%,
+      rgba(201, 168, 76, 0.05) 52%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 100% 50% at 50% 100%,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.20) 50%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 25% 100% at 0% 50%,
+      rgba(0, 0, 0, 0.50) 0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 25% 100% at 100% 50%,
+      rgba(0, 0, 0, 0.50) 0%,
+      transparent 65%
+    );
+}
+
+/* ── xl: hero sections ── */
+.spot-xl::before {
+  background:
+    radial-gradient(
+      ellipse 80% 70% at 50% 0%,
+      rgba(201, 168, 76, 0.65) 0%,
+      rgba(255, 235, 180, 0.22) 20%,
+      rgba(201, 168, 76, 0.06) 48%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 100% 45% at 50% 100%,
+      rgba(0, 0, 0, 0.70) 0%,
+      rgba(0, 0, 0, 0.25) 50%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 22% 100% at 0% 50%,
+      rgba(0, 0, 0, 0.55) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 22% 100% at 100% 50%,
+      rgba(0, 0, 0, 0.55) 0%,
+      transparent 60%
+    );
+}
+
+/* Hover — brighten beam */
+.spot-sm:hover::before { filter: brightness(1.35); }
+.spot-md:hover::before { filter: brightness(1.30); }
+.spot-lg:hover::before { filter: brightness(1.25); }
+.spot-xl:hover::before { filter: brightness(1.20); }
+
+/* Slow pulse for featured artwork frames */
+.spot-pulse::before {
+  animation: spotPulse 4s ease-in-out infinite;
+}
+
+@keyframes spotPulse {
+  0%, 100% { filter: brightness(0.85); }
+  50%       { filter: brightness(1.25); }
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
 
 /* Editorial Serif typography class */
 .editorial-text {
