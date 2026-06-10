@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, MessageSquare } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { Artwork } from '../types'
 
 interface ArtworkFrameProps {
@@ -24,13 +24,16 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   onVote,
   isVoted = false,
 }) => {
-  const { title, artist, imageUrl, votes, comments, category } = artwork
+  const { title, artist, imageUrl, videoUrl, votes, comments, category } = artwork
   const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
   // Format category to readable text
   const categoryLabel = category
     ? category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')
     : 'Art'
+
+  // Check if this is a video artwork
+  const isVideo = category === 'cinematography' || category === 'motion-graphics' || videoUrl
 
   return (
     <div className="flex flex-col items-center justify-center py-6 w-full max-w-xl mx-auto">
@@ -43,8 +46,39 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
         {/* Visual highlight on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
 
-        {/* The Image */}
-        {imageUrl ? (
+        {/* The Media - Video or Image */}
+        {isVideo && videoUrl ? (
+          <div className="w-full h-full bg-black relative">
+            {/* Video thumbnail/preview */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={title}
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="text-zinc-500 text-center">
+                  <div className="w-20 h-20 mx-auto mb-3 border-2 border-zinc-700 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-exhibition-gold" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                  </div>
+                  <p className="text-xs font-mono uppercase tracking-wider">Video Artwork</p>
+                </div>
+              )}
+            </div>
+            {/* Play button overlay */}
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+              <div className="w-16 h-16 bg-exhibition-gold/90 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-exhibition-void ml-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        ) : imageUrl ? (
           <img
             src={imageUrl}
             alt={title}
@@ -53,7 +87,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-500 text-sm">
-            No image available
+            No media available
           </div>
         )}
 
@@ -100,10 +134,6 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
             />
             <span>{votes}</span>
           </button>
-          <div className="flex items-center gap-1.5 hover:text-exhibition-bone">
-            <MessageSquare size={14} />
-            <span>{comments?.length || 0}</span>
-          </div>
         </div>
       </div>
     </div>

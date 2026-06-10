@@ -1,11 +1,20 @@
-export type Category = 
+export type MainCategory = 
   | 'photography'
-  | 'filmmaking'
-  | 'animation'
   | 'digital-art'
-  | 'illustration'
-  | 'motion-graphics'
-  | 'other';
+  | 'cinematography'
+  | 'motion-graphics';
+
+export type SubCategory = 
+  | 'portrait-photography'
+  | 'landscape-photography'
+  | 'concept-art'
+  | 'character-design'
+  | 'short-film'
+  | 'travel-film'
+  | 'logo-animation'
+  | 'explainer-video';
+
+export type Category = MainCategory | SubCategory;
 
 export interface Artist {
   id: string;
@@ -23,7 +32,8 @@ export interface Artwork {
   id: string;
   title: string;
   description: string;
-  category: Category;
+  category: MainCategory; // Main category only
+  subCategory?: SubCategory; // Optional subcategory
   imageUrl: string | null;
   thumbnailUrl: string | null;
   videoUrl: string | null;
@@ -52,7 +62,7 @@ export interface User {
   year: string;
   avatar: string | null;
   bio: string;
-  votedCategories: Category[];
+  votedCategories: MainCategory[]; // Only main categories for voting
   commentedArtworks: string[];
   submissions: Artwork[];
   achievements: Achievement[];
@@ -71,6 +81,6 @@ export interface Vote {
   id: string;
   artworkId: string;
   userId: string;
-  category: Category;
+  category: MainCategory; // Only main categories
   createdAt: Date;
 }

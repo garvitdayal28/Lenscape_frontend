@@ -63,15 +63,146 @@ export default function LandingPage() {
 
   // Filter approved artworks
   const approvedArtworks = artworks.filter((a) => a.status === 'approved')
-  const featured = approvedArtworks.slice(0, 3)
+  
+  // Lenscape 2025 Hall of Fame Winners (uploaded to Cloudinary)
+  const lenscape2025Winners: Artwork[] = [
+    {
+      id: 'winner-photo-2025',
+      title: 'Your CSE Journey Begins Here',
+      category: 'digital-art',
+      subCategory: 'concept-art',
+      artist: { 
+        id: 'gupta-squad',
+        name: 'Gupta squad', 
+        email: '',
+        college: 'Lenscape 2025',
+        branch: '',
+        year: '',
+        avatar: null,
+        bio: '',
+        joinedDate: new Date('2024-10-26')
+      },
+      votes: 30,
+      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781086583/lenscape/winners2025/photography-winner.jpg',
+      thumbnailUrl: null,
+      videoUrl: null,
+      description: 'Winner - Digital Art Domain | 30 votes',
+      status: 'approved' as const,
+      comments: [],
+      createdAt: new Date('2024-10-26'),
+    },
+    {
+      id: 'winner-photo-sunscape-2025',
+      title: 'A close-up view of water flowing through loose, muddy soil, capturing the effects of erosion.',
+      category: 'photography',
+      subCategory: 'landscape-photography',
+      artist: { 
+        id: 'sunscape',
+        name: 'Sunscape', 
+        email: '',
+        college: 'Lenscape 2025',
+        branch: '',
+        year: '',
+        avatar: null,
+        bio: '',
+        joinedDate: new Date('2024-10-25')
+      },
+      votes: 38,
+      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087869/lenscape/winners2025/photography-sunscape.jpg',
+      thumbnailUrl: null,
+      videoUrl: null,
+      description: 'A close-up view of water flowing through loose, muddy soil, capturing the effects of erosion.',
+      status: 'approved' as const,
+      comments: [],
+      createdAt: new Date('2024-10-25'),
+    },
+    {
+      id: 'winner-digitalart-2025',
+      title: 'Peaceful damage',
+      category: 'photography',
+      subCategory: 'landscape-photography',
+      artist: { 
+        id: 'rockers',
+        name: 'Rockers', 
+        email: '',
+        college: 'Lenscape 2025',
+        branch: '',
+        year: '',
+        avatar: null,
+        bio: '',
+        joinedDate: new Date('2024-10-25')
+      },
+      votes: 36,
+      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781086584/lenscape/winners2025/digitalart-winner.jpg',
+      thumbnailUrl: null,
+      videoUrl: null,
+      description: 'Winner - Photography Domain | 36 votes',
+      status: 'approved' as const,
+      comments: [],
+      createdAt: new Date('2024-10-25'),
+    },
+    {
+      id: 'winner-digitalart-grunge-spidey-2025',
+      title: 'Grunge Spidey',
+      category: 'digital-art',
+      subCategory: 'character-design',
+      artist: { 
+        id: 'pranjal-verma',
+        name: 'PRANJAL VERMA', 
+        email: '',
+        college: 'Lenscape 2025',
+        branch: '',
+        year: '',
+        avatar: null,
+        bio: '',
+        joinedDate: new Date('2024-10-20')
+      },
+      votes: 18,
+      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087868/lenscape/winners2025/digitalart-grunge-spidey.jpg',
+      thumbnailUrl: null,
+      videoUrl: null,
+      description: 'Winner - Digital Art Domain | Spider-Man artwork with grunge aesthetic',
+      status: 'approved' as const,
+      comments: [],
+      createdAt: new Date('2024-10-20'),
+    },
+    {
+      id: 'winner-videography-2025',
+      title: 'Mahayagna',
+      category: 'cinematography',
+      subCategory: 'short-film',
+      artist: { 
+        id: 'pranjal-verma-2',
+        name: 'PRANJAL VERMA', 
+        email: '',
+        college: 'Lenscape 2025',
+        branch: '',
+        year: '',
+        avatar: null,
+        bio: '',
+        joinedDate: new Date('2024-10-20')
+      },
+      votes: 25,
+      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087870/lenscape/winners2025/videography-mahayagna-cover.jpg',
+      thumbnailUrl: null,
+      videoUrl: 'https://drive.google.com/file/d/1tHGPZB0wvN2e5CfELotAqGLgkhfo1WPJ/preview',
+      description: 'Winner - Videography Domain | 25 votes',
+      status: 'approved' as const,
+      comments: [],
+      createdAt: new Date('2024-10-20'),
+    },
+  ]
+  
+  const featured = lenscape2025Winners
 
-  // Calculate dynamic stats
-  const totalSubmissions = artworks.length + 142
-  const totalVotes = artworks.reduce((acc, curr) => acc + curr.votes, 0) + 4900
+  // Calculate dynamic stats - showing Lenscape 2025 data
+  const totalSubmissions = 166
+  const totalVotes = 1218
+  const totalCategories = 4
 
   const stats = [
     { value: `${totalSubmissions}+`, label: 'SUBMISSIONS' },
-    { value: `${categories.length}`, label: 'DOMAINS' },
+    { value: `${totalCategories}`, label: 'DOMAINS' },
     { value: `${(totalVotes / 1000).toFixed(1)}K+`, label: 'VOTES CAST' },
   ]
 
@@ -165,40 +296,78 @@ export default function LandingPage() {
             
             {/* Section: Featured Artworks */}
             <section className="max-w-6xl mx-auto mb-40">
-              <div className="text-center mb-24">
+              <div className="text-center mb-16">
                 <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
-                  Hall of Honor
+                  Lenscape 2025 Winners
                 </span>
                 <h2 className="editorial-text text-4xl md:text-6xl font-light">
-                  Featured Masterpieces
+                  Hall of Honor
                 </h2>
-                <p className="text-sm text-zinc-500 mt-2 font-mono">
-                  Highly acclaimed student submissions currently curated.
+                <p className="text-sm text-zinc-500 mt-2 font-mono mb-12">
+                  Celebrating the champions of Lenscape 2025.
                 </p>
+
+                {/* Statistics - Lenscape 2025 past data */}
+                <div className="spot-xl relative py-16 border-t border-b border-zinc-900">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    {stats.map((stat, idx) => (
+                      <div key={idx} className="flex flex-col items-center">
+                        <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">
+                          {stat.value}
+                        </span>
+                        <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.25em] mt-3 block">
+                          {stat.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {/* Staggered high-fidelity layout */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 items-start">
-                {featured.map((artwork, idx) => {
-                  const isVoted = user ? user?.votedCategories?.includes(artwork.category) : false
-                  return (
-                    <motion.div
-                      key={artwork.id}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-100px' }}
-                      transition={{ duration: 0.8, delay: idx * 0.15 }}
-                      className={`flex flex-col ${idx === 1 ? 'md:mt-16' : ''}`}
-                    >
+              {/* Hall of Fame Layout: 4 images in 2x2 grid, video below in larger frame */}
+              <div className="flex flex-col gap-12">
+                {/* Top 4 images - 2x2 grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                  {featured.slice(0, 4).map((artwork, idx) => {
+                    return (
+                      <motion.div
+                        key={artwork.id}
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-100px' }}
+                        transition={{ duration: 0.8, delay: idx * 0.15 }}
+                        className="flex flex-col"
+                      >
+                        <ArtworkFrame
+                          artwork={artwork}
+                          onClick={() => setSelectedArtwork(artwork)}
+                          onVote={undefined}
+                          isVoted={false}
+                        />
+                      </motion.div>
+                    )
+                  })}
+                </div>
+
+                {/* Video entry - larger frame centered below */}
+                {featured.length > 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-100px' }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="w-full max-w-3xl">
                       <ArtworkFrame
-                        artwork={artwork}
-                        onClick={() => setSelectedArtwork(artwork)}
-                        onVote={() => handleVote(artwork.id)}
-                        isVoted={isVoted}
+                        artwork={featured[4]}
+                        onClick={() => setSelectedArtwork(featured[4])}
+                        onVote={undefined}
+                        isVoted={false}
                       />
-                    </motion.div>
-                  )
-                })}
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </section>
 
@@ -258,22 +427,6 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Section: Typographic Statistics */}
-            <section className="spot-xl max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-                {stats.map((stat, idx) => (
-                  <div key={idx} className="flex flex-col items-center">
-                    <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">
-                      {stat.value}
-                    </span>
-                    <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.25em] mt-3 block">
-                      {stat.label}
-                    </span>
                   </div>
                 ))}
               </div>
@@ -433,14 +586,24 @@ export default function LandingPage() {
                     {/* Top wash light */}
                     <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                     
-                    {selectedArtwork.imageUrl ? (
+                    {selectedArtwork.videoUrl ? (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <iframe
+                          src={selectedArtwork.videoUrl}
+                          title={selectedArtwork.title}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : selectedArtwork.imageUrl ? (
                       <img
                         src={selectedArtwork.imageUrl}
                         alt={selectedArtwork.title}
                         className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
                       />
                     ) : (
-                      <div className="text-zinc-500 font-mono text-sm">Image Unavailable</div>
+                      <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
                     )}
                   </div>
 
@@ -471,10 +634,10 @@ export default function LandingPage() {
                         </span>
                         {user ? (
                           <button
-                            onClick={() => handleVote(selectedArtwork.id)}
+                            onClick={() => selectedArtwork && handleVote(selectedArtwork.id)}
                             className="px-4 py-1.5 border border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold text-xs font-mono uppercase tracking-wider flex items-center gap-1.5"
                           >
-                            <Heart size={12} className={user?.votedCategories?.includes(selectedArtwork.category) ? 'fill-exhibition-gold stroke-exhibition-gold' : ''} />
+                            <Heart size={12} />
                             <span>VOTE</span>
                           </button>
                         ) : (
@@ -484,7 +647,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Feedbacks / Comments section - HIDDEN (kept for future use) */}
-                    {false && (
+                    {false && selectedArtwork && (
                       <>
                         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
                           <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
@@ -522,17 +685,12 @@ export default function LandingPage() {
                               type="text"
                               value={commentContent}
                               onChange={(e) => setCommentContent(e.target.value)}
-                              placeholder={
-                                user.commentedArtworks.includes(selectedArtwork.id)
-                                  ? "Feedback already logged"
-                                  : "Write a feedback..."
-                              }
-                              disabled={user.commentedArtworks.includes(selectedArtwork.id)}
-                              className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              placeholder="Write a feedback..."
+                              className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
                             />
                             <button
                               type="submit"
-                              disabled={user.commentedArtworks.includes(selectedArtwork.id) || !commentContent.trim()}
+                              disabled={!commentContent.trim()}
                               className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <Send size={12} />
