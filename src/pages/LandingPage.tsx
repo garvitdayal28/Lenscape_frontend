@@ -68,13 +68,11 @@ export default function LandingPage() {
   // Calculate dynamic stats
   const totalSubmissions = artworks.length + 142
   const totalVotes = artworks.reduce((acc, curr) => acc + curr.votes, 0) + 4900
-  const totalComments = artworks.reduce((acc, curr) => acc + curr.comments.length, 0) + 1200
 
   const stats = [
     { value: `${totalSubmissions}+`, label: 'SUBMISSIONS' },
     { value: `${categories.length}`, label: 'DOMAINS' },
     { value: `${(totalVotes / 1000).toFixed(1)}K+`, label: 'VOTES CAST' },
-    { value: `${totalComments}+`, label: 'FEEDBACKS' },
   ]
 
   // Handle voting from modal/frames
@@ -267,7 +265,7 @@ export default function LandingPage() {
 
             {/* Section: Typographic Statistics */}
             <section className="spot-xl max-w-6xl mx-auto mb-40 border-t border-b border-zinc-900 py-24">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 {stats.map((stat, idx) => (
                   <div key={idx} className="flex flex-col items-center">
                     <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">

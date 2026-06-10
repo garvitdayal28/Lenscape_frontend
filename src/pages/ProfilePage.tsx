@@ -122,8 +122,8 @@ export default function ProfilePage() {
         {/* Info placard — always show (falls back to email if college/branch not set) */}
         <div className="border border-zinc-900 p-6 bg-[#0c0c0c] mb-12 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between shadow-lg">
           {college ? (
-            <div className="flex items-center gap-3">
-              <School size={16} className="text-exhibition-gold" />
+            <div className="flex items-start gap-3">
+              <School size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
               <div>
                 <span className="text-[8px] text-zinc-500 font-mono block">INSTITUTION</span>
                 <span className="text-xs font-mono uppercase tracking-wider text-exhibition-bone">{college}</span>
@@ -131,16 +131,16 @@ export default function ProfilePage() {
             </div>
           ) : null}
           {branch ? (
-            <div className="flex items-center gap-3">
-              <BookOpen size={16} className="text-exhibition-gold" />
+            <div className="flex items-start gap-3">
+              <BookOpen size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
               <div>
                 <span className="text-[8px] text-zinc-500 font-mono block">CREATIVE DISCIPLINE</span>
                 <span className="text-xs font-mono uppercase tracking-wider text-exhibition-bone">{branch}</span>
               </div>
             </div>
           ) : null}
-          <div className="flex items-center gap-3">
-            <User size={16} className="text-exhibition-gold" />
+          <div className="flex items-start gap-3">
+            <User size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
             <div>
               <span className="text-[8px] text-zinc-500 font-mono block">EMAIL</span>
               <span className="text-xs font-mono text-exhibition-bone">{userEmail}</span>
@@ -207,8 +207,9 @@ export default function ProfilePage() {
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-zinc-700 font-mono text-xs">No Image</div>
                         )}
-                        <div className={`absolute top-2 right-2 flex items-center gap-1 border px-2 py-0.5 text-[8px] font-mono font-bold uppercase tracking-widest bg-black/90 ${cfg.color}`}>
-                          <cfg.Icon size={9} />
+                        {/* Status badge - hidden on small screens */}
+                        <div className={`hidden md:flex absolute top-3 left-3 items-center gap-1.5 border px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.15em] bg-black/80 backdrop-blur-sm ${cfg.color}`}>
+                          <cfg.Icon size={10} />
                           {cfg.label}
                         </div>
                       </div>
@@ -224,11 +225,18 @@ export default function ProfilePage() {
                           </>}
                         </div>
 
-                        {/* Always show date + votes row */}
-                        <div className="mt-auto flex justify-between items-center pt-3 border-t border-zinc-900 font-mono text-[9px] text-zinc-500">
-                          <span>{formatDate(art.createdAt)}</span>
-                          {art.status !== 'pending' && <span>{art.votes} votes</span>}
-                          {art.status === 'pending' && <span className="text-exhibition-gold/60">Awaiting review</span>}
+                        {/* Date + votes/status row */}
+                        <div className="mt-auto flex justify-between items-center pt-3 border-t border-zinc-900 font-mono text-[9px]">
+                          <span className="text-zinc-500">{formatDate(art.createdAt)}</span>
+                          {/* Status badge on mobile, votes/status on desktop */}
+                          <div className="flex items-center gap-1.5">
+                            {art.status !== 'pending' && <span className="text-zinc-500">{art.votes} votes</span>}
+                            {/* Mobile status badge */}
+                            <span className={`md:hidden flex items-center gap-1 border px-2 py-0.5 text-[8px] uppercase tracking-wider ${cfg.color}`}>
+                              <cfg.Icon size={9} />
+                              {cfg.label}
+                            </span>
+                          </div>
                         </div>
 
                         {art.status === 'rejected' && (
@@ -317,20 +325,19 @@ export default function ProfilePage() {
             {/* Right: details */}
             <div className="w-full md:w-[35%] flex flex-col bg-[#0b0b0b] flex-grow overflow-y-auto">
               <div className="p-6 flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em]">
-                    {selectedArtwork.category.replace('-', ' ')}
-                    {selectedArtwork.subcategory && ` · ${selectedArtwork.subcategory}`}
-                  </span>
-                  {(() => {
-                    const cfg = STATUS_CONFIG[selectedArtwork.status]
-                    return (
-                      <span className={`flex items-center gap-1 text-[8px] font-mono font-bold uppercase border px-2 py-0.5 ${cfg.color}`}>
-                        <cfg.Icon size={9} />{cfg.label}
-                      </span>
-                    )
-                  })()}
-                </div>
+                {/* Status badge - moved above to avoid close button */}
+                {(() => {
+                  const cfg = STATUS_CONFIG[selectedArtwork.status]
+                  return (
+                    <div className={`flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider border px-2.5 py-1 mb-4 w-fit ${cfg.color}`}>
+                      <cfg.Icon size={10} />{cfg.label}
+                    </div>
+                  )
+                })()}
+                <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-2">
+                  {selectedArtwork.category.replace('-', ' ')}
+                  {selectedArtwork.subcategory && ` · ${selectedArtwork.subcategory}`}
+                </span>
                 <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone mt-2">{selectedArtwork.title}</h3>
                 <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">{userName}</p>
                 {college && <p className="text-[10px] text-zinc-500 font-mono">{college}</p>}
