@@ -349,8 +349,8 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {/* Comments */}
-                {(selectedArtwork.comments?.length ?? 0) > 0 && (
+                {/* Comments - HIDDEN (kept for future use) */}
+                {false && (selectedArtwork.comments?.length ?? 0) > 0 && (
                   <div className="mt-6 border-t border-zinc-900 pt-4">
                     <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-3">
                       Feedbacks ({selectedArtwork.comments!.length})

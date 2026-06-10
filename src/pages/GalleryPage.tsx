@@ -356,58 +356,62 @@ export default function GalleryPage() {
                   </div>
                 </div>
 
-                {/* Feedbacks list */}
-                <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
-                  <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
-                    Feedbacks ({selectedArtwork.comments?.length || 0})
-                  </h4>
+                {/* Feedbacks list - HIDDEN (kept for future use) */}
+                {false && (
+                  <>
+                    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
+                      <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
+                        Feedbacks ({selectedArtwork.comments?.length || 0})
+                      </h4>
 
-                  <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
-                    {selectedArtwork.comments?.length > 0 ? (
-                      selectedArtwork.comments.map((comment) => (
-                        <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
-                          <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
-                            <span>{comment.userName}</span>
-                            <span className="text-zinc-600">
-                              {new Date(comment.createdAt).toLocaleDateString()}
-                            </span>
+                      <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
+                        {selectedArtwork.comments?.length > 0 ? (
+                          selectedArtwork.comments.map((comment) => (
+                            <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
+                              <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
+                                <span>{comment.userName}</span>
+                                <span className="text-zinc-600">
+                                  {new Date(comment.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-zinc-300 font-sans">{comment.content}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex-1 flex items-center justify-center text-zinc-600 text-xs font-mono py-6">
+                            No feedbacks logged yet.
                           </div>
-                          <p className="text-zinc-300 font-sans">{comment.content}</p>
-                        </div>
-                      ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Submit Feedback */}
+                    {user ? (
+                      <form
+                        onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
+                        className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
+                      >
+                        <input
+                          type="text"
+                          value={commentContent}
+                          onChange={(e) => setCommentContent(e.target.value)}
+                          placeholder="Write a feedback..."
+                          className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!commentContent.trim()}
+                          className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Send size={12} />
+                        </button>
+                      </form>
                     ) : (
-                      <div className="flex-1 flex items-center justify-center text-zinc-600 text-xs font-mono py-6">
-                        No feedbacks logged yet.
+                      <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
+                        <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                       </div>
                     )}
-                  </div>
-                </div>
-
-                {/* Submit Feedback */}
-                {user ? (
-                  <form
-                    onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
-                    className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={commentContent}
-                      onChange={(e) => setCommentContent(e.target.value)}
-                      placeholder="Write a feedback..."
-                      className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
-                    />
-                    <button
-                      type="submit"
-                      disabled={!commentContent.trim()}
-                      className="w-8 h-8 flex items-center justify-center bg-exhibition-gold text-exhibition-void hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Send size={12} />
-                    </button>
-                  </form>
-                ) : (
-                  <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
-                    <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
-                  </div>
+                  </>
                 )}
               </div>
             </motion.div>
