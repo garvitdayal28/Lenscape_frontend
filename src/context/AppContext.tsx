@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import ErrorToast from '../components/UI/ErrorToast';
 import { User, Artwork, Category, Comment, Achievement, Artist } from '../types';
 
 // Mock Achievements list
@@ -12,23 +14,37 @@ const ALL_ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'ach2',
-    title: 'Art Critic',
-    description: 'Left a thoughtful comment on another student\'s artwork',
-    icon: '💬',
+    title: 'Rising Star',
+    description: 'Received 5 votes on your artwork',
+    icon: '⭐',
     unlockedAt: new Date(),
   },
   {
     id: 'ach3',
-    title: 'Grand Patron',
-    description: 'Voted in at least 3 distinct categories',
-    icon: '👑',
+    title: 'Acclaimed Artist',
+    description: 'Received 10 votes on your artwork',
+    icon: '🏆',
     unlockedAt: new Date(),
   },
   {
     id: 'ach4',
-    title: 'Polymath',
-    description: 'Voted in all available artwork categories',
-    icon: '🔮',
+    title: 'Master Creator',
+    description: 'Received 20 votes on your artwork',
+    icon: '👑',
+    unlockedAt: new Date(),
+  },
+  {
+    id: 'ach5',
+    title: 'Versatile Artist',
+    description: 'Received votes in 2 different categories',
+    icon: '🎖️',
+    unlockedAt: new Date(),
+  },
+  {
+    id: 'ach6',
+    title: 'Renaissance Creator',
+    description: 'Received votes in all categories',
+    icon: '💎',
     unlockedAt: new Date(),
   },
 ];
@@ -318,6 +334,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [bannedUsers, setBannedUsers] = useState<string[]>([]);
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [errorTitle, setErrorTitle] = useState('Error');
+
+  const triggerError = (title: string, message: string) => {
+    setErrorTitle(title);
+    setErrorMessage(message);
+    setShowErrorToast(true);
+    setTimeout(() => setShowErrorToast(false), 4000);
+  };
+
+
   // Load state from localStorage on mount
   useEffect(() => {
     const localUser = localStorage.getItem('lenscape_curr_user');
@@ -354,7 +382,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
     if (foundUser) {
       if (bannedUsers.includes(foundUser.id)) {
-        alert("This account is banned due to code of conduct violation.");
+        triggerError("Account Banned", "This account is banned due to code of conduct violation.");
         return false;
       }
       setCurrentUser(foundUser);
@@ -404,6 +432,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const newAchievements = [...user.achievements];
     const userSubs = updatedArtworks.filter(a => a.artist.id === user.id);
 
+    // Calculate total votes received by user across all their artworks
+    const totalVotesReceived = userSubs.reduce((sum, artwork) => sum + artwork.votes, 0);
+
+    // Calculate categories where user has received at least 1 vote
+    const categoriesWithVotes = new Set(
+      userSubs.filter(artwork => artwork.votes > 0).map(artwork => artwork.category)
+    );
+
     // 1. Creative Pioneer: First Submission
     if (userSubs.length > 0 && !newAchievements.some(a => a.id === 'ach1')) {
       newAchievements.push({
@@ -412,28 +448,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
     }
 
-    // 2. Art Critic: First comment
-    if (user.commentedArtworks.length > 0 && !newAchievements.some(a => a.id === 'ach2')) {
+    // 2. Rising Star: 5 votes received
+    if (totalVotesReceived >= 5 && !newAchievements.some(a => a.id === 'ach2')) {
       newAchievements.push({
         ...ALL_ACHIEVEMENTS[1],
         unlockedAt: new Date()
       });
     }
 
-    // 3. Grand Patron: Voted in at least 3 categories
-    if (user.votedCategories.length >= 3 && !newAchievements.some(a => a.id === 'ach3')) {
+    // 3. Acclaimed Artist: 10 votes received
+    if (totalVotesReceived >= 10 && !newAchievements.some(a => a.id === 'ach3')) {
       newAchievements.push({
         ...ALL_ACHIEVEMENTS[2],
         unlockedAt: new Date()
       });
     }
 
-    // 4. Polymath: Voted in all available categories
-    const relevantCategoriesCount = categories.filter(c => c !== 'other').length;
-    const votedMainCategories = user.votedCategories.filter(c => c !== 'other');
-    if (votedMainCategories.length >= relevantCategoriesCount && !newAchievements.some(a => a.id === 'ach4')) {
+    // 4. Master Creator: 20 votes received
+    if (totalVotesReceived >= 20 && !newAchievements.some(a => a.id === 'ach4')) {
       newAchievements.push({
         ...ALL_ACHIEVEMENTS[3],
+        unlockedAt: new Date()
+      });
+    }
+
+    // 5. Versatile Artist: Received votes in 2 different categories
+    if (categoriesWithVotes.size >= 2 && !newAchievements.some(a => a.id === 'ach5')) {
+      newAchievements.push({
+        ...ALL_ACHIEVEMENTS[4],
+        unlockedAt: new Date()
+      });
+    }
+
+    // 6. Renaissance Creator: Received votes in all 4 categories
+    if (categoriesWithVotes.size >= 4 && !newAchievements.some(a => a.id === 'ach6')) {
+      newAchievements.push({
+        ...ALL_ACHIEVEMENTS[5],
         unlockedAt: new Date()
       });
     }
@@ -451,7 +501,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ) => {
     if (!currentUser) return;
     if (bannedUsers.includes(currentUser.id)) {
-      alert("You are banned and cannot submit artwork.");
+      triggerError("Action Denied", "You are banned and cannot submit artwork.");
       return;
     }
 
@@ -506,11 +556,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const voteArtwork = (artworkId: string): boolean => {
     if (!currentUser) {
-      alert("Please log in to vote.");
+      triggerError("Authentication Required", "Please log in to vote.");
       return false;
     }
     if (bannedUsers.includes(currentUser.id)) {
-      alert("Your account is banned and cannot vote.");
+      triggerError("Action Denied", "Your account is banned and cannot vote.");
       return false;
     }
 
@@ -519,7 +569,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     // A user can vote only ONCE per category/domain.
     if (currentUser.votedCategories.includes(targetArtwork.category)) {
-      alert(`You have already voted in the "${targetArtwork.category}" category. You can only vote once per category.`);
+      triggerError("Already Voted", `You have already voted in the "${targetArtwork.category}" category. You can only vote once per category.`);
       return false;
     }
 
@@ -548,17 +598,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const commentArtwork = (artworkId: string, content: string): boolean => {
     if (!currentUser) {
-      alert("Please log in to comment.");
+      triggerError("Authentication Required", "Please log in to comment.");
       return false;
     }
     if (bannedUsers.includes(currentUser.id)) {
-      alert("Your account is banned and cannot submit comments.");
+      triggerError("Action Denied", "Your account is banned and cannot submit comments.");
       return false;
     }
 
     // A user can comment only once per artwork.
     if (currentUser.commentedArtworks.includes(artworkId)) {
-      alert("You have already commented on this artwork. Only one comment is allowed per artwork.");
+      triggerError("Already Commented", "You have already commented on this artwork. Only one comment is allowed per artwork.");
       return false;
     }
 
@@ -608,7 +658,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const adminBanUser = (userId: string) => {
     if (userId === 'user_admin') {
-      alert("Cannot ban the administrator account.");
+      triggerError("Action Denied", "Cannot ban the administrator account.");
       return;
     }
     const updatedBanned = [...bannedUsers, userId];
@@ -673,6 +723,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isBanned
     }}>
       {children}
+      <AnimatePresence>
+        {showErrorToast && (
+          <ErrorToast
+            setShowErrorToast={setShowErrorToast}
+            errorMessage={errorMessage}
+            title={errorTitle}
+          />
+        )}
+      </AnimatePresence>
     </AppContext.Provider>
   );
 };

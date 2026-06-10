@@ -5,11 +5,13 @@ import { Heart } from 'lucide-react'
 interface ErrorToastProps {
   setShowErrorToast: (show: boolean) => void;
   errorMessage: string;
+  title?: string;
 }
 
 export default function ErrorToast({
   setShowErrorToast,
-  errorMessage
+  errorMessage,
+  title = "Error"
 }: ErrorToastProps) {
   return (
     <motion.div
@@ -23,7 +25,7 @@ export default function ErrorToast({
           <Heart size={20} className="text-red-300" />
         </div>
         <div className="flex-1">
-          <h4 className="font-mono text-sm font-bold text-red-100 mb-1">Vote Failed</h4>
+          <h4 className="font-mono text-sm font-bold text-red-100 mb-1">{title}</h4>
           <p className="font-mono text-xs text-red-200">{errorMessage}</p>
         </div>
         <button

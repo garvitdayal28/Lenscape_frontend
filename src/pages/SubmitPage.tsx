@@ -205,7 +205,7 @@ export default function SubmitPage() {
           <AlertTriangle className="w-12 h-12 text-exhibition-gold mx-auto mb-6" />
           <h2 className="editorial-text text-3xl font-light mb-3">Curation Gate Locked</h2>
           <p className="text-xs font-mono text-zinc-500 mb-8 leading-relaxed">Please sign in to upload artworks.</p>
-          <Link to="/auth/login">
+          <Link to="/auth/signup">
             <button className="w-full py-3 bg-exhibition-gold text-exhibition-void font-mono text-xs uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors">
               Access Gateway
             </button>

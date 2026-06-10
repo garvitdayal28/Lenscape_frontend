@@ -41,7 +41,7 @@ export default function VoteConfirmationModal({
 
         {/* Message */}
         <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
-          You can only vote <span className="text-exhibition-gold font-bold">once</span> per artwork.
+          You can only vote <span className="text-exhibition-gold font-bold">once</span> per category.
         </p>
         <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
           This action cannot be undone. Are you sure you want to cast your vote?

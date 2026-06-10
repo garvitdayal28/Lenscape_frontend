@@ -309,7 +309,14 @@ export default function GalleryPage() {
 
       {/* Main exhibition showcase (Artworks) */}
       <div className="max-w-6xl mx-auto px-6 md:px-12 pb-32 relative z-10">
-        {sortedArtworks.length > 0 ? (
+        {loadingArtworks ? (
+          <div className="text-center py-32">
+            <div className="w-10 h-10 border border-exhibition-gold/30 border-t-exhibition-gold rounded-full animate-spin mx-auto mb-4" />
+            <h3 className="font-mono text-xs uppercase tracking-widest text-exhibition-gold animate-pulse">
+              Curating Gallery...
+            </h3>
+          </div>
+        ) : sortedArtworks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
             {sortedArtworks.map((artwork, idx) => {
               return (
@@ -410,6 +417,7 @@ export default function GalleryPage() {
                 <div className="p-6 border-b border-zinc-900">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
                     {selectedArtwork.category.replace('-', ' ')}
+                    {selectedArtwork.subcategory && ` · ${selectedArtwork.subcategory.replace('-', ' ')}`}
                   </span>
                   <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
                     {selectedArtwork.title}
@@ -429,26 +437,36 @@ export default function GalleryPage() {
                       {selectedArtwork.votes} votes logged
                     </span>
                     {user ? (
-                      <button
-                        onClick={handleVoteClick}
-                        disabled={hasVoted}
-                        className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                          hasVoted
-                            ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
-                            : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
-                        }`}
-                      >
-                        <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
-                        <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
-                      </button>
+                      <div className="relative group">
+                        <button
+                          onClick={handleVoteClick}
+                          disabled={hasVoted}
+                          className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                            hasVoted
+                              ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                              : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
+                          }`}
+                        >
+                          <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
+                          <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
+                        </button>
+                        {hasVoted && (
+                          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                            You have already voted for {selectedArtwork?.category.replace('-', ' ')}
+                            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700"></div>
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
+                      <Link to="/auth/signup" className="text-[10px] font-mono text-exhibition-gold hover:underline">
+                        Sign up to vote
+                      </Link>
                     )}
                   </div>
                 </div>
 
                 {/* Feedbacks list - HIDDEN (kept for future use) */}
-                {false && (
+                {false && selectedArtwork && (
                   <>
                     <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
                       <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
@@ -542,7 +560,7 @@ export default function GalleryPage() {
 
               {/* Message */}
               <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
-                You can only vote <span className="text-exhibition-gold font-bold">once</span> per artwork.
+                You can only vote <span className="text-exhibition-gold font-bold">once</span> per category.
               </p>
               <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
                 This action cannot be undone. Are you sure you want to cast your vote?

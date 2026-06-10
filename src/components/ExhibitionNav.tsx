@@ -47,7 +47,7 @@ const ExhibitionNav: React.FC<ExhibitionNavProps> = ({ isVisible = true }) => {
     { name: 'Submit Work', path: '/submit', icon: Upload },
     isLoggedIn && profileComplete
       ? { name: 'My Portfolio', path: '/profile', icon: Award }
-      : { name: 'Enter Exhibition', path: '/auth/login', icon: Lock },
+      : { name: 'Enter Exhibition', path: '/auth/signup', icon: Lock },
   ].filter(Boolean) as { name: string; path: string; icon: React.ElementType }[]
 
   return (

@@ -96,6 +96,7 @@ export default function ArtworkViewerModal({
           <div className="p-6 border-b border-zinc-900">
             <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
               {selectedArtwork.category.replace('-', ' ')}
+              {selectedArtwork.subCategory && ` · ${selectedArtwork.subCategory.replace('-', ' ')}`}
             </span>
             <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
               {selectedArtwork.title}
@@ -117,20 +118,30 @@ export default function ArtworkViewerModal({
               </span>
               {!hideVoteButton && (
                 user ? (
-                  <button
-                    onClick={handleVoteClick}
-                    disabled={hasVoted}
-                    className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                      hasVoted
-                        ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
-                        : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
-                    }`}
-                  >
-                    <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
-                    <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
-                  </button>
+                  <div className="relative group">
+                    <button
+                      onClick={handleVoteClick}
+                      disabled={hasVoted}
+                      className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                        hasVoted
+                          ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                          : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
+                      }`}
+                    >
+                      <Heart size={12} className={hasVoted ? 'fill-zinc-600' : ''} />
+                      <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
+                    </button>
+                    {hasVoted && (
+                      <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                        You have already voted for {selectedArtwork.category.replace('-', ' ')}
+                        <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700"></div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
-                  <span className="text-[10px] font-mono text-zinc-600">Log in to vote</span>
+                  <Link to="/auth/signup" className="text-[10px] font-mono text-exhibition-gold hover:underline">
+                    Sign up to vote
+                  </Link>
                 )
               )}
             </div>

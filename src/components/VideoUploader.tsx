@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react'
 import { Upload, X, Film, Image as ImageIcon, CheckCircle } from 'lucide-react'
+import { AnimatePresence } from 'framer-motion'
+import ErrorToast from './UI/ErrorToast'
 
 interface VideoUploaderProps {
   onVideoSelect: (video: File) => void
@@ -22,6 +24,16 @@ export default function VideoUploader({
   const coverInputRef = useRef<HTMLInputElement>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [errorTitle, setErrorTitle] = useState('Upload Error')
+
+  const triggerError = (title: string, message: string) => {
+    setErrorTitle(title)
+    setErrorMessage(message)
+    setShowErrorToast(true)
+    setTimeout(() => setShowErrorToast(false), 4000)
+  }
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -29,14 +41,14 @@ export default function VideoUploader({
       // Validate video file
       const validTypes = ['video/mp4', 'video/x-matroska', 'video/mkv']
       if (!validTypes.includes(file.type) && !file.name.endsWith('.mkv')) {
-        alert('Please upload a valid video file (MP4 or MKV)')
+        triggerError('Invalid File Type', 'Please upload a valid video file (MP4 or MKV)')
         return
       }
 
       // Check file size (max 500MB)
       const maxSize = 500 * 1024 * 1024 // 500MB
       if (file.size > maxSize) {
-        alert('Video file size must be less than 500MB')
+        triggerError('File Too Large', 'Video file size must be less than 500MB')
         return
       }
 
@@ -54,14 +66,14 @@ export default function VideoUploader({
       // Validate image file
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a valid image file (JPG, PNG, or WebP)')
+        triggerError('Invalid File Type', 'Please upload a valid image file (JPG, PNG, or WebP)')
         return
       }
 
       // Check file size (max 10MB)
       const maxSize = 10 * 1024 * 1024 // 10MB
       if (file.size > maxSize) {
-        alert('Cover image size must be less than 10MB')
+        triggerError('File Too Large', 'Cover image size must be less than 10MB')
         return
       }
 
@@ -210,6 +222,17 @@ export default function VideoUploader({
           both video file and cover image are required. The cover image will be displayed as a thumbnail in the gallery.
         </p>
       </div>
+
+      {/* Error Toast */}
+      <AnimatePresence>
+        {showErrorToast && (
+          <ErrorToast
+            setShowErrorToast={setShowErrorToast}
+            errorMessage={errorMessage}
+            title={errorTitle}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
