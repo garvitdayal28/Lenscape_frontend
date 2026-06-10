@@ -59,41 +59,35 @@ const ExhibitionNav: React.FC<ExhibitionNavProps> = ({ isVisible = true }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-1 md:gap-2 bg-black/60 border border-exhibition-gold/20 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-2 rounded-full"
+            className="flex flex-col items-center gap-2"
           >
-            {menuItems.map((item) => {
-              const Icon = item.icon
-              const isActive = path === item.path
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  title={item.name}
-                  className={`flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-full text-[10px] md:text-xs font-mono transition-all duration-300 whitespace-nowrap ${
-                    isActive
-                      ? 'text-exhibition-gold bg-exhibition-gold/10 border border-exhibition-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.15)]'
-                      : 'text-zinc-400 border border-transparent hover:text-exhibition-bone hover:bg-white/5 hover:border-white/10'
-                  }`}
-                >
-                  <Icon size={16} className={isActive ? 'drop-shadow-[0_0_8px_rgba(201,168,76,0.8)]' : ''} />
-                  <span className="hidden md:inline tracking-wider uppercase">{item.name}</span>
-                </Link>
-              )
-            })}
-
-            {isLoggedIn && (
-              <>
-                <div className="w-[1px] h-6 bg-zinc-800 mx-1 md:mx-2" />
-                <button
-                  onClick={handleLogout}
-                  title="Exit Session"
-                  className="flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-full text-[10px] md:text-xs font-mono text-red-400/80 border border-transparent hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-all duration-300"
-                >
-                  <LogOut size={16} />
-                  <span className="hidden md:inline tracking-wider uppercase">Exit</span>
-                </button>
-              </>
-            )}
+            {/* Active tab name for mobile */}
+            <div className="md:hidden font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] px-4 py-1 bg-black/60 border border-exhibition-gold/20 backdrop-blur-xl rounded-full">
+              {menuItems.find(item => item.path === path)?.name || 'Lenscape'}
+            </div>
+            
+            {/* Navigation buttons */}
+            <div className="flex items-center gap-1 md:gap-2 bg-black/60 border border-exhibition-gold/20 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-2 rounded-full">
+              {menuItems.map((item) => {
+                const Icon = item.icon
+                const isActive = path === item.path
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    title={item.name}
+                    className={`flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-full text-[10px] md:text-xs font-mono transition-all duration-300 whitespace-nowrap ${
+                      isActive
+                        ? 'text-exhibition-gold bg-exhibition-gold/10 border border-exhibition-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.15)]'
+                        : 'text-zinc-400 border border-transparent hover:text-exhibition-bone hover:bg-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <Icon size={16} className={isActive ? 'drop-shadow-[0_0_8px_rgba(201,168,76,0.8)]' : ''} />
+                    <span className="hidden md:inline tracking-wider uppercase">{item.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
           </motion.div>
         </div>
       )}

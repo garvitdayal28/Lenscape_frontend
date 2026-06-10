@@ -391,13 +391,13 @@ export default function LandingPage() {
             <footer className="max-w-6xl mx-auto border-t border-zinc-900 pt-16 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-                  LENSCAPE © 2026 // SPONSORED BY JLUG CLUB
+                  LENSCAPE © 2026 // ORGANIZED BY JLUG CLUB
                 </span>
               </div>
               <div className="flex gap-8 font-mono text-[9px] tracking-widest uppercase text-zinc-400">
-                <Link to="/gallery" className="hover:text-exhibition-gold transition-colors">Rooms</Link>
-                <Link to="/submit" className="hover:text-exhibition-gold transition-colors">Portal</Link>
-                <Link to="/admin" className="hover:text-exhibition-gold transition-colors">Curator</Link>
+                <Link to="/gallery" className="hover:text-exhibition-gold transition-colors">Exhibition</Link>
+                <Link to="/submit" className="hover:text-exhibition-gold transition-colors">Submit</Link>
+                <Link to="/profile" className="hover:text-exhibition-gold transition-colors">Profile</Link>
               </div>
             </footer>
           </div>

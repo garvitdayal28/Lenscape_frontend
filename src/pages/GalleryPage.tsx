@@ -60,7 +60,18 @@ export default function GalleryPage() {
 
   const sortedArtworks = [...filteredArtworks].sort((a, b) => {
     if (selectedSort === 'most-voted') return b.votes - a.votes
-    if (selectedSort === 'trending') return (b.votes + b.comments.length * 2) - (a.votes + a.comments.length * 2)
+    if (selectedSort === 'trending') {
+      // Trending: votes per day (more votes in less time = trending)
+      const toMs = (v: any) => typeof v === 'object' && v?._seconds ? v._seconds * 1000 : new Date(v).getTime()
+      const now = Date.now()
+      const ageInDays = (artwork: any) => {
+        const ageMs = now - toMs(artwork.createdAt)
+        const days = Math.max(ageMs / (1000 * 60 * 60 * 24), 3 / 24) // Minimum 3 hours (0.125 days)
+        return days
+      }
+      const votesPerDay = (artwork: any) => artwork.votes / ageInDays(artwork)
+      return votesPerDay(b) - votesPerDay(a)
+    }
     // latest — handle Firestore timestamps
     const toMs = (v: any) => typeof v === 'object' && v?._seconds ? v._seconds * 1000 : new Date(v).getTime()
     return toMs(b.createdAt) - toMs(a.createdAt)

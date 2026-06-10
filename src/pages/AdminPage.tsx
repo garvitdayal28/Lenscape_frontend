@@ -16,9 +16,11 @@ export default function AdminPage() {
   const [adminName, setAdminName] = useState('')
 
   const [pendingArtworks, setPendingArtworks] = useState<any[]>([])
+  const [approvedArtworks, setApprovedArtworks] = useState<any[]>([])
+  const [rejectedArtworks, setRejectedArtworks] = useState<any[]>([])
   const [allUsers, setAllUsers] = useState<any[]>([])
-  const [stats, setStats] = useState({ users: 0, totalUploads: 0, votes: 0, pending: 0 })
-  const [activeTab, setActiveTab] = useState<'moderation' | 'users'>('moderation')
+  const [stats, setStats] = useState({ users: 0, totalUploads: 0, votes: 0, pending: 0, approved: 0, rejected: 0 })
+  const [activeTab, setActiveTab] = useState<'moderation' | 'approved' | 'rejected' | 'users'>('moderation')
   const [rejecting, setRejecting] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
   const [previewArtwork, setPreviewArtwork] = useState<any | null>(null)
@@ -48,6 +50,8 @@ export default function AdminPage() {
   useEffect(() => {
     if (checking) return
     fetchPending()
+    fetchApproved()
+    fetchRejected()
     fetchUsers()
   }, [checking])
 
@@ -57,6 +61,26 @@ export default function AdminPage() {
       const data = await res.json()
       setPendingArtworks(data)
       setStats(prev => ({ ...prev, pending: data.length }))
+    }
+  }
+
+  const fetchApproved = async () => {
+    const res = await fetch(`${API}/api/artworks`, { headers: authHeaders() })
+    if (res.ok) {
+      const data = await res.json()
+      setApprovedArtworks(data)
+      // Calculate total votes from approved artworks
+      const totalVotes = data.reduce((sum: number, art: any) => sum + (art.votes || 0), 0)
+      setStats(prev => ({ ...prev, approved: data.length, votes: totalVotes }))
+    }
+  }
+
+  const fetchRejected = async () => {
+    const res = await fetch(`${API}/api/artworks/rejected`, { headers: authHeaders() })
+    if (res.ok) {
+      const data = await res.json()
+      setRejectedArtworks(data)
+      setStats(prev => ({ ...prev, rejected: data.length }))
     }
   }
 
@@ -75,11 +99,13 @@ export default function AdminPage() {
   const approveArtwork = async (id: string) => {
     await fetch(`${API}/api/artworks/${id}/approve`, { method: 'POST', headers: authHeaders() })
     fetchPending()
+    fetchApproved()
   }
 
   const rejectArtwork = async (id: string) => {
     await fetch(`${API}/api/artworks/${id}/reject`, { method: 'POST', headers: authHeaders() })
     fetchPending()
+    fetchRejected()
   }
 
   const rejectWithReason = async () => {
@@ -93,6 +119,7 @@ export default function AdminPage() {
     setRejectReason('')
     setPreviewArtwork(null)
     fetchPending()
+    fetchRejected()
   }
 
   const banUser = async (userId: string) => {
@@ -147,11 +174,13 @@ export default function AdminPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-5 mb-10">
           {[
             { label: 'Participants', value: stats.users, Icon: Users, color: 'text-cyan-400' },
             { label: 'Pending', value: stats.pending, Icon: UploadCloud, color: 'text-exhibition-gold' },
-            { label: 'Votes Cast', value: stats.votes, Icon: TrendingUp, color: 'text-emerald-400' },
+            { label: 'Approved', value: stats.approved, Icon: CheckCircle, color: 'text-emerald-400' },
+            { label: 'Rejected', value: stats.rejected, Icon: Ban, color: 'text-red-400' },
+            { label: 'Total Votes', value: stats.votes, Icon: TrendingUp, color: 'text-purple-400' },
           ].map(({ label, value, Icon, color }) => (
             <div key={label} className="border border-zinc-900 bg-[#0c0c0c] p-5 flex items-center justify-between">
               <div>
@@ -166,7 +195,9 @@ export default function AdminPage() {
         {/* Tabs */}
         <div className="flex border-b border-zinc-900 mb-8 font-mono text-[10px] uppercase tracking-widest overflow-x-auto">
           {[
-            { id: 'moderation', label: `Queue (${stats.pending})` },
+            { id: 'moderation', label: `Pending (${stats.pending})` },
+            { id: 'approved', label: `Approved (${stats.approved})` },
+            { id: 'rejected', label: `Rejected (${stats.rejected})` },
             { id: 'users', label: 'Users' },
           ].map(tab => (
             <button
@@ -183,7 +214,7 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* ── Moderation Tab ── */}
+        {/* ── Moderation Tab (Pending) ── */}
         {activeTab === 'moderation' && (
           <div className="space-y-5">
             {pendingArtworks.map(art => (
@@ -216,6 +247,70 @@ export default function AdminPage() {
               <div className="text-center py-20 border border-zinc-900">
                 <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
                 <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No pending submissions.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Approved Tab ── */}
+        {activeTab === 'approved' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {approvedArtworks.map(art => (
+              <div key={art.id} className="border border-zinc-900 bg-[#0c0c0c] overflow-hidden group cursor-pointer hover:border-exhibition-gold/40 transition-colors"
+                onClick={() => setPreviewArtwork(art)}>
+                <div className="aspect-[4/3] overflow-hidden relative bg-black">
+                  {art.thumbnailUrl || art.imageUrl ? (
+                    <img src={art.thumbnailUrl || art.imageUrl} alt={art.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-700 font-mono text-xs">No Image</div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h4 className="font-mono text-sm font-bold text-exhibition-bone truncate mb-1">{art.title}</h4>
+                  <p className="font-mono text-[10px] text-zinc-500 mb-2">by {art.artist?.name}</p>
+                  <div className="flex items-center justify-between text-[9px] font-mono text-zinc-600">
+                    <span className="text-exhibition-gold uppercase">{art.category.replace('-', ' ')}</span>
+                    <span>{art.votes || 0} votes</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {approvedArtworks.length === 0 && (
+              <div className="col-span-full text-center py-20 border border-zinc-900">
+                <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No approved artworks yet.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Rejected Tab ── */}
+        {activeTab === 'rejected' && (
+          <div className="space-y-5">
+            {rejectedArtworks.map(art => (
+              <div key={art.id} className="border border-red-900/30 bg-[#0c0c0c] p-5 flex flex-col md:flex-row gap-5 justify-between items-start">
+                <div className="flex gap-4 items-center flex-1">
+                  <img src={art.thumbnailUrl || art.imageUrl} className="w-16 h-16 object-cover border border-zinc-800 opacity-60" alt="" />
+                  <div className="flex-1">
+                    <h4 className="font-mono text-sm font-bold text-zinc-400">{art.title}</h4>
+                    <p className="font-mono text-[10px] text-zinc-600">by {art.artist?.name} · {art.artist?.college}</p>
+                    <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-widest">{art.category}</span>
+                    {art.rejectionReason && (
+                      <p className="mt-2 font-mono text-[9px] text-red-400/70 bg-red-500/5 border border-red-500/15 px-3 py-2">
+                        Reason: {art.rejectionReason}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <button onClick={() => setPreviewArtwork(art)}
+                  className="px-4 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
+                  <Eye size={12} /> View
+                </button>
+              </div>
+            ))}
+            {rejectedArtworks.length === 0 && (
+              <div className="text-center py-20 border border-zinc-900">
+                <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No rejected submissions.</p>
               </div>
             )}
           </div>
