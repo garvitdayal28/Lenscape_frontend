@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageSquare, ArrowRight, Sparkles, Send } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { Heart, ArrowRight, Send } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Artwork } from '../types'
@@ -8,7 +8,6 @@ import CinematicIntro from '../components/CinematicIntro'
 import ExhibitionNav from '../components/ExhibitionNav'
 import ThreeExhibitionScene from '../components/ThreeExhibitionScene'
 import ArtworkFrame from '../components/ArtworkFrame'
-import SpotlightCursor from '../components/SpotlightCursor'
 
 export default function LandingPage() {
   const { artworks, categories, currentUser, voteArtwork, commentArtwork } = useApp()
@@ -66,8 +65,13 @@ export default function LandingPage() {
     }
   }
 
+  // Scroll-driven fade + lift for the corridor overlay text
+  const { scrollY } = useScroll()
+  const useScrollFade = useTransform(scrollY, [0, 400], [1, 0])
+  const useScrollY = useTransform(scrollY, [0, 400], [0, -80])
+
   return (
-    <div className="min-h-screen bg-exhibition-void text-exhibition-bone overflow-x-hidden selection:bg-exhibition-gold selection:text-exhibition-void relative">
+    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold selection:text-exhibition-void relative">
       {/* 1. Cinematic Preloader Intro */}
       <AnimatePresence>
         {!introComplete && (
@@ -80,25 +84,23 @@ export default function LandingPage() {
           {/* Navigation Guide */}
           <ExhibitionNav />
 
-          {/* Flashlight Spotlight Mouse Cursor tracking */}
-          <SpotlightCursor />
+          {/* 
+            Scroll-jacked 3D corridor.
+            The outer div is 300vh tall — this is the "scroll budget" for the camera walk.
+            The inner div is sticky, so the canvas stays fixed while the user scrolls
+            through the 300vh. Once past it, normal page content resumes.
+          */}
+          <div className="relative" style={{ height: '300vh' }} data-corridor="true">
+            <div className="sticky top-0 w-full h-screen overflow-hidden">
+              {/* 3D scene fills the sticky viewport */}
+              <div className="absolute inset-0 w-full h-full pointer-events-auto">
+                <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} />
+              </div>
 
-          {/* 3D Exhibition Corridor container */}
-          {/* We make it sticky or fixed so it scrolls dynamically while sections roll over */}
-          <div className="fixed inset-0 w-full h-full -z-10 pointer-events-auto">
-            <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} />
-          </div>
-
-          {/* Spacer to allow scrolling through 3D corridor */}
-          {/* Height is 300vh, matching ThreeExhibitionScene scroll length */}
-          <div className="h-[250vh] relative pointer-events-none">
-            {/* Scroll cues overlay */}
-            <div className="absolute inset-x-0 top-32 flex flex-col items-center justify-center text-center px-4">
+              {/* Text overlay — fades + moves up as user starts scrolling */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 0.8, y: 0 }}
-                transition={{ duration: 1.5, delay: 0.5 }}
-                className="flex flex-col items-center"
+                style={{ opacity: useScrollFade, y: useScrollY }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
               >
                 <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
                   Curated Digital Hallway
@@ -112,19 +114,13 @@ export default function LandingPage() {
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-[1px] h-12 bg-exhibition-gold/50 mt-12"
+                  className="w-[1px] h-12 bg-exhibition-gold/50 mt-10"
                 />
               </motion.div>
             </div>
-
-            <div className="absolute inset-x-0 bottom-12 flex flex-col items-center justify-center text-center">
-              <span className="font-mono text-[9px] text-zinc-600 uppercase tracking-widest">
-                Entering featured collections
-              </span>
-            </div>
           </div>
 
-          {/* Main scrollable section overlays (z-10, background overrides canvas) */}
+          {/* Main scrollable section overlays */}
           <div className="relative z-10 bg-exhibition-void/90 backdrop-blur-md border-t border-exhibition-gold/15 py-32 px-6 md:px-12">
             
             {/* Section: Featured Artworks */}
@@ -320,7 +316,7 @@ export default function LandingPage() {
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.95, opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="relative w-full max-w-5xl h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-hidden"
+                  className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Close button */}
@@ -332,7 +328,7 @@ export default function LandingPage() {
                   </button>
 
                   {/* Left Side: Art display */}
-                  <div className="w-full md:w-[65%] h-[50%] md:h-full bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+                  <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
                     {/* Top wash light */}
                     <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                     
@@ -348,13 +344,13 @@ export default function LandingPage() {
                   </div>
 
                   {/* Right Side: Information / Placard details & comments */}
-                  <div className="w-full md:w-[35%] h-[50%] md:h-full flex flex-col bg-[#0b0b0b]">
+                  <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-[#0b0b0b] flex-grow">
                     {/* Art Details */}
                     <div className="p-6 border-b border-zinc-900">
                       <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
                         {selectedArtwork.category.replace('-', ' ')}
                       </span>
-                      <h3 className="editorial-text text-3xl font-light text-exhibition-bone">
+                      <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
                         {selectedArtwork.title}
                       </h3>
                       <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
@@ -387,7 +383,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Feedbacks / Comments section */}
-                    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-[30vh] md:max-h-none">
+                    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
                       <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
                         Feedbacks ({selectedArtwork.comments?.length || 0})
                       </h4>
