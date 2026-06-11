@@ -538,6 +538,56 @@ export default function LandingPage() {
               </div>
             </section>
 
+            {/* Section: Guidelines */}
+            <section className="max-w-4xl mx-auto mb-40">
+              <div className="border border-zinc-900 bg-black/20 p-10 md:p-12 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-exhibition-gold/5 blur-3xl rounded-full" />
+                <div className="text-center mb-8">
+                  <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.3em] block mb-3">
+                    Submission & Exhibition
+                  </span>
+                  <h2 className="editorial-text text-3xl md:text-5xl font-light text-exhibition-bone">
+                    Event Guidelines
+                  </h2>
+                </div>
+
+                <div className="space-y-8 max-w-3xl mx-auto text-sm font-mono text-zinc-400 leading-relaxed">
+                  <div>
+                    <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">1. Format & Quality</h4>
+                    <p>Images should be high-resolution (minimum 1080p) in JPEG/PNG formats. Videos must be in MP4/WebM format, not exceeding 8 minutes in duration.</p>
+                  </div>
+                  <div>
+                    <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">2. Core Theme Alignment</h4>
+                    <p>All artwork submissions must creatively interpret the official theme: <span className="text-exhibition-bone font-bold">"Summer at Your Place"</span>.</p>
+                  </div>
+                  <div>
+                    <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">3. Originality & Ownership</h4>
+                    <p>Strictly original works only. Plagiarism, unauthorized use of copyrighted elements, or utilizing AI generation tools is strictly prohibited. Any submission found copying existing artworks or using AI will result in immediate disqualification.</p>
+                  </div>
+                  <div>
+                    <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">4. Code of Conduct</h4>
+                    <p>Submissions must be respectful and free from offensive or inappropriate content. The curation board reserves the right to reject entries.</p>
+                  </div>
+                  <div>
+                    <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">5. Judging & Selection</h4>
+                    <p className="mb-3">The final result will be determined by a combination of public opinion and expert evaluation. 50% of the weightage relies on public voting, and the remaining 50% is determined by the official judges' decision.</p>
+                    <p className="text-exhibition-bone font-bold mb-2">Submissions will be evaluated based on:</p>
+                    <ul className="space-y-2 pl-4 border-l border-exhibition-gold/20">
+                      <li>
+                        <span className="text-exhibition-gold font-bold">Creativity:</span> Original imagination and artistic interpretation.
+                      </li>
+                      <li>
+                        <span className="text-exhibition-gold font-bold">Uniqueness:</span> Distinct style, innovation, and conceptual depth.
+                      </li>
+                      <li>
+                        <span className="text-exhibition-gold font-bold">Visual Impact:</span> Overall execution and aesthetic appeal.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Section: Exhibition Rooms CTA */}
             <section ref={chambersRef} className="max-w-5xl mx-auto mb-32">
               <div className="text-center mb-20">

@@ -295,16 +295,6 @@ export default function GalleryPage() {
           />
         </div>
 
-        {/* Minimal Sorting Dropdown */}
-        <select
-          value={selectedSort}
-          onChange={(e) => setSelectedSort(e.target.value)}
-          className="bg-[#0c0c0c] border border-zinc-800 px-3 py-2 font-mono text-[10px] tracking-widest uppercase text-zinc-400 outline-none cursor-pointer hover:border-zinc-700"
-        >
-          <option value="latest">LATEST IN HALL</option>
-          <option value="most-voted">MOST ACCLAIMED</option>
-          <option value="trending">TRENDING ACTIVITY</option>
-        </select>
       </div>
 
       {/* Main exhibition showcase (Artworks) */}
