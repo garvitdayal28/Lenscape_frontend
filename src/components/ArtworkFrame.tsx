@@ -1,6 +1,7 @@
 import React from 'react'
 import { Heart } from 'lucide-react'
 import { Artwork } from '../types'
+import { useApp } from '../context/AppContext';
 
 interface ArtworkFrameProps {
   artwork: Artwork
@@ -8,7 +9,6 @@ interface ArtworkFrameProps {
   onVote?: (e: React.MouseEvent) => void
   isVoted?: boolean
   hideVoteButton?: boolean
-  hideVoteCount?: boolean
 }
 
 // Format video duration from seconds to MM:SS
@@ -20,11 +20,11 @@ function formatDuration(seconds: number): string {
 
 // Map orientation id → Tailwind aspect class
 const ASPECT: Record<string, string> = {
-  landscape:  'aspect-[3/2]',
-  portrait:   'aspect-[2/3]',
-  square:     'aspect-square',
-  widescreen: 'aspect-video',
-  vertical:   'aspect-[9/16]',
+  landscape:   'aspect-[3/2]',
+  portrait:    'aspect-[2/3]',
+  square:      'aspect-square',
+  widescreen:  'aspect-video',
+  vertical:    'aspect-[9/16]',
 }
 
 const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
@@ -33,8 +33,13 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   onVote,
   isVoted = false,
   hideVoteButton = false,
-  hideVoteCount = false,
 }) => {
+  // 1. ACCESS THE CURRENT LOGGED-IN USER FROM CONTEXT
+  const { currentUser } = useApp()
+
+  // 2. CHECK IF THE LOGGED-IN USER IS THE ADMIN
+  const isAdmin = currentUser?.email.toLowerCase() === 'admin@jlug.club'
+
   const { title, artist, imageUrl, videoUrl, thumbnailUrl, videoDuration, votes, comments, category } = artwork
   const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
@@ -142,7 +147,8 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           {hideVoteButton ? (
             <div className="flex items-center gap-1.5">
               <Heart size={14} className="opacity-50" />
-              {!hideVoteCount && <span>{votes}</span>}
+              {/* 3. CONDITIONAL VOTE DISPLAY (STATIC VARIANT) */}
+              {isAdmin && <span>{votes}</span>}
             </div>
           ) : (
             <button
@@ -153,7 +159,8 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
               className={`flex items-center gap-1.5 transition-colors hover:text-exhibition-gold`}
             >
               <Heart size={14} />
-              {!hideVoteCount && <span>{votes}</span>}
+              {/* 4. CONDITIONAL VOTE DISPLAY (BUTTON VARIANT) */}
+              {isAdmin && <span>{votes}</span>}
             </button>
           )}
         </div>
