@@ -500,34 +500,18 @@ export default function LandingPage() {
                   Lenscape 2026
                 </span>
                 <h2 className="editorial-text text-4xl md:text-6xl font-light">
-                  Event Themes
+                  Event Theme
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-exhibition-gold/15">
-                {/* Theme 1 */}
-                <div className="p-10 border-b md:border-b-0 md:border-r border-exhibition-gold/15 relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-exhibition-gold/3 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-4">Theme 01</span>
-                  <h3 className="editorial-text text-3xl md:text-4xl font-light text-exhibition-bone mb-4">
-                    Summer at Your Place
-                  </h3>
-                  <p className="font-mono text-xs text-zinc-500 leading-relaxed">
-                    Capture the warmth, intimacy and vibrancy of summer through your lens — your home, your city, your people.
-                  </p>
-                </div>
-
-                {/* Theme 2 */}
-                <div className="p-10 relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-bl from-exhibition-gold/3 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-4">Theme 02</span>
-                  <h3 className="editorial-text text-3xl md:text-4xl font-light text-exhibition-bone mb-4">
-                    Open Innovation
-                  </h3>
-                  <p className="font-mono text-xs text-zinc-500 leading-relaxed">
-                    No constraints — explore the intersection of technology, design and imagination. Anything goes.
-                  </p>
-                </div>
+              <div className="max-w-3xl mx-auto border border-exhibition-gold/15 p-10 md:p-12 relative overflow-hidden group text-center bg-black/40">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-exhibition-gold/3 to-transparent pointer-events-none" />
+                <h3 className="editorial-text text-3xl md:text-5xl font-light text-exhibition-bone mb-4">
+                  Summer at Your Place
+                </h3>
+                <p className="font-mono text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
+                  Capture the warmth, intimacy and vibrancy of summer through your lens — your home, your city, your people.
+                </p>
               </div>
 
               {/* Categories overview */}

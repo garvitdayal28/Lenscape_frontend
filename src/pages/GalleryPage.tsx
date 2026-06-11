@@ -325,11 +325,11 @@ export default function GalleryPage() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(idx * 0.08, 0.4), duration: 0.8 }}
-                  className={`${idx % 2 === 1 ? 'md:mt-16' : ''}`}
                 >
                   <ArtworkFrame
                     artwork={artwork}
                     onClick={() => setSelectedArtwork(artwork)}
+                    hideVoteCount={true}
                   />
                 </motion.div>
               )
@@ -434,7 +434,7 @@ export default function GalleryPage() {
 
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
                     <span className="text-zinc-500 text-xs font-mono">
-                      {selectedArtwork.votes} votes logged
+                      Exhibition Voting
                     </span>
                     {user ? (
                       <div className="relative group">
