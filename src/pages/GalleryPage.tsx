@@ -26,6 +26,8 @@ export default function GalleryPage() {
 
   const [artworks, setArtworks] = useState<Artwork[]>([])
   const [loadingArtworks, setLoadingArtworks] = useState(true)
+
+
   const [selectedCategory, setSelectedCategory] = useState<EventCategory | 'all'>('all')
   const [selectedSort, setSelectedSort] = useState('latest')
   const [searchQuery, setSearchQuery] = useState('')
@@ -308,22 +310,20 @@ export default function GalleryPage() {
           </div>
         ) : sortedArtworks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
-            {sortedArtworks.map((artwork, idx) => {
-              return (
-                <motion.div
-                  key={artwork.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(idx * 0.08, 0.4), duration: 0.8 }}
-                >
-                  <ArtworkFrame
-                    artwork={artwork}
-                    onClick={() => setSelectedArtwork(artwork)}
-                    hideVoteCount={true}
-                  />
-                </motion.div>
-              )
-            })}
+            {sortedArtworks.map((artwork, idx) => (
+              <motion.div
+                key={artwork.id}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(idx * 0.08, 0.4), duration: 0.8 }}
+              >
+                <ArtworkFrame
+                  artwork={artwork}
+                  onClick={() => setSelectedArtwork(artwork)}
+                  hideVoteCount={true}
+                />
+              </motion.div>
+            ))}
           </div>
         ) : (
           <div className="text-center py-32 border border-zinc-900 bg-black/10">

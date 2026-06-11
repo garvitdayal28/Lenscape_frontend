@@ -9,6 +9,7 @@ interface ArtworkFrameProps {
   onVote?: (e: React.MouseEvent) => void
   isVoted?: boolean
   hideVoteButton?: boolean
+  hideVoteCount?: boolean
 }
 
 // Format video duration from seconds to MM:SS
@@ -33,6 +34,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   onVote,
   isVoted = false,
   hideVoteButton = false,
+  hideVoteCount = false,
 }) => {
   // 1. ACCESS THE CURRENT LOGGED-IN USER FROM CONTEXT
   const { currentUser } = useApp()
@@ -41,7 +43,6 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   const isAdmin = currentUser?.email.toLowerCase() === 'admin@jlug.club'
 
   const { title, artist, imageUrl, videoUrl, thumbnailUrl, videoDuration, votes, comments, category } = artwork
-  const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
   // Format category to readable text
   const categoryLabel = category
@@ -57,10 +58,10 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   return (
     <div className="flex flex-col items-center justify-center py-6 w-full max-w-xl mx-auto">
 
-      {/* Frame Container — dynamic ratio */}
+      {/* Frame Container — fixed uniform height so all artworks share the same frame size */}
       <div
         onClick={onClick}
-        className={`museum-frame cursor-pointer w-full ${aspectClass} relative overflow-hidden group select-none`}
+        className="museum-frame cursor-pointer w-full h-72 relative overflow-hidden group select-none"
       >
         {/* Visual highlight on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-[45] pointer-events-none" />
@@ -74,7 +75,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
                 <img
                   src={displayImage}
                   alt={title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                 />
                 {/* Play button overlay */}
@@ -109,7 +110,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-contain bg-black transition-transform duration-700 ease-out group-hover:scale-105 relative z-[40]"
+            className="w-full h-full object-cover bg-black transition-transform duration-700 ease-out group-hover:scale-105 relative z-[40]"
             loading="lazy"
           />
         ) : (
