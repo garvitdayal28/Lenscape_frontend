@@ -203,18 +203,7 @@ export default function LandingPage() {
     },
   ]
   
-  const featured = lenscape2025Winners
 
-  // Calculate dynamic stats - showing Lenscape 2025 data
-  const totalSubmissions = 166
-  const totalVotes = 1218
-  const totalCategories = 4
-
-  const stats = [
-    { value: `${totalSubmissions}+`, label: 'SUBMISSIONS' },
-    { value: `${totalCategories}`, label: 'DOMAINS' },
-    { value: `${(totalVotes / 1000).toFixed(1)}K+`, label: 'VOTES CAST' },
-  ]
 
   // Handle voting from modal/frames - only for backend sync, no UI update
   const handleVote = async (artId: string) => {
@@ -343,7 +332,7 @@ export default function LandingPage() {
             <div className="sticky top-0 w-full h-screen overflow-hidden">
               {/* 3D scene fills the sticky viewport */}
               <div className="absolute inset-0 w-full h-full pointer-events-auto">
-                <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} />
+                <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} artworks={lenscape2025Winners} />
               </div>
 
               {/* Text overlay — fades + moves up as user starts scrolling */}
@@ -352,13 +341,13 @@ export default function LandingPage() {
                 className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
               >
                 <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
-                  Curated Digital Hallway
+                  Lenscape 2024 Winners
                 </span>
                 <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
-                  Float through the gallery
+                  Hall of Flames
                 </h1>
                 <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
-                  Scroll down to traverse the virtual museum. Click on any frame to inspect the artwork.
+                  Walk through the winners of Lenscape 2024. Click on any frame to inspect the artwork.
                 </p>
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
@@ -621,80 +610,6 @@ export default function LandingPage() {
               </div>
             </section>
 
-            {/* Section: Hall of Honor (Lenscape 2025 Winners) */}
-            <section className="max-w-6xl mx-auto mb-40">
-              <div className="text-center mb-16">
-                <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
-                  Lenscape 2025 Winners
-                </span>
-                <h2 className="editorial-text text-4xl md:text-6xl font-light">
-                  Hall of Honor
-                </h2>
-                <p className="text-sm text-zinc-500 mt-2 font-mono mb-12">
-                  Celebrating the champions of Lenscape 2025.
-                </p>
-
-                {/* Statistics - Lenscape 2025 past data */}
-                <div className="spot-xl relative py-16 border-t border-b border-zinc-900">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                    {stats.map((stat, idx) => (
-                      <div key={idx} className="flex flex-col items-center">
-                        <span className="editorial-text text-6xl md:text-7xl font-bold text-exhibition-gold drop-shadow-[0_0_20px_rgba(201,168,76,0.15)]">
-                          {stat.value}
-                        </span>
-                        <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.25em] mt-3 block">
-                          {stat.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Hall of Fame Layout: 4 images in 2x2 grid, video below in larger frame */}
-              <div className="flex flex-col gap-12">
-                {/* Top 4 images - 2x2 grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                  {featured.slice(0, 4).map((artwork, idx) => {
-                    return (
-                      <motion.div
-                        key={artwork.id}
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-100px' }}
-                        transition={{ duration: 0.8, delay: idx * 0.15 }}
-                        className="flex flex-col"
-                      >
-                        <ArtworkFrame
-                          artwork={artwork}
-                          onClick={() => setSelectedArtwork(artwork)}
-                          hideVoteButton={true}
-                        />
-                      </motion.div>
-                    )
-                  })}
-                </div>
-
-                {/* Video entry - larger frame centered below */}
-                {featured.length > 4 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-100px' }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="flex flex-col items-center"
-                  >
-                    <div className="w-full max-w-3xl">
-                      <ArtworkFrame
-                        artwork={featured[4]}
-                        onClick={() => setSelectedArtwork(featured[4])}
-                        hideVoteButton={true}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </section>
 
             {/* Footer */}
             <footer className="max-w-6xl mx-auto border-t border-zinc-900 pt-16 flex flex-col md:flex-row justify-between items-center gap-6">

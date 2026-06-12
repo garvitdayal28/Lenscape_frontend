@@ -176,10 +176,12 @@ const CameraController: React.FC<CameraControllerProps> = ({ scrollPercent, maxZ
 
 interface ThreeExhibitionSceneProps {
   onArtworkSelect: (artwork: Artwork) => void
+  artworks?: Artwork[]
 }
 
-const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSelect }) => {
-  const { artworks } = useApp()
+const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ onArtworkSelect, artworks: propArtworks }) => {
+  const { artworks: contextArtworks } = useApp()
+  const artworks = propArtworks ?? contextArtworks
   const [scrollPercent, setScrollPercent] = useState(0)
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth / window.innerHeight < 1.25)
   const containerRef = useRef<HTMLDivElement>(null)
