@@ -43,6 +43,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   const isAdmin = currentUser?.email.toLowerCase() === 'admin@jlug.club'
 
   const { title, artist, imageUrl, videoUrl, thumbnailUrl, videoDuration, votes, comments, category } = artwork
+  const aspectClass = ASPECT[(artwork as any).orientation] || 'aspect-[4/3]'
 
   // Format category to readable text
   const categoryLabel = category
@@ -56,26 +57,26 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
   const displayImage = isVideo ? (thumbnailUrl || imageUrl) : imageUrl
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 w-full max-w-xl mx-auto">
+    <div className="flex flex-col items-center justify-center w-full">
 
-      {/* Frame Container — fixed uniform height so all artworks share the same frame size */}
+      {/* Frame Container — flexible sizing, natural aspect ratio */}
       <div
         onClick={onClick}
-        className="museum-frame cursor-pointer w-full h-72 relative overflow-hidden group select-none"
+        className={`museum-frame cursor-pointer relative overflow-hidden group select-none bg-black w-full`}
       >
         {/* Visual highlight on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-[45] pointer-events-none" />
 
         {/* The Media - Video or Image */}
         {isVideo ? (
-          <div className="w-full h-full bg-black relative z-[40]">
+          <div className="w-full h-auto bg-black relative z-[40]">
             {/* Video thumbnail with play button overlay */}
             {displayImage ? (
               <>
                 <img
                   src={displayImage}
                   alt={title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   loading="lazy"
                 />
                 {/* Play button overlay */}
@@ -94,7 +95,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
                 )}
               </>
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-full aspect-video flex items-center justify-center bg-zinc-900">
                 <div className="text-zinc-500 text-center">
                   <div className="w-20 h-20 mx-auto mb-3 border-2 border-zinc-700 rounded-full flex items-center justify-center">
                     <svg className="w-8 h-8 text-exhibition-gold" fill="currentColor" viewBox="0 0 20 20">
@@ -110,11 +111,11 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-cover bg-black transition-transform duration-700 ease-out group-hover:scale-105 relative z-[40]"
+            className="w-full h-auto block transition-transform duration-700 ease-out group-hover:scale-105 relative z-[40]"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-500 text-sm">
+          <div className="w-full aspect-square flex items-center justify-center bg-zinc-900 text-zinc-500 text-sm">
             No media available
           </div>
         )}
@@ -126,7 +127,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
       </div>
 
       {/* Placard / Museum Tag */}
-      <div className="mt-4 px-4 py-3 bg-[#0d0d0d] border border-exhibition-gold/20 w-full max-w-[20rem] text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
+      <div className="mt-4 px-4 py-3 bg-[#0d0d0d] border border-exhibition-gold/20 w-full text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
         {/* Small screw heads in corners to look like a metal placard */}
         <div className="absolute top-1 left-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />
         <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />

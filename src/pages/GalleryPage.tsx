@@ -300,7 +300,7 @@ export default function GalleryPage() {
       </div>
 
       {/* Main exhibition showcase (Artworks) */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 pb-32 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 pb-32 relative z-10">
         {loadingArtworks ? (
           <div className="text-center py-32">
             <div className="w-10 h-10 border border-exhibition-gold/30 border-t-exhibition-gold rounded-full animate-spin mx-auto mb-4" />
@@ -309,13 +309,15 @@ export default function GalleryPage() {
             </h3>
           </div>
         ) : sortedArtworks.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
-            {sortedArtworks.map((artwork, idx) => (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-8 pb-8">
+            {sortedArtworks.map((artwork, idx) => {
+              return (
               <motion.div
                 key={artwork.id}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.08, 0.4), duration: 0.8 }}
+                className="break-inside-avoid mb-8 inline-block w-full"
               >
                 <ArtworkFrame
                   artwork={artwork}
@@ -323,7 +325,8 @@ export default function GalleryPage() {
                   hideVoteCount={true}
                 />
               </motion.div>
-            ))}
+            )
+            })}
           </div>
         ) : (
           <div className="text-center py-32 border border-zinc-900 bg-black/10">
