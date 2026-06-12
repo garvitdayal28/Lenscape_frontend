@@ -341,13 +341,13 @@ export default function LandingPage() {
                 className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
               >
                 <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
-                  Lenscape 2024 Winners
+                  Glimpse of 2024
                 </span>
                 <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
-                  Hall of Flames
+                  Hall of Fames
                 </h1>
                 <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
-                  Walk through the winners of Lenscape 2024. Click on any frame to inspect the artwork.
+                  Walk through the glimpse of 2024. Click on any frame to inspect the artwork.
                 </p>
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
