@@ -74,7 +74,7 @@ export default function LandingPage() {
   // Filter approved artworks
   const approvedArtworks = artworks.filter((a) => a.status === 'approved')
   
-  // Lenscape 2025 Hall of Fame Winners (uploaded to Cloudinary)
+  // Lenscape 2024 Hall of Fame Winners (uploaded to Cloudinary)
   const lenscape2025Winners: Artwork[] = [
     {
       id: 'winner-photo-2025',
@@ -85,7 +85,7 @@ export default function LandingPage() {
         id: 'gupta-squad',
         name: 'Gupta squad', 
         email: '',
-        college: 'Lenscape 2025',
+        college: 'Lenscape 2024',
         branch: '',
         year: '',
         avatar: null,
@@ -110,7 +110,7 @@ export default function LandingPage() {
         id: 'sunscape',
         name: 'Sunscape', 
         email: '',
-        college: 'Lenscape 2025',
+        college: 'Lenscape 2024',
         branch: '',
         year: '',
         avatar: null,
@@ -135,7 +135,7 @@ export default function LandingPage() {
         id: 'rockers',
         name: 'Rockers', 
         email: '',
-        college: 'Lenscape 2025',
+        college: 'Lenscape 2024',
         branch: '',
         year: '',
         avatar: null,
@@ -160,7 +160,7 @@ export default function LandingPage() {
         id: 'pranjal-verma',
         name: 'PRANJAL VERMA', 
         email: '',
-        college: 'Lenscape 2025',
+        college: 'Lenscape 2024',
         branch: '',
         year: '',
         avatar: null,
@@ -185,7 +185,7 @@ export default function LandingPage() {
         id: 'pranjal-verma-2',
         name: 'PRANJAL VERMA', 
         email: '',
-        college: 'Lenscape 2025',
+        college: 'Lenscape 2024',
         branch: '',
         year: '',
         avatar: null,
