@@ -31,6 +31,7 @@ export default function LandingPage() {
   })
 
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const [commentContent, setCommentContent] = useState('')
   const [showNav, setShowNav] = useState(false)
   const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
@@ -96,7 +97,7 @@ export default function LandingPage() {
       imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781086583/lenscape/winners2025/photography-winner.jpg',
       thumbnailUrl: null,
       videoUrl: null,
-      description: 'Winner - Digital Art Domain | 30 votes',
+      description: 'Digital Art Domain | 30 votes',
       status: 'approved' as const,
       comments: [],
       createdAt: new Date('2024-10-26'),
@@ -146,7 +147,7 @@ export default function LandingPage() {
       imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781086584/lenscape/winners2025/digitalart-winner.jpg',
       thumbnailUrl: null,
       videoUrl: null,
-      description: 'Winner - Photography Domain | 36 votes',
+      description: 'Photography Domain | 36 votes',
       status: 'approved' as const,
       comments: [],
       createdAt: new Date('2024-10-25'),
@@ -171,7 +172,7 @@ export default function LandingPage() {
       imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087868/lenscape/winners2025/digitalart-grunge-spidey.jpg',
       thumbnailUrl: null,
       videoUrl: null,
-      description: 'Winner - Digital Art Domain | Spider-Man artwork with grunge aesthetic',
+      description: 'Digital Art Domain | Spider-Man artwork with grunge aesthetic',
       status: 'approved' as const,
       comments: [],
       createdAt: new Date('2024-10-20'),
@@ -196,7 +197,7 @@ export default function LandingPage() {
       imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087870/lenscape/winners2025/videography-mahayagna-cover.jpg',
       thumbnailUrl: null,
       videoUrl: 'https://drive.google.com/file/d/1tHGPZB0wvN2e5CfELotAqGLgkhfo1WPJ/preview',
-      description: 'Winner - Videography Domain | 25 votes',
+      description: 'Videography Domain | 25 votes',
       status: 'approved' as const,
       comments: [],
       createdAt: new Date('2024-10-20'),
@@ -332,29 +333,43 @@ export default function LandingPage() {
             <div className="sticky top-0 w-full h-screen overflow-hidden">
               {/* 3D scene fills the sticky viewport */}
               <div className="absolute inset-0 w-full h-full pointer-events-auto">
-                <ThreeExhibitionScene onArtworkSelect={(art) => setSelectedArtwork(art)} artworks={lenscape2025Winners} />
+                <ThreeExhibitionScene
+                  onArtworkSelect={(art) => {
+                    setSelectedArtwork(art)
+                    setHasInteracted(true)
+                  }}
+                  artworks={lenscape2025Winners}
+                  selectedArtwork={selectedArtwork}
+                />
               </div>
 
-              {/* Text overlay — fades + moves up as user starts scrolling */}
-              <motion.div
-                style={{ opacity: useScrollFade, y: useScrollY }}
-                className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
-              >
-                <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
-                  Glimpse of 2024
-                </span>
-                <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
-                  Hall of Fame
-                </h1>
-                <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
-                  Walk through the glimpse of 2024. Click on any frame to inspect the artwork.
-                </p>
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-[1px] h-12 bg-exhibition-gold/50 mt-10"
-                />
-              </motion.div>
+              {/* Text overlay — fades + moves up as user starts scrolling, unmounts cleanly on selection */}
+              <AnimatePresence>
+                {!selectedArtwork && !hasInteracted && (
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ opacity: useScrollFade, y: useScrollY }}
+                    className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-10"
+                  >
+                    <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
+                      Glimpse of 2024
+                    </span>
+                    <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
+                      Hall of Fame
+                    </h1>
+                    <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
+                      Walk through the glimpse of 2024. Click on any frame to inspect the artwork.
+                    </p>
+                    <motion.div
+                      animate={{ y: [0, 10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      className="w-[1px] h-12 bg-exhibition-gold/50 mt-10"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -626,20 +641,79 @@ export default function LandingPage() {
             </footer>
           </div>
 
-          {/* Immersive Artwork Viewer Modal (Full Screen Exhibition focus) */}
+          {/* Immersive Artwork Details Banner (Downside of Artwork) */}
           <AnimatePresence>
             {selectedArtwork && (
-              <ArtworkViewerModal
-                selectedArtwork={selectedArtwork}
-                setSelectedArtwork={setSelectedArtwork}
-                user={user}
-                handleVoteClick={handleVoteClick}
-                hasVoted={hasVoted}
-                handleCommentSubmit={handleCommentSubmit}
-                commentContent={commentContent}
-                setCommentContent={setCommentContent}
-                hideVoteButton={lenscape2025Winners.some(w => w.id === selectedArtwork.id)}
-              />
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-black/90 backdrop-blur-md border border-exhibition-gold/30 p-5 md:p-6 text-exhibition-bone z-[100] shadow-2xl rounded-sm flex flex-col gap-3 pointer-events-auto"
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedArtwork(null)}
+                  className="absolute top-3 right-3 text-zinc-400 hover:text-exhibition-gold transition-colors text-lg p-1"
+                  aria-label="Close details"
+                >
+                  ✕
+                </button>
+
+                {/* Motivational Quote at top of placard if Starry Night */}
+                {selectedArtwork.id === 'starry-night-popular' && (
+                  <div className="border-b border-exhibition-gold/20 pb-3 mb-1">
+                    <p className="font-serif italic text-xs text-exhibition-gold text-center tracking-wide leading-relaxed">
+                      "Great things are done by a series of small things brought together."
+                    </p>
+                    <p className="font-mono text-[9px] text-zinc-500 text-center mt-1 uppercase tracking-widest">
+                      — Vincent van Gogh
+                    </p>
+                  </div>
+                )}
+
+                {/* Category tag */}
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[8px] text-exhibition-gold uppercase tracking-[0.2em] border border-exhibition-gold/20 px-2 py-0.5 rounded-full">
+                    {selectedArtwork.category.replace('-', ' ')}
+                  </span>
+                  {selectedArtwork.subCategory && (
+                    <span className="font-mono text-[8px] text-zinc-500 uppercase tracking-[0.2em]">
+                      • {selectedArtwork.subCategory.replace('-', ' ')}
+                    </span>
+                  )}
+                </div>
+
+                {/* Title and Artist */}
+                <div>
+                  <h3 className="font-sans text-lg font-medium text-exhibition-bone tracking-wide leading-tight">
+                    {selectedArtwork.title}
+                  </h3>
+                  <p className="font-sans text-xs text-zinc-400 mt-1">
+                    By <span className="text-zinc-200 font-medium">{selectedArtwork.artist.name}</span>
+                    {selectedArtwork.artist.college && ` (${selectedArtwork.artist.college})`}
+                  </p>
+                </div>
+
+                {/* Description */}
+                <p className="font-sans text-xs text-zinc-400 leading-relaxed max-h-24 overflow-y-auto pr-2 scrollbar-thin">
+                  {selectedArtwork.description}
+                </p>
+
+                {/* Bottom Bar: Action buttons */}
+                <div className="flex items-center justify-between mt-2 pt-3 border-t border-zinc-900">
+                  <span className="font-mono text-[10px] text-zinc-500">
+                    {selectedArtwork.id === 'starry-night-popular' ? 'Featured Masterpiece' : `Votes: ${selectedArtwork.votes}`}
+                  </span>
+                  
+                  <button
+                    onClick={() => setSelectedArtwork(null)}
+                    className="font-mono text-[10px] text-exhibition-gold uppercase tracking-wider hover:underline transition-all"
+                  >
+                    Back to Gallery
+                  </button>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
 
