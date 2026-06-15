@@ -29,6 +29,17 @@ export default function LandingPage() {
   const [introComplete, setIntroComplete] = useState<boolean>(() => {
     return sessionStorage.getItem('lenscape_intro_complete') === 'true'
   })
+  // Delay mounting the 3D scene so the intro overlay always paints first
+  const [sceneReady, setSceneReady] = useState<boolean>(() => {
+    return sessionStorage.getItem('lenscape_intro_complete') === 'true'
+  })
+
+  useEffect(() => {
+    if (!sceneReady) {
+      const t = setTimeout(() => setSceneReady(true), 800)
+      return () => clearTimeout(t)
+    }
+  }, [])
 
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
   const [hasInteracted, setHasInteracted] = useState(false)
@@ -197,31 +208,6 @@ export default function LandingPage() {
       comments: [],
       createdAt: new Date('2024-10-20'),
     },
-    {
-      id: 'winner-videography-2025',
-      title: 'Mahayagna',
-      category: 'cinematography',
-      subCategory: 'short-film',
-      artist: { 
-        id: 'pranjal-verma-2',
-        name: 'PRANJAL VERMA', 
-        email: '',
-        college: 'Lenscape 2024',
-        branch: '',
-        year: '',
-        avatar: null,
-        bio: '',
-        joinedDate: new Date('2024-10-20')
-      },
-      votes: 25,
-      imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781087870/lenscape/winners2025/videography-mahayagna-cover.jpg',
-      thumbnailUrl: null,
-      videoUrl: 'https://drive.google.com/file/d/1tHGPZB0wvN2e5CfELotAqGLgkhfo1WPJ/preview',
-      description: 'Videography Domain | 25 votes',
-      status: 'approved' as const,
-      comments: [],
-      createdAt: new Date('2024-10-20'),
-    },
   ]
   
 
@@ -331,15 +317,27 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold selection:text-exhibition-void relative">
-      {/* 1. Cinematic Preloader Intro */}
+
+      {/* 1. Cinematic Preloader Intro — sits on top (z-1000), 3D scene loads behind it */}
       <AnimatePresence>
         {!introComplete && (
-          <CinematicIntro onComplete={handleIntroComplete} />
+          <CinematicIntro
+            onComplete={handleIntroComplete}
+            preloadUrls={lenscape2025Winners
+              .map(w => w.thumbnailUrl || w.imageUrl)
+              .filter(Boolean) as string[]}
+          />
         )}
       </AnimatePresence>
 
-      {introComplete && (
-        <>
+      {/* 2. Main content — always mounted so 3D scene initialises during intro */}
+      <motion.div
+        initial={introComplete ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        // Keep non-interactive while intro is playing so scroll/clicks don't bleed through
+        style={{ pointerEvents: introComplete ? 'auto' : 'none' }}
+      >
           {/* Navigation Guide */}
           <ExhibitionNav isVisible={showNav} />
 
@@ -351,16 +349,19 @@ export default function LandingPage() {
           */}
           <div className="relative" style={{ height: '300vh' }} data-corridor="true">
             <div className="sticky top-0 w-full h-screen overflow-hidden">
-              {/* 3D scene fills the sticky viewport */}
+              {/* 3D scene — delayed mount so intro overlay always paints first */}
               <div className="absolute inset-0 w-full h-full pointer-events-auto">
-                <ThreeExhibitionScene
-                  onArtworkSelect={(art) => {
-                    setSelectedArtwork(art)
-                    setHasInteracted(true)
-                  }}
-                  artworks={lenscape2025Winners}
-                  selectedArtwork={selectedArtwork}
-                />
+                {sceneReady && (
+                  <ThreeExhibitionScene
+                    onArtworkSelect={(art) => {
+                      setSelectedArtwork(art)
+                      setHasInteracted(true)
+                    }}
+                    artworks={lenscape2025Winners}
+                    selectedArtwork={selectedArtwork}
+                    enabled={introComplete}
+                  />
+                )}
               </div>
 
               {/* Text overlay — fades + moves up as user starts scrolling, unmounts cleanly on selection */}
@@ -733,7 +734,7 @@ export default function LandingPage() {
                 {/* Bottom Bar: Action buttons */}
                 <div className="flex items-center justify-between mt-0.5 pt-2 border-t border-zinc-900">
                   <span className="font-mono text-[9.5px] text-zinc-500">
-                    {selectedArtwork.id === 'starry-night-popular' ? 'Featured Masterpiece' : `Votes: ${selectedArtwork.votes}`}
+                    {selectedArtwork.id === 'starry-night-popular' ? 'Featured Masterpiece' : 'Hall of Fame · 2024'}
                   </span>
                   
                   <div className="flex items-center gap-4">
@@ -857,8 +858,7 @@ export default function LandingPage() {
               />
             )}
           </AnimatePresence>
-        </>
-      )}
+        </motion.div>
     </div>
   )
 }

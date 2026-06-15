@@ -1,16 +1,28 @@
-import React, { useRef, useEffect, useState, Suspense, useMemo } from 'react'
+import React, { useRef, useEffect, useState, Suspense, useMemo, useCallback } from 'react'
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber'
-import { Text, Html } from '@react-three/drei'
+import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { TextureLoader } from 'three'
-import { useApp } from '../context/AppContext'
 import { Artwork } from '../types'
 
-// File-level constants for the gallery corridor limits
+// ─── Constants ───────────────────────────────────────────────────────────────
 const MAX_Z = 5
 const MIN_Z = -35
 
-// Vincent van Gogh's Starry Night static artwork object
+// Shared gold material — created once, reused everywhere
+const GOLD_MAT = new THREE.MeshStandardMaterial({ color: '#C9A84C', metalness: 0.85, roughness: 0.15 })
+const GOLD_HOVERED_MAT = new THREE.MeshStandardMaterial({ color: '#E5C158', metalness: 0.85, roughness: 0.15 })
+const WIRE_MAT = new THREE.MeshBasicMaterial({ color: '#111111' })
+const SHADOW_MAT = new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.25 })
+
+// Shared geometries — created once, reused everywhere
+const FRAME_GEO = new THREE.BoxGeometry(3.2, 2.4, 0.08)
+const PAINTING_GEO = new THREE.PlaneGeometry(2.8, 2.0)
+const SHADOW_GEO = new THREE.PlaneGeometry(3.4, 2.6)
+const WIRE_GEO = new THREE.BoxGeometry(1.23, 0.008, 0.008)
+const PEG_GEO = new THREE.CylinderGeometry(0.03, 0.03, 0.06, 6) // 6-sided instead of 8
+
+// ─── Static Starry Night Artwork ─────────────────────────────────────────────
 const starryNightArtwork: Artwork = {
   id: 'starry-night-popular',
   title: 'The Starry Night',
@@ -25,7 +37,7 @@ const starryNightArtwork: Artwork = {
     year: '1889',
     avatar: null,
     bio: 'Vincent Willem van Gogh was a Dutch Post-Impressionist painter who is among the most famous and influential figures in the history of Western art.',
-    joinedDate: new Date('1889-06-01')
+    joinedDate: new Date('1889-06-01'),
   },
   votes: 9999,
   imageUrl: '/starry-night.jpg',
@@ -34,506 +46,323 @@ const starryNightArtwork: Artwork = {
   description: 'The Starry Night is an oil-on-canvas painting by the Dutch Post-Impressionist painter Vincent van Gogh. Painted in June 1889, it depicts the view from the east-facing window of his asylum room at Saint-Rémy-de-Provence, just before sunrise, with the addition of an imaginary village.',
   status: 'approved',
   comments: [],
-  createdAt: new Date('1889-06-01')
+  createdAt: new Date('1889-06-01'),
 }
 
-// Procedural texture generator for a polished dark slate tiled floor
-const useProceduralTileTexture = () => {
-  return useMemo(() => {
+// ─── Procedural tile texture (lower res) ─────────────────────────────────────
+const useProceduralTileTexture = () =>
+  useMemo(() => {
     if (typeof window === 'undefined') return null
     const canvas = document.createElement('canvas')
-    canvas.width = 1024
-    canvas.height = 1024
+    // 512 instead of 1024 — quarter the memory, barely visible difference
+    canvas.width = 512
+    canvas.height = 512
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
 
-    // Base creme tile color
     ctx.fillStyle = '#f2eae1'
-    ctx.fillRect(0, 0, 1024, 1024)
+    ctx.fillRect(0, 0, 512, 512)
 
-    const cols = 4
-    const rows = 4
-    const tileWidth = 1024 / cols
-    const tileHeight = 1024 / rows
-
+    const cols = 4, rows = 4
+    const tw = 512 / cols, th = 512 / rows
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const x = c * tileWidth
-        const y = r * tileHeight
-
-        // Subtle tile-to-tile color variations
-        const brightness = (Math.random() - 0.5) * 8
-        ctx.fillStyle = `rgb(${242 + brightness}, ${234 + brightness}, ${225 + brightness})`
-        ctx.fillRect(x + 2, y + 2, tileWidth - 4, tileHeight - 4)
-
-        // Add subtle stone texture
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.015)'
-        for (let n = 0; n < 8; n++) {
-          ctx.fillRect(
-            x + Math.random() * tileWidth,
-            y + Math.random() * tileHeight,
-            1 + Math.random() * 3,
-            1 + Math.random() * 3
-          )
-        }
-
-        // Add veins
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.02)'
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(x + Math.random() * tileWidth, y)
-        ctx.lineTo(x + Math.random() * tileWidth, y + tileHeight)
-        ctx.stroke()
+        const x = c * tw, y = r * th
+        const b = (Math.random() - 0.5) * 8
+        ctx.fillStyle = `rgb(${242 + b},${234 + b},${225 + b})`
+        ctx.fillRect(x + 2, y + 2, tw - 4, th - 4)
       }
     }
-
-    // Draw clean grout lines
     ctx.strokeStyle = '#d8cdbf'
-    ctx.lineWidth = 4
-    for (let i = 0; i <= cols; i++) {
-      const x = i * tileWidth
-      ctx.beginPath()
-      ctx.moveTo(x, 0)
-      ctx.lineTo(x, 1024)
-      ctx.stroke()
-    }
-    for (let i = 0; i <= rows; i++) {
-      const y = i * tileHeight
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(1024, y)
-      ctx.stroke()
-    }
+    ctx.lineWidth = 3
+    for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo(i * tw, 0); ctx.lineTo(i * tw, 512); ctx.stroke() }
+    for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, i * th); ctx.lineTo(512, i * th); ctx.stroke() }
 
-    const texture = new THREE.CanvasTexture(canvas)
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapT = THREE.RepeatWrapping
-    // Repeat tile texture along the corridor
-    texture.repeat.set(2, 16)
-    return texture
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(2, 16)
+    tex.anisotropy = 4 // cap anisotropy — default 16 is expensive
+    return tex
   }, [])
-}
 
-// Renders artwork image as a Three.js texture on a plane — no Html portal
+// ─── Painting ─────────────────────────────────────────────────────────────────
 interface PaintingProps {
   artwork: Artwork
   position: [number, number, number]
   rotation: [number, number, number]
   onSelect: (artwork: Artwork) => void
   isMobile: boolean
-  selectedArtwork: Artwork | null
 }
 
-const PaintingTexture: React.FC<{ url: string; hovered: boolean; isMobile: boolean }> = ({ url, hovered, isMobile }) => {
+// Texture cache so each URL loads only once
+const textureCache = new Map<string, THREE.Texture>()
+
+const PaintingInner: React.FC<{ url: string; hovered: boolean }> = ({ url, hovered }) => {
   const texture = useLoader(TextureLoader, url)
+  // Cache it for reuse
+  if (!textureCache.has(url)) textureCache.set(url, texture)
   return (
-    <mesh position={[0, 0, 0.06]}>
-      <planeGeometry args={[2.8, 2.0]} />
-      <meshBasicMaterial
-        map={texture}
-        toneMapped={false}
-        opacity={hovered ? 1 : (isMobile ? 0.98 : 0.92)}
-        transparent
-      />
+    <mesh position={[0, 0, 0.06]} geometry={PAINTING_GEO}>
+      <meshBasicMaterial map={texture} toneMapped={false} opacity={hovered ? 1 : 0.93} transparent />
     </mesh>
   )
 }
 
 const FallbackPlane: React.FC = () => (
-  <mesh position={[0, 0, 0.06]}>
-    <planeGeometry args={[2.8, 2.0]} />
+  <mesh position={[0, 0, 0.06]} geometry={PAINTING_GEO}>
     <meshBasicMaterial color="#1a1a1a" />
   </mesh>
 )
 
-const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSelect, isMobile, selectedArtwork }) => {
-  const meshRef = useRef<THREE.Mesh>(null)
+const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSelect, isMobile }) => {
   const [hovered, setHovered] = useState(false)
 
   const imageUrl =
-    artwork.thumbnailUrl ||
-    artwork.imageUrl ||
-    'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600'
+    artwork.thumbnailUrl || artwork.imageUrl ||
+    'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400'
+
+  const onOver = useCallback(() => { setHovered(true);  document.body.style.cursor = 'pointer' }, [])
+  const onOut  = useCallback(() => { setHovered(false); document.body.style.cursor = 'auto'    }, [])
+  const onClick = useCallback(() => onSelect(artwork), [onSelect, artwork])
 
   return (
-    <group
-      position={position}
-      rotation={rotation}
-      onClick={() => onSelect(artwork)}
-      onPointerOver={() => {
-        setHovered(true)
-        document.body.style.cursor = 'pointer'
-      }}
-      onPointerOut={() => {
-        setHovered(false)
-        document.body.style.cursor = 'auto'
-      }}
-    >
-      {/* Wall Hook / Peg */}
-      <mesh position={[0, 1.45, -0.04]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.06, 8]} />
-        <meshStandardMaterial color="#C9A84C" metalness={0.8} roughness={0.2} />
-      </mesh>
+    <group position={position} rotation={rotation} onClick={onClick} onPointerOver={onOver} onPointerOut={onOut}>
+      {/* Peg */}
+      <mesh position={[0, 1.45, -0.04]} rotation={[Math.PI / 2, 0, 0]} geometry={PEG_GEO} material={GOLD_MAT} />
 
-      {/* Hanging Wire Left */}
-      <mesh position={[-0.6, 1.325, -0.038]} rotation={[0, 0, -Math.atan2(0.25, 1.2)]}>
-        <boxGeometry args={[1.23, 0.008, 0.008]} />
-        <meshBasicMaterial color="#111111" />
-      </mesh>
+      {/* Wires */}
+      <mesh position={[-0.6, 1.325, -0.038]} rotation={[0, 0, -Math.atan2(0.25, 1.2)]} geometry={WIRE_GEO} material={WIRE_MAT} />
+      <mesh position={[ 0.6, 1.325, -0.038]} rotation={[0, 0,  Math.atan2(0.25, 1.2)]} geometry={WIRE_GEO} material={WIRE_MAT} />
 
-      {/* Hanging Wire Right */}
-      <mesh position={[0.6, 1.325, -0.038]} rotation={[0, 0, Math.atan2(0.25, 1.2)]}>
-        <boxGeometry args={[1.23, 0.008, 0.008]} />
-        <meshBasicMaterial color="#111111" />
-      </mesh>
+      {/* Wall shadow */}
+      <mesh position={[0, 0, -0.039]} geometry={SHADOW_GEO} material={SHADOW_MAT} />
 
-      {/* Soft Contact Drop Shadow on Wall */}
-      <mesh position={[0, 0, -0.039]}>
-        <planeGeometry args={[3.4, 2.6]} />
-        <meshBasicMaterial color="#000000" opacity={0.3} transparent />
-      </mesh>
+      {/* Frame */}
+      <mesh geometry={FRAME_GEO} material={hovered ? GOLD_HOVERED_MAT : GOLD_MAT} />
 
-      {/* Gold frame */}
-      <mesh ref={meshRef} castShadow receiveShadow>
-        <boxGeometry args={[3.2, 2.4, 0.08]} />
-        <meshStandardMaterial
-          color={hovered ? '#E5C158' : '#C9A84C'}
-          metalness={0.85}
-          roughness={0.15}
-        />
-      </mesh>
-
-      {/* Artwork image as texture */}
+      {/* Image */}
       <Suspense fallback={<FallbackPlane />}>
-        <PaintingTexture url={imageUrl} hovered={hovered} isMobile={isMobile} />
+        <PaintingInner url={imageUrl} hovered={hovered} />
       </Suspense>
 
-      {/* Wall wash light */}
+      {/* Single combined point light — was 2 per painting before */}
       <pointLight
-        position={[0, -1.5, 0.5]}
-        intensity={hovered ? 4.5 : (isMobile ? 2.5 : 1.2)}
-        distance={isMobile ? 5.5 : 4.5}
-        color="#C9A84C"
-      />
-
-      {/* Overhead Spotlight (reflects warm light on floor and wall) */}
-      <pointLight
-        position={[0, 1.8, 0.8]}
-        intensity={hovered ? 4.0 : 2.0}
-        distance={6.0}
-        color="#FFF9E6"
+        position={[0, 0, 1.2]}
+        intensity={hovered ? 5 : (isMobile ? 2.2 : 1.5)}
+        distance={isMobile ? 5 : 4}
+        color="#FFE8A0"
       />
     </group>
   )
 }
 
-interface GalleryEnvironmentProps {
-  isMobile: boolean
-  floorTexture: THREE.CanvasTexture | null
-}
-
-const GalleryEnvironment: React.FC<GalleryEnvironmentProps> = ({ isMobile, floorTexture }) => {
-  const lightRef = useRef<THREE.SpotLight>(null)
-
-  useFrame((state) => {
-    if (lightRef.current) {
-      lightRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.5) * 5
-      lightRef.current.position.y = 4 + Math.cos(state.clock.elapsedTime * 0.5) * 1
-    }
-  })
-
+// ─── Gallery Environment ──────────────────────────────────────────────────────
+const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.CanvasTexture | null }> = ({
+  isMobile,
+  floorTexture,
+}) => {
+  // Removed animated spotlight — was calling useFrame every tick, expensive
   const wallX = isMobile ? 3.4 : 5.0
-  const floorCeilingWidth = isMobile ? 6.8 : 10.0
+  const fcW   = isMobile ? 6.8 : 10.0
 
   return (
     <>
-      <ambientLight intensity={isMobile ? 0.85 : 0.65} color="#fff1e6" />
-      <directionalLight position={[0, 10, 0]} intensity={isMobile ? 0.8 : 0.5} color="#ffe8cc" />
-      
-      {/* Aesthetic warm floor uplights for atmosphere */}
-      <pointLight position={[-wallX + 0.5, -1.8, -10]} intensity={3.5} color="#ff9d00" distance={6} />
-      <pointLight position={[wallX - 0.5, -1.8, -20]} intensity={3.5} color="#ff9d00" distance={6} />
-      <pointLight position={[-wallX + 0.5, -1.8, -30]} intensity={3.5} color="#ff9d00" distance={6} />
-      
-      <spotLight
-        ref={lightRef}
-        position={[0, 6, -10]}
-        angle={0.6}
-        penumbra={1}
-        intensity={isMobile ? 12 : 8}
-        color="#C9A84C"
-        castShadow
-      />
-      {/* Floor - Polished Slate Tiled Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, -20]} receiveShadow>
-        <planeGeometry args={[floorCeilingWidth, 80]} />
-        <meshStandardMaterial 
-          map={floorTexture || undefined} 
-          roughness={0.18} 
-          metalness={0.2} 
-        />
+      <ambientLight intensity={isMobile ? 0.9 : 0.7} color="#fff1e6" />
+      <directionalLight position={[0, 10, 0]} intensity={0.5} color="#ffe8cc" />
+
+      {/* 2 floor uplights instead of 3 */}
+      <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
+      <pointLight position={[ wallX - 0.5, -1.8, -26]} intensity={3} color="#ff9d00" distance={7} />
+
+      {/* Floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, -20]}>
+        <planeGeometry args={[fcW, 80]} />
+        <meshStandardMaterial map={floorTexture || undefined} roughness={0.2} metalness={0.15} />
       </mesh>
+
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4, -20]}>
-        <planeGeometry args={[floorCeilingWidth, 80]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.8} />
+        <planeGeometry args={[fcW, 80]} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
-      
-      {/* Left Wall - Colored (Warm Ivory/Creme) */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-wallX, 1, -20]} receiveShadow>
+
+      {/* Walls */}
+      <mesh rotation={[0,  Math.PI / 2, 0]} position={[-wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.8} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
-      
-      {/* Right Wall - Colored (Warm Ivory/Creme) */}
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[wallX, 1, -20]} receiveShadow>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[ wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.8} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
-      
-      {/* Back Wall - Colored (Warm Ivory/Creme) */}
-      <mesh position={[0, 1, -37]} receiveShadow>
-        <planeGeometry args={[floorCeilingWidth, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.8} />
+      <mesh position={[0, 1, -37]}>
+        <planeGeometry args={[fcW, 6]} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
 
-      {/* Gold Baseboards (Floor Trim) */}
-      <mesh position={[-wallX + 0.02, -1.9, -20]}>
-        <boxGeometry args={[0.04, 0.2, 80]} />
-        <meshStandardMaterial color="#C9A84C" metalness={0.85} roughness={0.15} />
-      </mesh>
-      <mesh position={[wallX - 0.02, -1.9, -20]}>
-        <boxGeometry args={[0.04, 0.2, 80]} />
-        <meshStandardMaterial color="#C9A84C" metalness={0.85} roughness={0.15} />
-      </mesh>
+      {/* Gold trims — shared material */}
+      {[-wallX + 0.02, wallX - 0.02].map((x) => (
+        <React.Fragment key={x}>
+          <mesh position={[x, -1.9, -20]} material={GOLD_MAT}><boxGeometry args={[0.04, 0.2, 80]} /></mesh>
+          <mesh position={[x,  3.9, -20]} material={GOLD_MAT}><boxGeometry args={[0.04, 0.2, 80]} /></mesh>
+        </React.Fragment>
+      ))}
 
-      {/* Gold Crown Moldings (Ceiling Trim) */}
-      <mesh position={[-wallX + 0.02, 3.9, -20]}>
-        <boxGeometry args={[0.04, 0.2, 80]} />
-        <meshStandardMaterial color="#C9A84C" metalness={0.85} roughness={0.15} />
-      </mesh>
-      <mesh position={[wallX - 0.02, 3.9, -20]}>
-        <boxGeometry args={[0.04, 0.2, 80]} />
-        <meshStandardMaterial color="#C9A84C" metalness={0.85} roughness={0.15} />
-      </mesh>
-
-      {/* 3D Motivational Quote above Starry Night (Charcoal for high contrast on cream wall) */}
+      {/* Quote above Starry Night */}
       <Suspense fallback={null}>
         <Text
           position={[0, 2.65, -36.9]}
-          rotation={[0, 0, 0]}
-          fontSize={0.14}
+          fontSize={0.13}
           maxWidth={isMobile ? 5.5 : 7.5}
           color="#1c1c1c"
           textAlign="center"
           anchorX="center"
           anchorY="middle"
         >
-          "Great things are done by a series of small things brought together."
-          {"\n"}— Vincent van Gogh
+          {"\"Great things are done by a series of small things brought together.\"\n— Vincent van Gogh"}
         </Text>
       </Suspense>
 
-      <gridHelper args={[80, 40, '#C9A84C', '#222']} position={[0, -1.98, -20]} />
+      {/* Grid helper — keep but low density */}
+      <gridHelper args={[80, 20, '#C9A84C', '#1a1a1a']} position={[0, -1.98, -20]} />
     </>
   )
 }
 
+// ─── Camera Controller ────────────────────────────────────────────────────────
 interface CameraControllerProps {
   scrollPercent: number
-  maxZ: number
-  minZ: number
   focusedArtwork: Artwork | null
-  paintings: {
-    pos: [number, number, number]
-    rot: [number, number, number]
-    artwork: Artwork
-  }[]
+  paintings: { pos: [number, number, number]; artwork: Artwork }[]
 }
 
-const CameraController: React.FC<CameraControllerProps> = ({ 
-  scrollPercent, 
-  maxZ, 
-  minZ, 
-  focusedArtwork, 
-  paintings 
-}) => {
+const CameraController: React.FC<CameraControllerProps> = ({ scrollPercent, focusedArtwork, paintings }) => {
   const { camera, size } = useThree()
-  const lookTargetRef = useRef(new THREE.Vector3(0, 1.0, -10))
+  const lookTarget = useRef(new THREE.Vector3(0, 1, -10))
+  const camTarget  = useRef(new THREE.Vector3(0, 1, MAX_Z))
 
   useEffect(() => {
     const aspect = size.width / size.height
-    if (aspect < 1.25) {
-      // Scale fov wider on portrait viewports to keep walls visible
-      const targetFov = Math.min(100, Math.max(60, 2 * Math.atan(0.72 / aspect) * 180 / Math.PI))
-      camera.fov = targetFov
-    } else {
-      camera.fov = 60
-    }
-    camera.updateProjectionMatrix()
+    const persCam = camera as THREE.PerspectiveCamera
+    persCam.fov = aspect < 1.25 ? Math.min(100, Math.max(60, 2 * Math.atan(0.72 / aspect) * 180 / Math.PI)) : 60
+    persCam.updateProjectionMatrix()
   }, [size.width, size.height, camera])
 
-  useFrame((state) => {
-    const targetPos = new THREE.Vector3()
-    const targetLook = new THREE.Vector3()
-
+  useFrame(() => {
     if (focusedArtwork) {
-      const p = paintings.find((x) => x.artwork.id === focusedArtwork.id)
+      const p = paintings.find(x => x.artwork.id === focusedArtwork.id)
       if (p) {
         const [px, py, pz] = p.pos
-        const aspect = size.width / size.height
-        const isPortrait = aspect < 1.25
-        // Determine camera target position based on where the painting is mounted
-        if (px < -0.1) {
-          // Left wall painting
-          targetPos.set(px + (isPortrait ? 3.6 : 2.4), py, pz)
-        } else if (px > 0.1) {
-          // Right wall painting
-          targetPos.set(px - (isPortrait ? 3.6 : 2.4), py, pz)
-        } else {
-          // Back wall painting (Starry Night)
-          targetPos.set(px, py, pz + (isPortrait ? 4.2 : 2.8))
-        }
-        targetLook.set(px, py, pz)
-      } else {
-        const targetZ = maxZ - scrollPercent * (maxZ - minZ)
-        targetPos.set(0, 1.0, targetZ)
-        targetLook.set(0, 1.0, targetZ - 10)
+        const portrait = size.width / size.height < 1.25
+        if      (px < -0.1) { camTarget.current.set(px + (portrait ? 3.6 : 2.4), py, pz) }
+        else if (px >  0.1) { camTarget.current.set(px - (portrait ? 3.6 : 2.4), py, pz) }
+        else                { camTarget.current.set(px, py, pz + (portrait ? 4.2 : 2.8)) }
+        lookTarget.current.set(px, py, pz)
       }
     } else {
-      // Default path following scroll
-      const targetZ = maxZ - scrollPercent * (maxZ - minZ)
-      const bobbing = Math.sin(state.clock.elapsedTime * 1.2) * 0.03
-      targetPos.set(0, 1.0 + bobbing, targetZ)
-      targetLook.set(0, 1.0 + bobbing, targetZ - 10)
+      const targetZ = MAX_Z - scrollPercent * (MAX_Z - MIN_Z)
+      // Removed bobbing sine wave — no perceptible loss, saves sin() per frame
+      camTarget.current.set(0, 1, targetZ)
+      lookTarget.current.set(0, 1, targetZ - 10)
     }
 
-    // Lerp camera position
-    camera.position.lerp(targetPos, 0.05)
-
-    // Lerp camera look target
-    lookTargetRef.current.lerp(targetLook, 0.05)
-    camera.lookAt(lookTargetRef.current)
+    camera.position.lerp(camTarget.current, 0.055)
+    const look = lookTarget.current
+    camera.lookAt(look.x, look.y, look.z)
   })
 
   return null
 }
 
+// ─── Main Component ───────────────────────────────────────────────────────────
 interface ThreeExhibitionSceneProps {
   onArtworkSelect: (artwork: Artwork) => void
   artworks?: Artwork[]
   selectedArtwork?: Artwork | null
+  enabled?: boolean
 }
 
-const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({ 
-  onArtworkSelect, 
-  artworks: propArtworks,
-  selectedArtwork
+const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({
+  onArtworkSelect,
+  artworks: propArtworks = [],
+  selectedArtwork,
+  enabled = true,
 }) => {
-  const { artworks: contextArtworks } = useApp()
-  const artworks = propArtworks ?? contextArtworks
   const [scrollPercent, setScrollPercent] = useState(0)
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth / window.innerHeight < 1.25)
-  const containerRef = useRef<HTMLDivElement>(null)
-
   const [focusedArtwork, setFocusedArtwork] = useState<Artwork | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const floorTexture = useProceduralTileTexture()
 
   useEffect(() => {
-    if (selectedArtwork === null) {
-      setFocusedArtwork(null)
-    } else if (selectedArtwork) {
-      setFocusedArtwork(selectedArtwork)
-    }
+    if (selectedArtwork === null) setFocusedArtwork(null)
+    else if (selectedArtwork)    setFocusedArtwork(selectedArtwork)
   }, [selectedArtwork])
 
-  const approvedArtworks = artworks.filter((art) => art.status === 'approved')
-
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
+      if (!enabled) return
       const el = containerRef.current?.closest('[data-corridor]') as HTMLElement | null
       if (!el) {
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight
-        if (docHeight <= 0) return
-        setScrollPercent(window.scrollY / docHeight)
+        const dh = document.documentElement.scrollHeight - window.innerHeight
+        if (dh > 0) setScrollPercent(window.scrollY / dh)
         return
       }
-      const rect = el.getBoundingClientRect()
       const scrollable = el.offsetHeight - window.innerHeight
-      const scrolled = -rect.top
-      const percent = Math.min(1, Math.max(0, scrolled / scrollable))
-      setScrollPercent(percent)
+      const scrolled   = -el.getBoundingClientRect().top
+      setScrollPercent(Math.min(1, Math.max(0, scrolled / scrollable)))
     }
+    const onResize = () => setIsMobile(window.innerWidth / window.innerHeight < 1.25)
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth / window.innerHeight < 1.25)
-    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize) }
+  }, [enabled])
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+  const approvedArtworks = propArtworks.filter(a => a.status === 'approved')
 
-  const getPaintingPositions = () => {
-    const positions: {
-      pos: [number, number, number]
-      rot: [number, number, number]
-      artwork: Artwork
-    }[] = []
-    
-    // Allocate space down the corridor
-    const stepZ = (MAX_Z - MIN_Z - 12) / Math.max(approvedArtworks.length, 1)
+  const paintings = useMemo(() => {
+    const wallX    = isMobile ? 3.4 : 5.0
+    const paintX   = wallX - 0.04
+    const stepZ    = (MAX_Z - MIN_Z - 12) / Math.max(approvedArtworks.length, 1)
+    const list: { pos: [number, number, number]; rot: [number, number, number]; artwork: Artwork }[] = []
 
-    const wallX = isMobile ? 3.4 : 5.0
-    const paintingX = wallX - 0.04
-
-    approvedArtworks.forEach((artwork, index) => {
-      const isLeft = index % 2 === 0
-      const xPos = isLeft ? -paintingX : paintingX
-      const zPos = MAX_Z - 6 - index * stepZ
-      const yRot = isLeft ? Math.PI / 2 : -Math.PI / 2
-
-      positions.push({
-        pos: [xPos, 1.0, zPos],
-        rot: [0, yRot, 0],
+    approvedArtworks.forEach((artwork, i) => {
+      const isLeft = i % 2 === 0
+      list.push({
+        pos: [isLeft ? -paintX : paintX, 1.0, MAX_Z - 6 - i * stepZ],
+        rot: [0, isLeft ? Math.PI / 2 : -Math.PI / 2, 0],
         artwork,
       })
     })
 
-    // Add Starry Night at the end of the corridor
-    positions.push({
-      pos: [0, 1.0, MIN_Z - 1.96],
-      rot: [0, 0, 0],
-      artwork: starryNightArtwork,
-    })
+    list.push({ pos: [0, 1.0, MIN_Z - 1.96], rot: [0, 0, 0], artwork: starryNightArtwork })
+    return list
+  }, [approvedArtworks, isMobile])
 
-    return positions
-  }
-
-  const paintings = getPaintingPositions()
-
-  const handlePaintingClick = (artwork: Artwork) => {
+  const handlePaintingClick = useCallback((artwork: Artwork) => {
     setFocusedArtwork(artwork)
-    // Delay opening the details by 900ms to allow the user to see the camera pan in 3D
-    setTimeout(() => {
-      onArtworkSelect(artwork)
-    }, 900)
-  }
+    setTimeout(() => onArtworkSelect(artwork), 900)
+  }, [onArtworkSelect])
 
   return (
     <div ref={containerRef} className="w-full h-full">
       <Canvas
-        shadows
         camera={{ position: [0, 1.0, MAX_Z], fov: 60 }}
         style={{ background: '#080808' }}
+        // Key performance options:
+        // - flat: disables tone-mapping pass (saves a GPU pass)
+        // - frameloop demand: only re-renders when something changes — but we need 'always' for smooth scroll
+        // - dpr cap at 1.5: avoids 2× pixel ratio rendering on retina (biggest single win)
+        dpr={[1, 1.5]}
+        gl={{ antialias: false, powerPreference: 'high-performance', stencil: false, depth: true }}
+        flat
       >
-        <fog attach="fog" args={['#080808', isMobile ? 8 : 5, isMobile ? 40 : 25]} />
+        <fog attach="fog" args={['#080808', isMobile ? 8 : 6, isMobile ? 38 : 28]} />
+
         <GalleryEnvironment isMobile={isMobile} floorTexture={floorTexture} />
 
-        {paintings.map((p) => (
+        {paintings.map(p => (
           <Painting
             key={p.artwork.id}
             artwork={p.artwork}
@@ -541,14 +370,11 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({
             rotation={p.rot}
             onSelect={handlePaintingClick}
             isMobile={isMobile}
-            selectedArtwork={selectedArtwork}
           />
         ))}
 
-        <CameraController 
-          scrollPercent={scrollPercent} 
-          maxZ={MAX_Z} 
-          minZ={MIN_Z} 
+        <CameraController
+          scrollPercent={scrollPercent}
           focusedArtwork={focusedArtwork}
           paintings={paintings}
         />

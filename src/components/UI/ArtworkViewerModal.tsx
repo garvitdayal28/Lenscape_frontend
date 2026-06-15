@@ -113,11 +113,8 @@ export default function ArtworkViewerModal({
               {selectedArtwork.description}
             </p>
 
-            {/* Vote statistics and button */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
-              <span className="text-zinc-500 text-xs font-mono">
-                {selectedArtwork.votes} votes logged
-              </span>
+            {/* Vote button */}
+            <div className="flex items-center justify-end mt-6 pt-4 border-t border-zinc-900">
               {!hideVoteButton && (
                 user ? (
                   <div className="relative group">

@@ -170,10 +170,6 @@ export default function ProfilePage() {
             className={`py-3 px-6 border-b-2 transition-all ${activeTab === 'submissions' ? 'border-exhibition-gold text-exhibition-gold' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}>
             My Submissions ({submissions.length})
           </button>
-          <button onClick={() => setActiveTab('votes')}
-            className={`py-3 px-6 border-b-2 transition-all ${activeTab === 'votes' ? 'border-exhibition-gold text-exhibition-gold' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}>
-            Votes &amp; Badges
-          </button>
         </div>
 
         {/* ── Submissions ── */}
@@ -232,7 +228,7 @@ export default function ProfilePage() {
                           <span className="text-zinc-500">{formatDate(art.createdAt)}</span>
                           {/* Status badge on mobile, votes/status on desktop */}
                           <div className="flex items-center gap-1.5">
-                            {art.status !== 'pending' && <span className="text-zinc-500">{art.votes} votes</span>}
+                            {/* vote count hidden from regular users */}
                             {/* Mobile status badge */}
                             <span className={`md:hidden flex items-center gap-1 border px-2 py-0.5 text-[8px] uppercase tracking-wider ${cfg.color}`}>
                               <cfg.Icon size={9} />
@@ -261,106 +257,6 @@ export default function ProfilePage() {
                 </Link>
               </div>
             )}
-          </div>
-        )}
-
-        {/* ── Votes & Badges ── */}
-        {activeTab === 'votes' && (
-          <div className="relative z-10 border border-zinc-800/80 p-8 bg-[#0c0c0c]/95 backdrop-blur-sm">
-            <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-exhibition-gold mb-8 flex items-center gap-2">
-              <Award size={16} /> Exhibition Badges
-            </h3>
-            
-            {/* Badge Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { id: 'ach1', title: 'Creative Pioneer', desc: 'First upload', Icon: Rocket, category: 'milestone' },
-                { id: 'ach2', title: 'Rising Star', desc: 'Received 5 votes', Icon: Star, category: 'votes' },
-                { id: 'ach3', title: 'Acclaimed Artist', desc: 'Received 10 votes', Icon: Award, category: 'votes' },
-                { id: 'ach4', title: 'Master Creator', desc: 'Received 20 votes', Icon: Crown, category: 'votes' },
-                { id: 'ach5', title: 'Versatile Artist', desc: 'Votes in 2 categories', Icon: Medal, category: 'diversity' },
-                { id: 'ach6', title: 'Renaissance Creator', desc: 'Votes in all categories', Icon: Gem, category: 'diversity' },
-              ].map(ach => {
-                // Calculate total votes received across all approved artworks
-                const totalVotes = approved.reduce((sum, artwork) => sum + artwork.votes, 0)
-                
-                // Calculate categories where user has received at least 1 vote
-                const categoriesWithVotes = new Set(
-                  approved.filter(artwork => artwork.votes > 0).map(artwork => artwork.category)
-                )
-                
-                // Check unlock criteria
-                let unlocked = false
-                if (ach.id === 'ach1') unlocked = approved.length > 0
-                if (ach.id === 'ach2') unlocked = totalVotes >= 5
-                if (ach.id === 'ach3') unlocked = totalVotes >= 10
-                if (ach.id === 'ach4') unlocked = totalVotes >= 20
-                if (ach.id === 'ach5') unlocked = categoriesWithVotes.size >= 2
-                if (ach.id === 'ach6') unlocked = categoriesWithVotes.size >= 4
-                
-                return (
-                  <div 
-                    key={ach.id} 
-                    className={`relative border p-6 text-center transition-all duration-300 ${
-                      unlocked 
-                        ? 'border-exhibition-gold/60 bg-gradient-to-br from-exhibition-gold/10 to-[#0e0d0a] shadow-lg shadow-exhibition-gold/20' 
-                        : 'border-zinc-800/50 bg-black/30 opacity-40 hover:opacity-60'
-                    }`}
-                  >
-                    {/* Badge Icon */}
-                    <div className={`mb-4 ${unlocked ? 'animate-pulse' : ''}`}>
-                      <ach.Icon 
-                        size={32} 
-                        className={`mx-auto ${unlocked ? 'text-exhibition-gold drop-shadow-[0_0_8px_rgba(212,175,55,0.5)]' : 'text-zinc-700'}`} 
-                      />
-                    </div>
-                    
-                    {/* Badge Title */}
-                    <h4 className={`font-mono text-[10px] font-bold uppercase tracking-wider leading-tight mb-2 ${
-                      unlocked ? 'text-exhibition-gold' : 'text-zinc-600'
-                    }`}>
-                      {ach.title}
-                    </h4>
-                    
-                    {/* Badge Description */}
-                    <p className={`text-[9px] font-mono uppercase tracking-wide ${
-                      unlocked ? 'text-zinc-400' : 'text-zinc-700'
-                    }`}>
-                      {ach.desc}
-                    </p>
-                    
-                    {/* Unlocked Indicator */}
-                    {unlocked && (
-                      <div className="flex items-center justify-center gap-1 mt-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-exhibition-gold animate-pulse" />
-                        <span className="text-[8px] font-mono text-exhibition-gold/80 uppercase tracking-widest">Unlocked</span>
-                      </div>
-                    )}
-                    
-                    {/* Locked Overlay */}
-                    {!unlocked && (
-                      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-            
-            {/* Progress Stats */}
-            <div className="mt-8 pt-6 border-t border-zinc-800/50 grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-black/30 border border-zinc-800/30 rounded">
-                <div className="text-2xl font-bold text-exhibition-gold">
-                  {approved.reduce((sum, artwork) => sum + artwork.votes, 0)}
-                </div>
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest mt-1">Total Votes</div>
-              </div>
-              <div className="text-center p-4 bg-black/30 border border-zinc-800/30 rounded">
-                <div className="text-2xl font-bold text-exhibition-gold">
-                  {new Set(approved.filter(artwork => artwork.votes > 0).map(artwork => artwork.category)).size}
-                </div>
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest mt-1">Categories</div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -422,7 +318,6 @@ export default function ProfilePage() {
 
                 <div className="mt-6 pt-4 border-t border-zinc-900 flex items-center justify-between font-mono text-xs text-zinc-500">
                   <span>{formatDate(selectedArtwork.createdAt)}</span>
-                  {selectedArtwork.status !== 'pending' && <span>{selectedArtwork.votes} votes</span>}
                 </div>
 
                 {selectedArtwork.status === 'rejected' && selectedArtwork.rejectionReason && (
