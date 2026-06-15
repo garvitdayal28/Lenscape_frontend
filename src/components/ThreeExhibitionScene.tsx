@@ -203,43 +203,10 @@ const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSele
         />
       </mesh>
 
-      {/* Artwork image as texture or Html portal for video */}
-      {artwork.videoUrl && selectedArtwork?.id === artwork.id ? (
-        <mesh position={[0, 0, 0.06]}>
-          <planeGeometry args={[2.8, 2.0]} />
-          <meshBasicMaterial color="#000" />
-          <Html transform distanceFactor={1.5} position={[0, 0, 0.01]} scale={2.8 / 840} zIndexRange={[100, 0]}>
-            <div 
-              style={{ width: '840px', height: '600px', background: 'black', pointerEvents: 'auto' }}
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              {artwork.videoUrl.includes('drive.google.com') || artwork.videoUrl.includes('/preview') ? (
-                <iframe
-                  src={artwork.videoUrl}
-                  title={artwork.title}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 'none' }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <video
-                  src={artwork.videoUrl}
-                  poster={artwork.imageUrl || undefined}
-                  controls
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              )}
-            </div>
-          </Html>
-        </mesh>
-      ) : (
-        <Suspense fallback={<FallbackPlane />}>
-          <PaintingTexture url={imageUrl} hovered={hovered} isMobile={isMobile} />
-        </Suspense>
-      )}
+      {/* Artwork image as texture */}
+      <Suspense fallback={<FallbackPlane />}>
+        <PaintingTexture url={imageUrl} hovered={hovered} isMobile={isMobile} />
+      </Suspense>
 
       {/* Wall wash light */}
       <pointLight
@@ -414,16 +381,18 @@ const CameraController: React.FC<CameraControllerProps> = ({
       const p = paintings.find((x) => x.artwork.id === focusedArtwork.id)
       if (p) {
         const [px, py, pz] = p.pos
+        const aspect = size.width / size.height
+        const isPortrait = aspect < 1.25
         // Determine camera target position based on where the painting is mounted
         if (px < -0.1) {
           // Left wall painting
-          targetPos.set(px + 2.8, py, pz)
+          targetPos.set(px + (isPortrait ? 3.6 : 2.4), py, pz)
         } else if (px > 0.1) {
           // Right wall painting
-          targetPos.set(px - 2.8, py, pz)
+          targetPos.set(px - (isPortrait ? 3.6 : 2.4), py, pz)
         } else {
           // Back wall painting (Starry Night)
-          targetPos.set(px, py, pz + 3.2)
+          targetPos.set(px, py, pz + (isPortrait ? 4.2 : 2.8))
         }
         targetLook.set(px, py, pz)
       } else {

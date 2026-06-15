@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { Heart, ArrowRight, Send } from 'lucide-react'
+import { Heart, ArrowRight, Send, Info, Eye, EyeOff } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { authHeaders } from '../lib/session'
@@ -40,6 +40,26 @@ export default function LandingPage() {
   const [showErrorToast, setShowErrorToast] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const chambersRef = useRef<HTMLElement>(null)
+
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  const [showPlacard, setShowPlacard] = useState(true)
+
+  const [showVideoModal, setShowVideoModal] = useState(false)
+
+  useEffect(() => {
+    if (selectedArtwork) {
+      setShowPlacard(true)
+      setShowVideoModal(false)
+    }
+  }, [selectedArtwork])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Fetch approved artworks from backend
   useEffect(() => {
@@ -641,77 +661,160 @@ export default function LandingPage() {
             </footer>
           </div>
 
-          {/* Immersive Artwork Details Banner (Downside of Artwork) */}
+          {/* Immersive Artwork Details Placard */}
           <AnimatePresence>
-            {selectedArtwork && (
+            {selectedArtwork && showPlacard && (
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 50 }}
+                key="placard-details"
+                initial={{ opacity: 0, y: 50, x: '-50%' }}
+                animate={{ opacity: 1, y: 0, x: '-50%' }}
+                exit={{ opacity: 0, y: 50, x: '-50%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-black/90 backdrop-blur-md border border-exhibition-gold/30 p-5 md:p-6 text-exhibition-bone z-[100] shadow-2xl rounded-sm flex flex-col gap-3 pointer-events-auto"
+                className="fixed bottom-4 left-1/2 w-[92%] max-w-[360px] bg-black/95 backdrop-blur-md border border-exhibition-gold/30 p-4 text-exhibition-bone z-[100] shadow-2xl rounded-sm flex flex-col gap-2 pointer-events-auto"
               >
+                {/* Hide Placard Button */}
+                <button
+                  onClick={() => setShowPlacard(false)}
+                  className="absolute top-3.5 right-9 text-zinc-400 hover:text-exhibition-gold transition-colors text-[9px] font-mono px-1.5 py-0.5 border border-zinc-800 hover:border-exhibition-gold/30 rounded-sm uppercase tracking-widest"
+                  title="Hide details"
+                >
+                  Hide
+                </button>
+
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedArtwork(null)}
-                  className="absolute top-3 right-3 text-zinc-400 hover:text-exhibition-gold transition-colors text-lg p-1"
+                  className="absolute top-2.5 right-2.5 text-zinc-400 hover:text-exhibition-gold transition-colors text-base p-1"
                   aria-label="Close details"
                 >
                   ✕
                 </button>
 
-                {/* Motivational Quote at top of placard if Starry Night */}
-                {selectedArtwork.id === 'starry-night-popular' && (
-                  <div className="border-b border-exhibition-gold/20 pb-3 mb-1">
-                    <p className="font-serif italic text-xs text-exhibition-gold text-center tracking-wide leading-relaxed">
-                      "Great things are done by a series of small things brought together."
-                    </p>
-                    <p className="font-mono text-[9px] text-zinc-500 text-center mt-1 uppercase tracking-widest">
-                      — Vincent van Gogh
-                    </p>
-                  </div>
-                )}
-
                 {/* Category tag */}
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[8px] text-exhibition-gold uppercase tracking-[0.2em] border border-exhibition-gold/20 px-2 py-0.5 rounded-full">
+                  <span className="font-mono text-[7.5px] text-exhibition-gold uppercase tracking-[0.2em] border border-exhibition-gold/20 px-2 py-0.5 rounded-full">
                     {selectedArtwork.category.replace('-', ' ')}
                   </span>
                   {selectedArtwork.subCategory && (
-                    <span className="font-mono text-[8px] text-zinc-500 uppercase tracking-[0.2em]">
+                    <span className="font-mono text-[7.5px] text-zinc-500 uppercase tracking-[0.2em]">
                       • {selectedArtwork.subCategory.replace('-', ' ')}
                     </span>
                   )}
                 </div>
 
                 {/* Title and Artist */}
-                <div>
-                  <h3 className="font-sans text-lg font-medium text-exhibition-bone tracking-wide leading-tight">
+                <div className="pr-16">
+                  <h3 className="font-sans text-[15px] font-medium text-exhibition-bone tracking-wide leading-tight">
                     {selectedArtwork.title}
                   </h3>
-                  <p className="font-sans text-xs text-zinc-400 mt-1">
+                  <p className="font-sans text-[11px] text-zinc-400 mt-0.5">
                     By <span className="text-zinc-200 font-medium">{selectedArtwork.artist.name}</span>
                     {selectedArtwork.artist.college && ` (${selectedArtwork.artist.college})`}
                   </p>
                 </div>
 
+                {/* Motivational Quote at top of placard if Starry Night */}
+                {selectedArtwork.id === 'starry-night-popular' && (
+                  <div className="border-t border-b border-exhibition-gold/15 py-2 my-0.5">
+                    <p className="font-serif italic text-[11px] text-exhibition-gold text-center tracking-wide leading-relaxed">
+                      "Great things are done by a series of small things brought together."
+                    </p>
+                    <p className="font-mono text-[8px] text-zinc-500 text-center mt-0.5 uppercase tracking-widest">
+                      — Vincent van Gogh
+                    </p>
+                  </div>
+                )}
+
                 {/* Description */}
-                <p className="font-sans text-xs text-zinc-400 leading-relaxed max-h-24 overflow-y-auto pr-2 scrollbar-thin">
+                <p className="font-sans text-[11px] text-zinc-400 leading-normal max-h-16 overflow-y-auto pr-2 scrollbar-thin">
                   {selectedArtwork.description}
                 </p>
 
                 {/* Bottom Bar: Action buttons */}
-                <div className="flex items-center justify-between mt-2 pt-3 border-t border-zinc-900">
-                  <span className="font-mono text-[10px] text-zinc-500">
+                <div className="flex items-center justify-between mt-0.5 pt-2 border-t border-zinc-900">
+                  <span className="font-mono text-[9.5px] text-zinc-500">
                     {selectedArtwork.id === 'starry-night-popular' ? 'Featured Masterpiece' : `Votes: ${selectedArtwork.votes}`}
                   </span>
                   
-                  <button
-                    onClick={() => setSelectedArtwork(null)}
-                    className="font-mono text-[10px] text-exhibition-gold uppercase tracking-wider hover:underline transition-all"
-                  >
-                    Back to Gallery
-                  </button>
+                  <div className="flex items-center gap-4">
+                    {selectedArtwork.videoUrl && (
+                      <button
+                        onClick={() => setShowVideoModal(true)}
+                        className="font-mono text-[9.5px] text-exhibition-gold uppercase tracking-wider hover:underline transition-all flex items-center gap-1 font-bold pointer-events-auto"
+                      >
+                        <span>▶ Play Video</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => setSelectedArtwork(null)}
+                      className="font-mono text-[9.5px] text-zinc-400 hover:text-exhibition-gold uppercase tracking-wider hover:underline transition-all pointer-events-auto"
+                    >
+                      Back to Gallery
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Floating button when placard is hidden */}
+            {selectedArtwork && !showPlacard && (
+              <motion.button
+                key="show-placard-btn"
+                initial={{ opacity: 0, y: 30, x: '-50%' }}
+                animate={{ opacity: 1, y: 0, x: '-50%' }}
+                exit={{ opacity: 0, y: 30, x: '-50%' }}
+                onClick={() => setShowPlacard(true)}
+                className="fixed bottom-6 left-1/2 bg-black/95 hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-bone border border-exhibition-gold/30 px-4 py-2 text-[10px] font-mono tracking-widest uppercase transition-all rounded-sm shadow-2xl z-[100] flex items-center gap-1.5 pointer-events-auto"
+              >
+                <Info size={12} className="text-exhibition-gold" />
+                <span>Show Details</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Full-screen Video Lightbox Modal */}
+          <AnimatePresence>
+            {showVideoModal && selectedArtwork && selectedArtwork.videoUrl && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-8 pointer-events-auto"
+                onClick={() => setShowVideoModal(false)}
+              >
+                {/* Screen-level Close button (easy to touch on mobile) */}
+                <button
+                  onClick={() => setShowVideoModal(false)}
+                  className="absolute top-4 right-4 z-[210] w-10 h-10 border border-exhibition-gold/20 flex items-center justify-center hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-gold transition-colors font-mono"
+                  aria-label="Close player"
+                >
+                  ✕
+                </button>
+
+                <div 
+                  className="relative w-full max-w-4xl aspect-video bg-black border border-exhibition-gold/30 shadow-2xl flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {selectedArtwork.videoUrl.includes('drive.google.com') || selectedArtwork.videoUrl.includes('/preview') ? (
+                    <iframe
+                      src={selectedArtwork.videoUrl}
+                      title={selectedArtwork.title}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video
+                      src={selectedArtwork.videoUrl}
+                      poster={selectedArtwork.imageUrl || undefined}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
                 </div>
               </motion.div>
             )}
