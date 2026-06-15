@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, Users, UploadCloud, CheckCircle, Ban, TrendingUp, LogOut, Eye } from 'lucide-react'
+import { ShieldCheck, Users, UploadCloud, CheckCircle, Ban, TrendingUp, LogOut, Eye, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import * as XLSX from 'xlsx'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -138,6 +139,96 @@ export default function AdminPage() {
     navigate('/admin/login')
   }
 
+  // ── Export all data to XLSX ──────────────────────────────────────────────────
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new()
+
+    // ── Sheet 1: Users ──────────────────────────────────────────────────────
+    const usersData = allUsers.map((u: any) => ({
+      'Name':              u.name || '',
+      'Email':             u.email || '',
+      'College':           u.college || '',
+      'Branch':            u.branch || '',
+      'Year':              u.year || '',
+      'Auth Provider':     u.authProvider || '',
+      'Profile Complete':  u.profileComplete ? 'Yes' : 'No',
+      'Banned':            u.isBanned ? 'Yes' : 'No',
+      'Voted Categories':  (u.votedCategories || []).join(', ') || 'None',
+      'Votes Cast':        (u.votedCategories || []).length,
+      'Joined Date':       u.joinedDate
+                             ? new Date(u.joinedDate._seconds ? u.joinedDate._seconds * 1000 : u.joinedDate).toLocaleDateString('en-IN')
+                             : '',
+    }))
+    const wsUsers = XLSX.utils.json_to_sheet(usersData)
+    wsUsers['!cols'] = [20, 30, 30, 20, 10, 15, 15, 8, 40, 12, 15].map(w => ({ wch: w }))
+    XLSX.utils.book_append_sheet(wb, wsUsers, 'Users')
+
+    // ── Sheet 2: All Artworks ────────────────────────────────────────────────
+    const allArtworks = [...approvedArtworks, ...pendingArtworks, ...rejectedArtworks]
+    const artworksData = allArtworks.map((a: any) => ({
+      'Title':          a.title || '',
+      'Category':       a.category || '',
+      'Subcategory':    a.subcategory || '',
+      'Status':         a.status || '',
+      'Artist Name':    a.artist?.name || '',
+      'Artist Email':   a.artist?.email || '',
+      'College':        a.artist?.college || '',
+      'Branch':         a.artist?.branch || '',
+      'Year':           a.artist?.year || '',
+      'Votes':          a.votes ?? '',
+      'Has Image':      a.imageUrl ? 'Yes' : 'No',
+      'Has Video':      a.videoUrl ? 'Yes' : 'No',
+      'Rejection Note': a.rejectionReason || '',
+      'Submitted':      a.createdAt
+                          ? new Date(a.createdAt._seconds ? a.createdAt._seconds * 1000 : a.createdAt).toLocaleDateString('en-IN')
+                          : '',
+    }))
+    const wsArtworks = XLSX.utils.json_to_sheet(artworksData)
+    wsArtworks['!cols'] = [30, 16, 18, 10, 25, 30, 25, 20, 8, 8, 10, 10, 30, 15].map(w => ({ wch: w }))
+    XLSX.utils.book_append_sheet(wb, wsArtworks, 'Artworks')
+
+    // ── Sheet 3: Votes Summary (per category) ────────────────────────────────
+    const categories = ['photography', 'digital-art', 'cinematography', 'motion-graphics']
+    const votesData = categories.map(cat => {
+      const catArtworks = approvedArtworks.filter((a: any) => a.category === cat)
+      const sorted = [...catArtworks].sort((a: any, b: any) => (b.votes || 0) - (a.votes || 0))
+      return {
+        'Category':       cat,
+        'Total Artworks': catArtworks.length,
+        'Total Votes':    catArtworks.reduce((s: number, a: any) => s + (a.votes || 0), 0),
+        'Leader':         sorted[0]?.title || 'N/A',
+        'Leader Votes':   sorted[0]?.votes ?? 'N/A',
+        'Leader Artist':  sorted[0]?.artist?.name || 'N/A',
+        '2nd Place':      sorted[1]?.title || 'N/A',
+        '2nd Votes':      sorted[1]?.votes ?? 'N/A',
+        '3rd Place':      sorted[2]?.title || 'N/A',
+        '3rd Votes':      sorted[2]?.votes ?? 'N/A',
+      }
+    })
+    const wsVotes = XLSX.utils.json_to_sheet(votesData)
+    wsVotes['!cols'] = [20, 16, 12, 30, 12, 25, 30, 10, 30, 10].map(w => ({ wch: w }))
+    XLSX.utils.book_append_sheet(wb, wsVotes, 'Votes by Category')
+
+    // ── Sheet 4: Leaderboard (all approved artworks sorted by votes) ─────────
+    const leaderboard = [...approvedArtworks]
+      .sort((a: any, b: any) => (b.votes || 0) - (a.votes || 0))
+      .map((a: any, i: number) => ({
+        'Rank':     i + 1,
+        'Title':    a.title || '',
+        'Category': a.category || '',
+        'Artist':   a.artist?.name || '',
+        'College':  a.artist?.college || '',
+        'Votes':    a.votes ?? 0,
+      }))
+    const wsLeader = XLSX.utils.json_to_sheet(leaderboard)
+    wsLeader['!cols'] = [6, 30, 16, 25, 25, 8].map(w => ({ wch: w }))
+    XLSX.utils.book_append_sheet(wb, wsLeader, 'Leaderboard')
+
+    // ── Download ─────────────────────────────────────────────────────────────
+    const timestamp = new Date().toISOString().slice(0, 10)
+    XLSX.writeFile(wb, `lenscape-export-${timestamp}.xlsx`)
+  }
+
   if (checking) {
     return (
       <div className="min-h-screen bg-[#020202] flex items-center justify-center">
@@ -164,13 +255,22 @@ export default function AdminPage() {
               <span className="font-mono text-sm text-exhibition-gold">{adminName}</span>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 border border-red-500/30 hover:border-red-500 text-red-400 font-mono text-[10px] uppercase tracking-widest transition-colors"
-          >
-            <LogOut size={12} />
-            Sign Out
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 border border-exhibition-gold/40 hover:border-exhibition-gold hover:bg-exhibition-gold/10 text-exhibition-gold font-mono text-[10px] uppercase tracking-widest transition-colors"
+            >
+              <Download size={12} />
+              Export XLSX
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 border border-red-500/30 hover:border-red-500 text-red-400 font-mono text-[10px] uppercase tracking-widest transition-colors"
+            >
+              <LogOut size={12} />
+              Sign Out
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
