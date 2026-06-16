@@ -32,7 +32,7 @@ export default function ArtworkViewerModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[1000] bg-[#000000]/98 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1000] bg-chic-bg/98 backdrop-blur-md flex items-center justify-center p-4"
       onClick={() => setSelectedArtwork(null)}
     >
       <motion.div
@@ -40,7 +40,7 @@ export default function ArtworkViewerModal({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
+        className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-chic-bg border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Localized film grain for the modal */}
@@ -54,7 +54,7 @@ export default function ArtworkViewerModal({
         </button>
 
         {/* Left Side: Art display */}
-        <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative z-[20] p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+        <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-chic-bg flex items-center justify-center relative z-[20] p-6 border-b md:border-b-0 md:border-r border-chic-muted/30">
           {/* Top wash light */}
           <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
           
@@ -88,14 +88,14 @@ export default function ArtworkViewerModal({
               className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
             />
           ) : (
-            <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
+            <div className="text-chic-muted font-mono text-sm">Media Unavailable</div>
           )}
         </div>
 
         {/* Right Side: Information / Placard details & comments */}
-        <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-[#0b0b0b] flex-grow">
+        <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-chic-light/30 flex-grow">
           {/* Art Details */}
-          <div className="p-6 border-b border-zinc-900">
+          <div className="p-6 border-b border-chic-muted/30">
             <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
               {selectedArtwork.category.replace('-', ' ')}
               {selectedArtwork.subCategory && ` · ${selectedArtwork.subCategory.replace('-', ' ')}`}
@@ -103,18 +103,18 @@ export default function ArtworkViewerModal({
             <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
               {selectedArtwork.title}
             </h3>
-            <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
+            <p className="text-xs font-mono text-chic-primary mt-2 uppercase tracking-wide">
               By {selectedArtwork.artist.name}
             </p>
-            <p className="text-[10px] text-zinc-500 font-mono">
+            <p className="text-[10px] text-chic-muted font-mono">
               {selectedArtwork.artist.college}
             </p>
-            <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed max-h-24 overflow-y-auto pr-2">
+            <p className="text-xs text-chic-primary mt-4 font-mono font-light leading-relaxed max-h-24 overflow-y-auto pr-2">
               {selectedArtwork.description}
             </p>
 
             {/* Vote button */}
-            <div className="flex items-center justify-end mt-6 pt-4 border-t border-zinc-900">
+            <div className="flex items-center justify-end mt-6 pt-4 border-t border-chic-muted/30">
               {!hideVoteButton && (
                 user ? (
                   <div className="relative group">
@@ -123,7 +123,7 @@ export default function ArtworkViewerModal({
                       disabled={hasVoted}
                       className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
                         hasVoted
-                          ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                          ? 'border-chic-muted/40 text-zinc-600 cursor-not-allowed'
                           : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
                       }`}
                     >
@@ -131,7 +131,7 @@ export default function ArtworkViewerModal({
                       <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
                     </button>
                     {hasVoted && (
-                      <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                      <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-chic-muted/50 text-chic-primary text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                         You have already voted for {selectedArtwork.category.replace('-', ' ')}
                         <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700"></div>
                       </div>
@@ -150,21 +150,21 @@ export default function ArtworkViewerModal({
           {false && selectedArtwork && (
             <>
               <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
-                <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
+                <h4 className="font-mono text-[10px] text-chic-muted uppercase tracking-widest border-b border-chic-muted/30 pb-2">
                   Feedbacks ({selectedArtwork?.comments?.length || 0})
                 </h4>
 
                 <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
                   {selectedArtwork?.comments?.length && selectedArtwork.comments.length > 0 ? (
                     selectedArtwork.comments.map((comment) => (
-                      <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
+                      <div key={comment.id} className="text-xs font-mono bg-chic-bg/20 p-2.5 border border-chic-muted/30">
                         <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
                           <span>{comment.userName}</span>
                           <span className="text-zinc-600">
                             {new Date(comment.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-zinc-300 font-sans">{comment.content}</p>
+                        <p className="text-chic-primary font-sans">{comment.content}</p>
                       </div>
                     ))
                   ) : (
@@ -179,14 +179,14 @@ export default function ArtworkViewerModal({
               {user ? (
                 <form
                   onSubmit={(e) => selectedArtwork && handleCommentSubmit(e, selectedArtwork.id)}
-                  className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
+                  className="p-4 bg-chic-bg/40 border-t border-chic-muted/30 flex gap-2"
                 >
                   <input
                     type="text"
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}
                     placeholder="Write a feedback..."
-                    className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
+                    className="flex-1 bg-zinc-900 border border-chic-muted/40 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
                   />
                   <button
                     type="submit"
@@ -197,7 +197,7 @@ export default function ArtworkViewerModal({
                   </button>
                 </form>
               ) : (
-                <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
+                <div className="p-4 bg-chic-bg/40 border-t border-chic-muted/30 text-center text-[10px] font-mono text-zinc-600">
                   <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                 </div>
               )}

@@ -87,12 +87,12 @@ export default function GalleryPage() {
   // Dynamic visual identity mapping based on room (category)
   const roomThemes: Record<string, { bg: string; text: string; titleColor: string; ambientGlow: string; description: string; extraClasses: string }> = {
     all: {
-      bg: 'bg-[#080808]', text: 'text-exhibition-bone', titleColor: 'text-exhibition-gold',
+      bg: 'bg-chic-bg', text: 'text-exhibition-bone', titleColor: 'text-exhibition-gold',
       ambientGlow: 'from-exhibition-gold/10',
       description: 'The main hall displaying all creative streams under one dome.', extraClasses: '',
     },
     photography: {
-      bg: 'bg-[#000000]', text: 'text-zinc-100', titleColor: 'text-white',
+      bg: 'bg-chic-bg', text: 'text-zinc-100', titleColor: 'text-chic-primary',
       ambientGlow: 'from-zinc-800/25',
       description: 'Room 01 · Portrait Photography · Landscape Photography', extraClasses: '',
     },
@@ -102,7 +102,7 @@ export default function GalleryPage() {
       description: 'Room 02 · Concept Art · Character Design', extraClasses: '',
     },
     cinematography: {
-      bg: 'bg-[#050505]', text: 'text-[#e2dac6]', titleColor: 'text-amber-500',
+      bg: 'bg-chic-bg', text: 'text-[#e2dac6]', titleColor: 'text-amber-500',
       ambientGlow: 'from-amber-950/20',
       description: 'Room 03 · Short Film · Travel Film', extraClasses: '',
     },
@@ -228,7 +228,7 @@ export default function GalleryPage() {
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-b ${currentTheme.ambientGlow} to-transparent blur-3xl rounded-full pointer-events-none -z-10`}
         />
 
-        <div className="flex items-center gap-2 mb-4 text-xs font-mono tracking-widest text-zinc-500 uppercase">
+        <div className="flex items-center gap-2 mb-4 text-xs font-mono tracking-widest text-chic-muted uppercase">
           <Compass size={14} />
           <span>Museum Exhibition Rooms</span>
         </div>
@@ -240,13 +240,13 @@ export default function GalleryPage() {
               selectedCategory.slice(1).replace('-', ' ')}
         </h1>
 
-        <p className="text-xs font-mono text-zinc-500 mt-4 max-w-md tracking-wider leading-relaxed">
+        <p className="text-xs font-mono text-chic-muted mt-4 max-w-md tracking-wider leading-relaxed">
           {currentTheme.description}
         </p>
       </div>
 
       {/* Room-Switch Nav */}
-      <div className="w-full border-t border-b border-zinc-900 bg-black/25 backdrop-blur-md sticky top-0 z-50">
+      <div className="w-full border-t border-b border-chic-muted/30 bg-chic-bg/25 backdrop-blur-md sticky top-0 z-50">
         <div className="relative">
           {/* Left fade for mobile */}
           <div className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-black/80 to-transparent z-10 md:hidden" />
@@ -260,7 +260,7 @@ export default function GalleryPage() {
                 className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-4 px-5 border-b-2 ${
                   selectedCategory === 'all'
                     ? 'text-exhibition-gold border-exhibition-gold'
-                    : 'text-zinc-500 hover:text-zinc-300 border-transparent'
+                    : 'text-chic-muted hover:text-chic-primary border-transparent'
                 }`}
               >
                 00 / Grand Hall
@@ -272,7 +272,7 @@ export default function GalleryPage() {
                   className={`font-mono text-[10px] uppercase tracking-[0.25em] whitespace-nowrap transition-colors py-4 px-5 border-b-2 ${
                     selectedCategory === cat
                       ? 'text-exhibition-gold border-exhibition-gold'
-                      : 'text-zinc-500 hover:text-zinc-300 border-transparent'
+                      : 'text-chic-muted hover:text-chic-primary border-transparent'
                   }`}
                 >
                   0{idx + 1} / {cat.replace('-', ' ')}
@@ -287,13 +287,13 @@ export default function GalleryPage() {
       <div className="max-w-6xl mx-auto px-6 md:px-12 py-8 flex flex-col sm:flex-row gap-4 items-center justify-between relative z-10">
         {/* Floating Minimal Search Input */}
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-chic-muted" />
           <input
             type="text"
             placeholder="Search placard, artist..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#0c0c0c] border border-zinc-800 text-xs font-mono text-zinc-300 focus:outline-none focus:border-exhibition-gold/50"
+            className="w-full pl-10 pr-4 py-2 bg-chic-light/20 border border-chic-muted/40 text-xs font-mono text-chic-primary focus:outline-none focus:border-exhibition-gold/50"
           />
         </div>
 
@@ -329,9 +329,9 @@ export default function GalleryPage() {
             })}
           </div>
         ) : (
-          <div className="text-center py-32 border border-zinc-900 bg-black/10">
+          <div className="text-center py-32 border border-chic-muted/30 bg-chic-bg/10">
             <Compass className="w-10 h-10 text-zinc-600 mx-auto mb-4 animate-pulse" />
-            <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-chic-primary">
               Chamber is Empty
             </h3>
             <p className="text-[10px] text-zinc-600 mt-2 font-mono">
@@ -348,7 +348,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1000] bg-[#000000]/98 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[1000] bg-chic-bg/98 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelectedArtwork(null)}
           >
             <motion.div
@@ -356,7 +356,7 @@ export default function GalleryPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
+              className="relative w-full max-w-5xl h-auto max-h-[90vh] md:h-[80vh] bg-chic-bg border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
@@ -368,7 +368,7 @@ export default function GalleryPage() {
               </button>
 
               {/* Left Side: Media display */}
-              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-chic-bg flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-chic-muted/30">
                 <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                 
                 {selectedArtwork.videoUrl ? (
@@ -401,13 +401,13 @@ export default function GalleryPage() {
                     className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
                   />
                 ) : (
-                  <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
+                  <div className="text-chic-muted font-mono text-sm">Media Unavailable</div>
                 )}
               </div>
 
               {/* Right Side: details & comment feedbacks */}
-              <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-[#0b0b0b] flex-grow">
-                <div className="p-6 border-b border-zinc-900">
+              <div className="w-full md:w-[35%] h-auto md:h-full flex flex-col bg-chic-light/30 flex-grow">
+                <div className="p-6 border-b border-chic-muted/30">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
                     {selectedArtwork.category.replace('-', ' ')}
                     {selectedArtwork.subcategory && ` · ${selectedArtwork.subcategory.replace('-', ' ')}`}
@@ -415,18 +415,18 @@ export default function GalleryPage() {
                   <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone">
                     {selectedArtwork.title}
                   </h3>
-                  <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
+                  <p className="text-xs font-mono text-chic-primary mt-2 uppercase tracking-wide">
                     By {selectedArtwork.artist.name}
                   </p>
-                  <p className="text-[10px] text-zinc-500 font-mono">
+                  <p className="text-[10px] text-chic-muted font-mono">
                     {selectedArtwork.artist.college}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed max-h-24 overflow-y-auto pr-2">
+                  <p className="text-xs text-chic-primary mt-4 font-mono font-light leading-relaxed max-h-24 overflow-y-auto pr-2">
                     {selectedArtwork.description}
                   </p>
 
-                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
-                    <span className="text-zinc-500 text-xs font-mono">
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-chic-muted/30">
+                    <span className="text-chic-muted text-xs font-mono">
                       Exhibition Voting
                     </span>
                     {user ? (
@@ -436,7 +436,7 @@ export default function GalleryPage() {
                           disabled={hasVoted}
                           className={`px-4 py-1.5 border font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
                             hasVoted
-                              ? 'border-zinc-800 text-zinc-600 cursor-not-allowed'
+                              ? 'border-chic-muted/40 text-zinc-600 cursor-not-allowed'
                               : 'border-exhibition-gold/40 hover:border-exhibition-gold text-exhibition-gold hover:bg-exhibition-gold/10'
                           }`}
                         >
@@ -444,7 +444,7 @@ export default function GalleryPage() {
                           <span>{hasVoted ? 'VOTED' : 'VOTE'}</span>
                         </button>
                         {hasVoted && (
-                          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-chic-muted/50 text-chic-primary text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                             You have already voted for {selectedArtwork?.category.replace('-', ' ')}
                             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700"></div>
                           </div>
@@ -462,21 +462,21 @@ export default function GalleryPage() {
                 {false && selectedArtwork && (
                   <>
                     <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 max-h-60 md:max-h-none">
-                      <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">
+                      <h4 className="font-mono text-[10px] text-chic-muted uppercase tracking-widest border-b border-chic-muted/30 pb-2">
                         Feedbacks ({selectedArtwork.comments?.length || 0})
                       </h4>
 
                       <div className="flex-1 flex flex-col gap-3.5 overflow-y-auto pr-1">
                         {selectedArtwork.comments?.length > 0 ? (
                           selectedArtwork.comments.map((comment) => (
-                            <div key={comment.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
+                            <div key={comment.id} className="text-xs font-mono bg-chic-bg/20 p-2.5 border border-chic-muted/30">
                               <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
                                 <span>{comment.userName}</span>
                                 <span className="text-zinc-600">
                                   {new Date(comment.createdAt).toLocaleDateString()}
                                 </span>
                               </div>
-                              <p className="text-zinc-300 font-sans">{comment.content}</p>
+                              <p className="text-chic-primary font-sans">{comment.content}</p>
                             </div>
                           ))
                         ) : (
@@ -491,14 +491,14 @@ export default function GalleryPage() {
                     {user ? (
                       <form
                         onSubmit={(e) => handleCommentSubmit(e, selectedArtwork.id)}
-                        className="p-4 bg-black/40 border-t border-zinc-900 flex gap-2"
+                        className="p-4 bg-chic-bg/40 border-t border-chic-muted/30 flex gap-2"
                       >
                         <input
                           type="text"
                           value={commentContent}
                           onChange={(e) => setCommentContent(e.target.value)}
                           placeholder="Write a feedback..."
-                          className="flex-1 bg-zinc-900 border border-zinc-800 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
+                          className="flex-1 bg-zinc-900 border border-chic-muted/40 text-xs font-sans px-3 py-2 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50"
                         />
                         <button
                           type="submit"
@@ -509,7 +509,7 @@ export default function GalleryPage() {
                         </button>
                       </form>
                     ) : (
-                      <div className="p-4 bg-black/40 border-t border-zinc-900 text-center text-[10px] font-mono text-zinc-600">
+                      <div className="p-4 bg-chic-bg/40 border-t border-chic-muted/30 text-center text-[10px] font-mono text-zinc-600">
                         <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link> to write a feedback.
                       </div>
                     )}
@@ -528,7 +528,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[1100] bg-chic-bg/90 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowVoteConfirmation(false)}
           >
             <motion.div
@@ -536,7 +536,7 @@ export default function GalleryPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-md bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl p-8"
+              className="relative w-full max-w-md bg-chic-bg border border-exhibition-gold/30 shadow-2xl p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Warning Icon */}
@@ -552,10 +552,10 @@ export default function GalleryPage() {
               </h3>
 
               {/* Message */}
-              <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
+              <p className="text-sm text-chic-primary font-mono text-center leading-relaxed mb-2">
                 You can only vote <span className="text-exhibition-gold font-bold">once</span> per category.
               </p>
-              <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
+              <p className="text-xs text-chic-muted font-mono text-center leading-relaxed mb-8">
                 This action cannot be undone. Are you sure you want to cast your vote?
               </p>
 
@@ -563,7 +563,7 @@ export default function GalleryPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowVoteConfirmation(false)}
-                  className="flex-1 px-4 py-3 border border-zinc-700 text-zinc-400 font-mono text-xs uppercase tracking-wider hover:border-zinc-500 hover:text-zinc-300 transition-all"
+                  className="flex-1 px-4 py-3 border border-chic-muted/50 text-chic-primary font-mono text-xs uppercase tracking-wider hover:border-zinc-500 hover:text-chic-primary transition-all"
                 >
                   Cancel
                 </button>
@@ -587,7 +587,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[1100] bg-chic-bg/90 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowAlreadyVotedWarning(false)}
           >
             <motion.div
@@ -595,33 +595,33 @@ export default function GalleryPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-md bg-[#0d0d0d] border border-zinc-700 shadow-2xl p-8"
+              className="relative w-full max-w-md bg-chic-bg border border-chic-muted/50 shadow-2xl p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Warning Icon */}
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 rounded-full border-2 border-zinc-600 flex items-center justify-center">
-                  <Heart size={28} className="text-zinc-500 fill-zinc-600" />
+                  <Heart size={28} className="text-chic-muted fill-zinc-600" />
                 </div>
               </div>
 
               {/* Title */}
-              <h3 className="editorial-text text-2xl font-light text-zinc-300 text-center mb-3">
+              <h3 className="editorial-text text-2xl font-light text-chic-primary text-center mb-3">
                 Already Voted
               </h3>
 
               {/* Message */}
-              <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
+              <p className="text-sm text-chic-primary font-mono text-center leading-relaxed mb-2">
                 You have already cast your vote.
               </p>
-              <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
+              <p className="text-xs text-chic-muted font-mono text-center leading-relaxed mb-8">
                 Each user can only vote once across all artworks.
               </p>
 
               {/* Button */}
               <button
                 onClick={() => setShowAlreadyVotedWarning(false)}
-                className="w-full px-4 py-3 bg-zinc-800 text-zinc-300 font-mono text-xs uppercase tracking-wider hover:bg-zinc-700 transition-all"
+                className="w-full px-4 py-3 bg-zinc-800 text-chic-primary font-mono text-xs uppercase tracking-wider hover:bg-zinc-700 transition-all"
               >
                 Understood
               </button>

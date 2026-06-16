@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020202] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-chic-bg flex items-center justify-center p-6">
       {/* Subtle grid background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: 'linear-gradient(#C9A84C 1px, transparent 1px), linear-gradient(90deg, #C9A84C 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-[#0c0c0c] border border-exhibition-gold/20 p-8 space-y-5 relative">
+        <form onSubmit={handleSubmit} className="bg-chic-light/20 border border-exhibition-gold/20 p-8 space-y-5 relative">
           {/* Corner rivets */}
           {['top-2 left-2','top-2 right-2','bottom-2 left-2','bottom-2 right-2'].map(pos => (
             <div key={pos} className={`absolute ${pos} w-1.5 h-1.5 bg-exhibition-gold/25 rounded-full`} />
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
 
           {/* Name */}
           <div>
-            <label className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-2">
+            <label className="block font-mono text-[9px] text-chic-muted uppercase tracking-widest mb-2">
               Name
             </label>
             <input
@@ -90,13 +90,13 @@ export default function AdminLoginPage() {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Your name (required for first login)"
-              className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
+              className="w-full bg-[#111] border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-2">
+            <label className="block font-mono text-[9px] text-chic-muted uppercase tracking-widest mb-2">
               Admin Email
             </label>
             <input
@@ -105,13 +105,13 @@ export default function AdminLoginPage() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="admin@jlug.club"
-              className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
+              className="w-full bg-[#111] border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-2">
+            <label className="block font-mono text-[9px] text-chic-muted uppercase tracking-widest mb-2">
               Password
             </label>
             <div className="relative">
@@ -121,10 +121,10 @@ export default function AdminLoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 pr-10 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
+                className="w-full bg-[#111] border border-chic-muted/40 text-xs font-mono px-4 py-3 pr-10 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
               />
               <button type="button" onClick={() => setShowPassword(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-chic-primary">
                 {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>
@@ -132,7 +132,7 @@ export default function AdminLoginPage() {
 
           {/* Secret Key */}
           <div>
-            <label className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-2">
+            <label className="block font-mono text-[9px] text-chic-muted uppercase tracking-widest mb-2">
               Secret Key
             </label>
             <div className="relative">
@@ -142,10 +142,10 @@ export default function AdminLoginPage() {
                 onChange={e => setSecretKey(e.target.value)}
                 required
                 placeholder="••••••••••••"
-                className="w-full bg-[#111] border border-zinc-800 text-xs font-mono px-4 py-3 pr-10 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
+                className="w-full bg-[#111] border border-chic-muted/40 text-xs font-mono px-4 py-3 pr-10 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700"
               />
               <button type="button" onClick={() => setShowSecret(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-chic-primary">
                 {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>

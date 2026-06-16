@@ -122,7 +122,7 @@ export default function AuthSignupPage() {
 
       <div className="max-w-md w-full z-10">
         <Link to="/">
-          <button className="flex items-center gap-2 text-zinc-500 hover:text-exhibition-gold transition-colors mb-8 font-mono text-xs uppercase tracking-widest bg-transparent border-0 cursor-pointer">
+          <button className="flex items-center gap-2 text-chic-muted hover:text-exhibition-gold transition-colors mb-8 font-mono text-xs uppercase tracking-widest bg-transparent border-0 cursor-pointer">
             <ArrowLeft size={14} /> Exhibition Hall
           </button>
         </Link>
@@ -131,7 +131,7 @@ export default function AuthSignupPage() {
 
           {step === 'form' && (
             <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
-              <div className="bg-[#0c0c0c] border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
+              <div className="bg-chic-light/20 border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
                 {['top-2 left-2','top-2 right-2','bottom-2 left-2','bottom-2 right-2'].map(p => (
                   <div key={p} className={`absolute ${p} w-1.5 h-1.5 bg-exhibition-gold/30 rounded-full`} />
                 ))}
@@ -139,7 +139,7 @@ export default function AuthSignupPage() {
                 <div className="text-center mb-8">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-2">Register</span>
                   <h2 className="editorial-text text-4xl font-light">Create Account</h2>
-                  <p className="font-mono text-[10px] text-zinc-500 mt-2">We'll send a code to verify your email</p>
+                  <p className="font-mono text-[10px] text-chic-muted mt-2">We'll send a code to verify your email</p>
                 </div>
 
                 <button onClick={handleGoogle} disabled={loading} type="button"
@@ -163,13 +163,13 @@ export default function AuthSignupPage() {
                   <div className="relative">
                     <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-600" />
                     <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@college.edu"
-                      className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono pl-9 pr-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700" />
+                      className="w-full bg-white border border-chic-muted/40 text-xs font-mono pl-9 pr-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700" />
                   </div>
                   <div className="relative">
                     <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-600" />
                     <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder="choose a password (min 6 chars)"
-                      className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono pl-9 pr-10 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700" />
-                    <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400">
+                      className="w-full bg-white border border-chic-muted/40 text-xs font-mono pl-9 pr-10 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50 placeholder:text-zinc-700" />
+                    <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-chic-primary">
                       {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
                   </div>
@@ -182,7 +182,7 @@ export default function AuthSignupPage() {
                   </button>
                 </form>
 
-                <p className="text-center font-mono text-[10px] text-zinc-500 mt-5">
+                <p className="text-center font-mono text-[10px] text-chic-muted mt-5">
                   Have an account?{' '}
                   <Link to="/auth/login" className="text-exhibition-gold hover:underline">Log in</Link>
                 </p>
@@ -192,14 +192,14 @@ export default function AuthSignupPage() {
 
           {step === 'otp' && (
             <motion.div key="otp" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
-              <div className="bg-[#0c0c0c] border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
+              <div className="bg-chic-light/20 border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
                 {['top-2 left-2','top-2 right-2','bottom-2 left-2','bottom-2 right-2'].map(p => (
                   <div key={p} className={`absolute ${p} w-1.5 h-1.5 bg-exhibition-gold/30 rounded-full`} />
                 ))}
                 <div className="text-center mb-8">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-2">Verification</span>
                   <h2 className="editorial-text text-4xl font-light">Enter Code</h2>
-                  <p className="font-mono text-[10px] text-zinc-500 mt-2">6-digit code sent to <span className="text-exhibition-gold">{email}</span></p>
+                  <p className="font-mono text-[10px] text-chic-muted mt-2">6-digit code sent to <span className="text-exhibition-gold">{email}</span></p>
                 </div>
 
                 <form onSubmit={handleVerifyOtp} className="space-y-6">
@@ -207,7 +207,7 @@ export default function AuthSignupPage() {
                     {otpDigits.map((d, i) => (
                       <input key={i} ref={el => { otpRefs.current[i] = el }} type="text" inputMode="numeric" maxLength={1}
                         value={d} onChange={e => handleOtpChange(i, e.target.value)} onKeyDown={e => handleOtpKey(i, e)}
-                        className="w-11 h-14 text-center text-xl font-mono font-bold bg-[#121212] border border-zinc-800 text-exhibition-bone focus:outline-none focus:border-exhibition-gold transition-colors caret-exhibition-gold" />
+                        className="w-11 h-14 text-center text-xl font-mono font-bold bg-white border border-chic-muted/40 text-exhibition-bone focus:outline-none focus:border-exhibition-gold transition-colors caret-exhibition-gold" />
                     ))}
                   </div>
 
@@ -220,9 +220,9 @@ export default function AuthSignupPage() {
 
                   <div className="flex items-center justify-between font-mono text-[10px]">
                     <button type="button" onClick={() => { setStep('form'); setOtpDigits(['','','','','','']); setError('') }}
-                      className="text-zinc-500 hover:text-exhibition-gold uppercase tracking-wider">← Change details</button>
+                      className="text-chic-muted hover:text-exhibition-gold uppercase tracking-wider">← Change details</button>
                     <button type="button" onClick={() => handleSendOtp()} disabled={resendCooldown > 0}
-                      className="flex items-center gap-1 text-zinc-500 hover:text-exhibition-gold uppercase tracking-wider disabled:opacity-40">
+                      className="flex items-center gap-1 text-chic-muted hover:text-exhibition-gold uppercase tracking-wider disabled:opacity-40">
                       <RefreshCw size={10} />{resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend'}
                     </button>
                   </div>
@@ -237,7 +237,7 @@ export default function AuthSignupPage() {
                 <CheckCircle className="w-8 h-8 text-exhibition-gold" />
               </div>
               <h2 className="editorial-text text-3xl font-light mb-2">Account Created</h2>
-              <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">Setting up your profile...</p>
+              <p className="font-mono text-[10px] text-chic-muted uppercase tracking-widest">Setting up your profile...</p>
             </motion.div>
           )}
 

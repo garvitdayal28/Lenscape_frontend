@@ -62,12 +62,12 @@ const ExhibitionNav: React.FC<ExhibitionNavProps> = ({ isVisible = true }) => {
             className="flex flex-col items-center gap-2"
           >
             {/* Active tab name for mobile */}
-            <div className="md:hidden font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] px-4 py-1 bg-black/60 border border-exhibition-gold/20 backdrop-blur-xl rounded-full">
+            <div className="md:hidden font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] px-4 py-1 bg-chic-bg/60 border border-exhibition-gold/20 backdrop-blur-xl rounded-full">
               {menuItems.find(item => item.path === path)?.name || 'Lenscape'}
             </div>
             
             {/* Navigation buttons */}
-            <div className="flex items-center gap-1 md:gap-2 bg-black/60 border border-exhibition-gold/20 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-2 rounded-full">
+            <div className="flex items-center gap-1 md:gap-2 bg-chic-bg/70 border border-exhibition-gold/25 backdrop-blur-xl shadow-[0_8px_32px_rgba(196,157,218,0.25)] p-2 rounded-full">
               {menuItems.map((item) => {
                 const Icon = item.icon
                 const isActive = path === item.path
@@ -78,11 +78,11 @@ const ExhibitionNav: React.FC<ExhibitionNavProps> = ({ isVisible = true }) => {
                     title={item.name}
                     className={`flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-full text-[10px] md:text-xs font-mono transition-all duration-300 whitespace-nowrap ${
                       isActive
-                        ? 'text-exhibition-gold bg-exhibition-gold/10 border border-exhibition-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.15)]'
-                        : 'text-zinc-400 border border-transparent hover:text-exhibition-bone hover:bg-white/5 hover:border-white/10'
+                        ? 'text-exhibition-gold bg-exhibition-gold/15 border border-exhibition-gold/40 shadow-[0_0_14px_rgba(196,157,218,0.30)]'
+                        : 'text-chic-primary border border-transparent hover:text-exhibition-bone hover:bg-exhibition-gold/10 hover:border-exhibition-gold/20'
                     }`}
                   >
-                    <Icon size={16} className={isActive ? 'drop-shadow-[0_0_8px_rgba(201,168,76,0.8)]' : ''} />
+                    <Icon size={16} className={isActive ? 'drop-shadow-[0_0_6px_rgba(196,157,218,0.70)]' : ''} />
                     <span className="hidden md:inline tracking-wider uppercase">{item.name}</span>
                   </Link>
                 )

@@ -231,7 +231,7 @@ export default function AdminPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+      <div className="min-h-screen bg-chic-bg flex items-center justify-center">
         <span className="font-mono text-xs text-exhibition-gold animate-pulse uppercase tracking-widest">
           Verifying credentials...
         </span>
@@ -241,7 +241,7 @@ export default function AdminPage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[#020202] text-exhibition-bone py-12 px-4 md:px-12">
+    <div className="min-h-screen bg-chic-bg text-exhibition-bone py-12 px-4 md:px-12">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
@@ -249,7 +249,7 @@ export default function AdminPage() {
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-exhibition-gold" />
             <div>
-              <span className="font-mono text-[9px] text-zinc-500 uppercase tracking-widest block">
+              <span className="font-mono text-[9px] text-chic-muted uppercase tracking-widest block">
                 Curator Dashboard
               </span>
               <span className="font-mono text-sm text-exhibition-gold">{adminName}</span>
@@ -282,7 +282,7 @@ export default function AdminPage() {
             { label: 'Rejected', value: stats.rejected, Icon: Ban, color: 'text-red-400' },
             { label: 'Total Votes', value: stats.votes, Icon: TrendingUp, color: 'text-purple-400' },
           ].map(({ label, value, Icon, color }) => (
-            <div key={label} className="border border-zinc-900 bg-[#0c0c0c] p-5 flex items-center justify-between">
+            <div key={label} className="border border-chic-muted/30 bg-chic-light/20 p-5 flex items-center justify-between">
               <div>
                 <span className="font-mono text-[8px] text-zinc-600 block uppercase tracking-widest">{label}</span>
                 <span className="editorial-text text-3xl font-bold text-exhibition-gold">{value}</span>
@@ -293,7 +293,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-zinc-900 mb-8 font-mono text-[10px] uppercase tracking-widest overflow-x-auto">
+        <div className="flex border-b border-chic-muted/30 mb-8 font-mono text-[10px] uppercase tracking-widest overflow-x-auto">
           {[
             { id: 'moderation', label: `Pending (${stats.pending})` },
             { id: 'approved', label: `Approved (${stats.approved})` },
@@ -306,7 +306,7 @@ export default function AdminPage() {
               className={`py-3 px-6 border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-exhibition-gold text-exhibition-gold'
-                  : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                  : 'border-transparent text-chic-muted hover:text-chic-primary'
               }`}
             >
               {tab.label}
@@ -318,18 +318,18 @@ export default function AdminPage() {
         {activeTab === 'moderation' && (
           <div className="space-y-5">
             {pendingArtworks.map(art => (
-              <div key={art.id} className="border border-zinc-900 bg-[#0c0c0c] p-5 flex flex-col md:flex-row gap-5 justify-between items-start md:items-center">
+              <div key={art.id} className="border border-chic-muted/30 bg-chic-light/20 p-5 flex flex-col md:flex-row gap-5 justify-between items-start md:items-center">
                 <div className="flex gap-4 items-center">
-                  <img src={art.thumbnailUrl || art.imageUrl} className="w-16 h-16 object-cover border border-zinc-800" alt="" />
+                  <img src={art.thumbnailUrl || art.imageUrl} className="w-16 h-16 object-cover border border-chic-muted/40" alt="" />
                   <div>
                     <h4 className="font-mono text-sm font-bold text-exhibition-bone">{art.title}</h4>
-                    <p className="font-mono text-[10px] text-zinc-500">by {art.artist?.name} · {art.artist?.college}</p>
+                    <p className="font-mono text-[10px] text-chic-muted">by {art.artist?.name} · {art.artist?.college}</p>
                     <span className="font-mono text-[8px] text-exhibition-gold uppercase tracking-widest">{art.category}</span>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setPreviewArtwork(art)}
-                    className="px-4 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
+                    className="px-4 py-2 border border-chic-muted/50 text-chic-primary font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
                     <Eye size={12} /> View
                   </button>
                   <button onClick={() => approveArtwork(art.id)}
@@ -337,16 +337,16 @@ export default function AdminPage() {
                     Approve
                   </button>
                   <button onClick={() => setRejecting(art.id)}
-                    className="px-5 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
+                    className="px-5 py-2 border border-chic-muted/50 text-chic-primary font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
                     Reject
                   </button>
                 </div>
               </div>
             ))}
             {pendingArtworks.length === 0 && (
-              <div className="text-center py-20 border border-zinc-900">
+              <div className="text-center py-20 border border-chic-muted/30">
                 <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-                <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No pending submissions.</p>
+                <p className="font-mono text-xs text-chic-muted uppercase tracking-widest">No pending submissions.</p>
               </div>
             )}
           </div>
@@ -356,9 +356,9 @@ export default function AdminPage() {
         {activeTab === 'approved' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {approvedArtworks.map(art => (
-              <div key={art.id} className="border border-zinc-900 bg-[#0c0c0c] overflow-hidden group cursor-pointer hover:border-exhibition-gold/40 transition-colors"
+              <div key={art.id} className="border border-chic-muted/30 bg-chic-light/20 overflow-hidden group cursor-pointer hover:border-exhibition-gold/40 transition-colors"
                 onClick={() => setPreviewArtwork(art)}>
-                <div className="aspect-[4/3] overflow-hidden relative bg-black">
+                <div className="aspect-[4/3] overflow-hidden relative bg-chic-bg">
                   {art.thumbnailUrl || art.imageUrl ? (
                     <img src={art.thumbnailUrl || art.imageUrl} alt={art.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -368,7 +368,7 @@ export default function AdminPage() {
                 </div>
                 <div className="p-4">
                   <h4 className="font-mono text-sm font-bold text-exhibition-bone truncate mb-1">{art.title}</h4>
-                  <p className="font-mono text-[10px] text-zinc-500 mb-2">by {art.artist?.name}</p>
+                  <p className="font-mono text-[10px] text-chic-muted mb-2">by {art.artist?.name}</p>
                   <div className="flex items-center justify-between text-[9px] font-mono text-zinc-600">
                     <span className="text-exhibition-gold uppercase">{art.category.replace('-', ' ')}</span>
                     <span>{art.votes || 0} votes</span>
@@ -377,8 +377,8 @@ export default function AdminPage() {
               </div>
             ))}
             {approvedArtworks.length === 0 && (
-              <div className="col-span-full text-center py-20 border border-zinc-900">
-                <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No approved artworks yet.</p>
+              <div className="col-span-full text-center py-20 border border-chic-muted/30">
+                <p className="font-mono text-xs text-chic-muted uppercase tracking-widest">No approved artworks yet.</p>
               </div>
             )}
           </div>
@@ -388,11 +388,11 @@ export default function AdminPage() {
         {activeTab === 'rejected' && (
           <div className="space-y-5">
             {rejectedArtworks.map(art => (
-              <div key={art.id} className="border border-red-900/30 bg-[#0c0c0c] p-5 flex flex-col md:flex-row gap-5 justify-between items-start">
+              <div key={art.id} className="border border-red-900/30 bg-chic-light/20 p-5 flex flex-col md:flex-row gap-5 justify-between items-start">
                 <div className="flex gap-4 items-center flex-1">
-                  <img src={art.thumbnailUrl || art.imageUrl} className="w-16 h-16 object-cover border border-zinc-800 opacity-60" alt="" />
+                  <img src={art.thumbnailUrl || art.imageUrl} className="w-16 h-16 object-cover border border-chic-muted/40 opacity-60" alt="" />
                   <div className="flex-1">
-                    <h4 className="font-mono text-sm font-bold text-zinc-400">{art.title}</h4>
+                    <h4 className="font-mono text-sm font-bold text-chic-primary">{art.title}</h4>
                     <p className="font-mono text-[10px] text-zinc-600">by {art.artist?.name} · {art.artist?.college}</p>
                     <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-widest">{art.category}</span>
                     {art.rejectionReason && (
@@ -403,14 +403,14 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <button onClick={() => setPreviewArtwork(art)}
-                  className="px-4 py-2 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
+                  className="px-4 py-2 border border-chic-muted/50 text-chic-primary font-mono text-[10px] uppercase tracking-widest hover:border-exhibition-gold/50 hover:text-exhibition-gold transition-colors flex items-center gap-1.5">
                   <Eye size={12} /> View
                 </button>
               </div>
             ))}
             {rejectedArtworks.length === 0 && (
-              <div className="text-center py-20 border border-zinc-900">
-                <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest">No rejected submissions.</p>
+              <div className="text-center py-20 border border-chic-muted/30">
+                <p className="font-mono text-xs text-chic-muted uppercase tracking-widest">No rejected submissions.</p>
               </div>
             )}
           </div>
@@ -418,10 +418,10 @@ export default function AdminPage() {
 
         {/* ── Users Tab ── */}
         {activeTab === 'users' && (
-          <div className="overflow-x-auto border border-zinc-900">
+          <div className="overflow-x-auto border border-chic-muted/30">
             <table className="w-full text-left font-mono text-xs">
               <thead>
-                <tr className="border-b border-zinc-900 text-[9px] text-zinc-600 uppercase tracking-widest">
+                <tr className="border-b border-chic-muted/30 text-[9px] text-zinc-600 uppercase tracking-widest">
                   <th className="py-3 px-4">Student</th>
                   <th className="py-3 px-4">College</th>
                   <th className="py-3 px-4">Votes</th>
@@ -431,12 +431,12 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {allUsers.map(u => (
-                  <tr key={u.id} className="border-b border-zinc-900/50 hover:bg-white/[0.02]">
+                  <tr key={u.id} className="border-b border-chic-muted/30/50 hover:bg-white/[0.02]">
                     <td className="py-3 px-4">
                       <div className="font-bold text-exhibition-bone">{u.name}</div>
                       <div className="text-[9px] text-zinc-600">{u.email}</div>
                     </td>
-                    <td className="py-3 px-4 text-zinc-400">{u.college}</td>
+                    <td className="py-3 px-4 text-chic-primary">{u.college}</td>
                     <td className="py-3 px-4 text-exhibition-gold">{u.votedCategories?.length || 0}</td>
                     <td className="py-3 px-4">
                       {u.isBanned
@@ -467,13 +467,13 @@ export default function AdminPage() {
         {previewArtwork && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[2000] bg-black/98 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[2000] bg-chic-bg/98 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setPreviewArtwork(null)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.35 }}
-              className="relative w-full max-w-5xl max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
+              className="relative w-full max-w-5xl max-h-[90vh] md:h-[80vh] bg-chic-bg border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {/* Close */}
@@ -483,24 +483,24 @@ export default function AdminPage() {
               </button>
 
               {/* Image / Video */}
-              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-chic-bg flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-chic-muted/30">
                 <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                 {previewArtwork.videoUrl ? (
                   <iframe src={previewArtwork.videoUrl} title={previewArtwork.title}
-                    className="w-full aspect-video bg-black border border-zinc-800"
+                    className="w-full aspect-video bg-chic-bg border border-chic-muted/40"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen />
                 ) : previewArtwork.imageUrl ? (
                   <img src={previewArtwork.imageUrl} alt={previewArtwork.title}
                     className="max-w-full max-h-full object-contain shadow-2xl border border-white/5" />
                 ) : (
-                  <div className="text-zinc-500 font-mono text-sm">Image Unavailable</div>
+                  <div className="text-chic-muted font-mono text-sm">Image Unavailable</div>
                 )}
               </div>
 
               {/* Details */}
-              <div className="w-full md:w-[35%] flex flex-col bg-[#0b0b0b] flex-grow">
-                <div className="p-6 border-b border-zinc-900 flex-1">
+              <div className="w-full md:w-[35%] flex flex-col bg-chic-light/30 flex-grow">
+                <div className="p-6 border-b border-chic-muted/30 flex-1">
                   <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.25em] block mb-1">
                     {previewArtwork.category?.replace('-', ' ')}
                     {previewArtwork.subcategory && ` · ${previewArtwork.subcategory}`}
@@ -508,19 +508,19 @@ export default function AdminPage() {
                   <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone mt-1">
                     {previewArtwork.title}
                   </h3>
-                  <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">
+                  <p className="text-xs font-mono text-chic-primary mt-2 uppercase tracking-wide">
                     By {previewArtwork.artist?.name}
                   </p>
-                  <p className="text-[10px] text-zinc-500 font-mono">{previewArtwork.artist?.college}</p>
+                  <p className="text-[10px] text-chic-muted font-mono">{previewArtwork.artist?.college}</p>
                   {previewArtwork.artist?.branch && (
                     <p className="text-[10px] text-zinc-600 font-mono">{previewArtwork.artist.branch} · {previewArtwork.artist.year}</p>
                   )}
-                  <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed max-h-32 overflow-y-auto pr-1">
+                  <p className="text-xs text-chic-primary mt-4 font-mono font-light leading-relaxed max-h-32 overflow-y-auto pr-1">
                     {previewArtwork.description}
                   </p>
 
-                  <div className="mt-6 pt-4 border-t border-zinc-900 flex items-center justify-between">
-                    <span className="text-zinc-500 text-xs font-mono">{previewArtwork.votes || 0} votes</span>
+                  <div className="mt-6 pt-4 border-t border-chic-muted/30 flex items-center justify-between">
+                    <span className="text-chic-muted text-xs font-mono">{previewArtwork.votes || 0} votes</span>
                     <span className={`text-[8px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 border ${
                       previewArtwork.status === 'approved' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5'
                       : previewArtwork.status === 'rejected' ? 'text-red-400 border-red-500/20 bg-red-500/5'
@@ -531,13 +531,13 @@ export default function AdminPage() {
 
                 {/* Admin quick actions inside modal */}
                 {previewArtwork.status === 'pending' && (
-                  <div className="p-4 border-t border-zinc-900 flex gap-3 bg-black/40">
+                  <div className="p-4 border-t border-chic-muted/30 flex gap-3 bg-chic-bg/40">
                     <button onClick={() => { approveArtwork(previewArtwork.id); setPreviewArtwork(null) }}
                       className="flex-1 py-2.5 bg-exhibition-gold text-exhibition-void font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-white hover:text-black transition-colors">
                       Approve
                     </button>
                     <button onClick={() => setRejecting(previewArtwork.id)}
-                      className="flex-1 py-2.5 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
+                      className="flex-1 py-2.5 border border-chic-muted/50 text-chic-primary font-mono text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-colors">
                       Reject
                     </button>
                   </div>
@@ -553,16 +553,16 @@ export default function AdminPage() {
         {rejecting && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[3000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[3000] bg-chic-bg/90 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => { setRejecting(null); setRejectReason('') }}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-[#0d0d0d] border border-red-500/30 p-8 shadow-2xl relative"
+              className="w-full max-w-md bg-chic-bg border border-red-500/30 p-8 shadow-2xl relative"
               onClick={e => e.stopPropagation()}
             >
               <h3 className="editorial-text text-2xl font-light text-exhibition-bone mb-2">Reject Submission</h3>
-              <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-6">
+              <p className="font-mono text-[10px] text-chic-muted uppercase tracking-widest mb-6">
                 Optionally write a reason — it will be shown to the participant.
               </p>
               <textarea
@@ -570,11 +570,11 @@ export default function AdminPage() {
                 onChange={e => setRejectReason(e.target.value)}
                 rows={4}
                 placeholder="e.g. Image quality too low, does not meet exhibition standards..."
-                className="w-full bg-[#111] border border-zinc-800 text-xs font-sans px-4 py-3 text-exhibition-bone focus:outline-none focus:border-red-500/50 resize-none mb-5"
+                className="w-full bg-[#111] border border-chic-muted/40 text-xs font-sans px-4 py-3 text-exhibition-bone focus:outline-none focus:border-red-500/50 resize-none mb-5"
               />
               <div className="flex gap-3">
                 <button onClick={() => { setRejecting(null); setRejectReason('') }}
-                  className="flex-1 py-3 border border-zinc-700 text-zinc-400 font-mono text-[10px] uppercase tracking-widest hover:border-zinc-500 transition-colors">
+                  className="flex-1 py-3 border border-chic-muted/50 text-chic-primary font-mono text-[10px] uppercase tracking-widest hover:border-zinc-500 transition-colors">
                   Cancel
                 </button>
                 <button onClick={rejectWithReason}

@@ -316,7 +316,7 @@ export default function LandingPage() {
   const useScrollY = useTransform(scrollY, [0, 400], [0, -80])
 
   return (
-    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold selection:text-exhibition-void relative">
+    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold/30 selection:text-exhibition-bone relative">
 
       {/* 1. Cinematic Preloader Intro — sits on top (z-1000), 3D scene loads behind it */}
       <AnimatePresence>
@@ -380,7 +380,7 @@ export default function LandingPage() {
                     <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
                       Hall of Fame
                     </h1>
-                    <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
+                    <p className="font-sans text-xs text-chic-muted mt-3 max-w-sm tracking-wide">
                       Walk through the glimpse of 2024. Click on any frame to inspect the artwork.
                     </p>
                     <motion.div
@@ -395,11 +395,11 @@ export default function LandingPage() {
           </div>
 
           {/* Main scrollable section overlays */}
-          <div className="relative z-10 bg-exhibition-void/90 backdrop-blur-md border-t border-exhibition-gold/15 py-32 px-6 md:px-12">
+          <div className="relative z-10 bg-exhibition-void border-t border-chic-muted/30 py-32 px-6 md:px-12">
             
             {/* Section: Event Info */}
             <section className="max-w-4xl mx-auto mb-40">
-              <div className="border border-exhibition-gold/20 bg-black/40 p-10 md:p-12">
+              <div className="border border-exhibition-gold/20 bg-chic-bg/40 p-10 md:p-12">
                 <div className="text-center mb-8">
                   <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.3em] block mb-3">
                     Lenscape 2026 Competition
@@ -409,35 +409,35 @@ export default function LandingPage() {
                   </h2>
                 </div>
 
-                <div className="space-y-6 text-sm font-mono text-zinc-400 leading-relaxed">
+                <div className="space-y-6 text-sm font-mono text-chic-primary leading-relaxed">
                   <div className="flex gap-4">
-                    <span className="text-exhibition-gold font-bold flex-shrink-0">01</span>
+                    <span className="text-chic-primary font-bold flex-shrink-0">01</span>
                     <div>
-                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Submit Your Work</h3>
+                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Submit Your Work</h3>
                       <p>Create and submit your artwork in any of our 4 categories. Each submission goes through curation before being displayed in the gallery.</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <span className="text-exhibition-gold font-bold flex-shrink-0">02</span>
+                    <span className="text-chic-primary font-bold flex-shrink-0">02</span>
                     <div>
-                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Community Voting</h3>
+                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Community Voting</h3>
                       <p>Vote for your favorite artwork in each category. <span className="text-exhibition-bone font-bold">You can cast one vote per category</span> — choose wisely!</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <span className="text-exhibition-gold font-bold flex-shrink-0">03</span>
+                    <span className="text-chic-primary font-bold flex-shrink-0">03</span>
                     <div>
-                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Winners Announced</h3>
+                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Winners Announced</h3>
                       <p>The artworks with the most votes in each category will be crowned winners and showcased in our Hall of Honor.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-zinc-800 text-center">
-                  <p className="text-xs font-mono text-zinc-500">
-                    <span className="text-exhibition-gold">4 Categories</span> · <span className="text-exhibition-gold">4 Votes Total</span> · <span className="text-exhibition-gold">Fair Competition</span>
+                <div className="mt-10 pt-8 border-t border-chic-muted/40 text-center">
+                  <p className="text-xs font-mono text-chic-muted">
+                    <span className="text-chic-primary">4 Categories</span> · <span className="text-chic-primary">4 Votes Total</span> · <span className="text-chic-primary">Fair Competition</span>
                   </p>
                 </div>
               </div>
@@ -454,18 +454,18 @@ export default function LandingPage() {
                 </h2>
               </div>
 
-              <div className="max-w-3xl mx-auto border border-exhibition-gold/15 p-10 md:p-12 relative overflow-hidden group text-center bg-black/40">
+              <div className="max-w-3xl mx-auto border border-exhibition-gold/15 p-10 md:p-12 relative overflow-hidden group text-center bg-chic-bg/40">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-exhibition-gold/3 to-transparent pointer-events-none" />
                 <h3 className="editorial-text text-3xl md:text-5xl font-light text-exhibition-bone mb-4">
                   Summer at Your Place
                 </h3>
-                <p className="font-mono text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
+                <p className="font-mono text-xs text-chic-primary max-w-xl mx-auto leading-relaxed">
                   Capture the warmth, intimacy and vibrancy of summer through your lens — your home, your city, your people.
                 </p>
               </div>
 
               {/* Categories overview */}
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-exhibition-gold/10">
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-chic-muted/20">
                 {[
                   { room: '01', cat: 'Photography', subs: ['Portrait', 'Landscape'] },
                   { room: '02', cat: 'Digital Art', subs: ['Concept Art', 'Character Design'] },
@@ -473,12 +473,12 @@ export default function LandingPage() {
                   { room: '04', cat: 'Motion Graphics', subs: ['Logo Animation', 'Explainer Video'] },
                 ].map(item => (
                   <div key={item.room} className="bg-exhibition-void p-6">
-                    <span className="font-mono text-[9px] text-zinc-600 block mb-2 uppercase tracking-widest">Room {item.room}</span>
-                    <h4 className="font-mono text-sm font-bold text-exhibition-gold uppercase tracking-wide mb-3">{item.cat}</h4>
+                    <span className="font-mono text-[9px] text-chic-muted block mb-2 uppercase tracking-widest">Room {item.room}</span>
+                    <h4 className="font-mono text-sm font-bold text-chic-primary uppercase tracking-wide mb-3">{item.cat}</h4>
                     <ul className="space-y-1">
                       {item.subs.map(s => (
-                        <li key={s} className="font-mono text-[9px] text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-1 h-1 bg-exhibition-gold/40 rounded-full flex-shrink-0" />
+                        <li key={s} className="font-mono text-[9px] text-chic-muted uppercase tracking-wider flex items-center gap-1.5">
+                          <span className="w-1 h-1 bg-chic-primary/40 rounded-full flex-shrink-0" />
                           {s}
                         </li>
                       ))}
@@ -490,7 +490,7 @@ export default function LandingPage() {
 
             {/* Section: Guidelines */}
             <section className="max-w-4xl mx-auto mb-40">
-              <div className="border border-zinc-900 bg-black/20 p-10 md:p-12 relative overflow-hidden">
+              <div className="border border-chic-muted/30 bg-chic-bg/20 p-10 md:p-12 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-exhibition-gold/5 blur-3xl rounded-full" />
                 <div className="text-center mb-8">
                   <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.3em] block mb-3">
@@ -501,7 +501,7 @@ export default function LandingPage() {
                   </h2>
                 </div>
 
-                <div className="space-y-8 max-w-3xl mx-auto text-sm font-mono text-zinc-400 leading-relaxed">
+                <div className="space-y-8 max-w-3xl mx-auto text-sm font-mono text-chic-primary leading-relaxed">
                   <div>
                     <h4 className="text-exhibition-gold font-semibold uppercase tracking-wider mb-2 text-sm md:text-base">1. Format & Quality</h4>
                     <p>Images should be high-resolution (minimum 1080p) in JPEG/PNG formats. Videos must be in MP4/WebM format, not exceeding 8 minutes in duration.</p>
@@ -541,7 +541,7 @@ export default function LandingPage() {
             {/* Section: Exhibition Rooms CTA */}
             <section ref={chambersRef} className="max-w-5xl mx-auto mb-32">
               <div className="text-center mb-20">
-                <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
+                <span className="font-mono text-xs text-chic-primary uppercase tracking-[0.25em] block mb-3">
                   Select a Room
                 </span>
                 <h2 className="editorial-text text-4xl md:text-5xl font-light">
@@ -553,17 +553,17 @@ export default function LandingPage() {
                 {/* Photography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=photography')}
-                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 01</span>
-                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 01</span>
+                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
                     Photography
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
                     Portrait Photography · Landscape Photography
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -572,17 +572,17 @@ export default function LandingPage() {
                 {/* Digital Art wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=digital-art')}
-                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 02</span>
-                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 02</span>
+                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
                     Digital Art
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
                     Concept Art · Character Design
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -591,17 +591,17 @@ export default function LandingPage() {
                 {/* Cinematography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=cinematography')}
-                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 03</span>
-                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 03</span>
+                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
                     Cinematography
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
                     Short Film · Travel Film
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -610,17 +610,17 @@ export default function LandingPage() {
                 {/* Motion Graphics wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=motion-graphics')}
-                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-black/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
-                  <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Room 04</span>
-                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 04</span>
+                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
                     Motion Graphics
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
                     Logo Animation · Explainer Video
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -628,18 +628,18 @@ export default function LandingPage() {
               </div>
 
               {/* Submit portal callout */}
-              <div className="mt-16 border border-exhibition-gold/25 p-10 bg-black/60 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="mt-16 border border-chic-muted/30 p-10 bg-chic-bg/60 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
-                  <h4 className="editorial-text text-xl font-bold text-exhibition-gold">
+                  <h4 className="editorial-text text-xl font-bold text-chic-primary">
                     Have your artwork shown in the corridor?
                   </h4>
-                  <p className="text-xs text-zinc-400 font-mono mt-1">
+                  <p className="text-xs text-chic-muted font-mono mt-1">
                     Submit your creations to be curated and voted on by peers.
                   </p>
                 </div>
                 <button
                   onClick={() => navigate('/submit')}
-                  className="px-6 py-3 bg-exhibition-gold text-exhibition-void font-mono font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors self-start md:self-auto"
+                  className="px-6 py-3 bg-chic-primary text-white font-mono font-bold text-xs uppercase tracking-widest hover:bg-exhibition-bone hover:text-chic-primary transition-colors self-start md:self-auto"
                 >
                   Add Your Canvas
                 </button>
@@ -648,13 +648,13 @@ export default function LandingPage() {
 
 
             {/* Footer */}
-            <footer className="max-w-6xl mx-auto border-t border-zinc-900 pt-16 flex flex-col md:flex-row justify-between items-center gap-6">
+            <footer className="max-w-6xl mx-auto border-t border-chic-muted/30 pt-16 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                <span className="font-mono text-[10px] text-chic-muted uppercase tracking-widest">
                   LENSCAPE © 2026 // ORGANIZED BY JLUG CLUB
                 </span>
               </div>
-              <div className="flex gap-8 font-mono text-[9px] tracking-widest uppercase text-zinc-400">
+              <div className="flex gap-8 font-mono text-[9px] tracking-widest uppercase text-chic-primary">
                 <Link to="/gallery" className="hover:text-exhibition-gold transition-colors">Exhibition</Link>
                 <Link to="/submit" className="hover:text-exhibition-gold transition-colors">Submit</Link>
                 <Link to="/profile" className="hover:text-exhibition-gold transition-colors">Profile</Link>
@@ -671,12 +671,12 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0, y: 50, x: '-50%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed bottom-4 left-1/2 w-[92%] max-w-[360px] bg-black/95 backdrop-blur-md border border-exhibition-gold/30 p-4 text-exhibition-bone z-[100] shadow-2xl rounded-sm flex flex-col gap-2 pointer-events-auto"
+                className="fixed bottom-4 left-1/2 w-[92%] max-w-[360px] bg-chic-bg/95 backdrop-blur-md border border-exhibition-gold/30 p-4 text-exhibition-bone z-[100] shadow-2xl rounded-sm flex flex-col gap-2 pointer-events-auto"
               >
                 {/* Hide Placard Button */}
                 <button
                   onClick={() => setShowPlacard(false)}
-                  className="absolute top-3.5 right-9 text-zinc-400 hover:text-exhibition-gold transition-colors text-[9px] font-mono px-1.5 py-0.5 border border-zinc-800 hover:border-exhibition-gold/30 rounded-sm uppercase tracking-widest"
+                  className="absolute top-3.5 right-9 text-chic-primary hover:text-exhibition-gold transition-colors text-[9px] font-mono px-1.5 py-0.5 border border-chic-muted/40 hover:border-exhibition-gold/30 rounded-sm uppercase tracking-widest"
                   title="Hide details"
                 >
                   Hide
@@ -685,7 +685,7 @@ export default function LandingPage() {
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedArtwork(null)}
-                  className="absolute top-2.5 right-2.5 text-zinc-400 hover:text-exhibition-gold transition-colors text-base p-1"
+                  className="absolute top-2.5 right-2.5 text-chic-primary hover:text-exhibition-gold transition-colors text-base p-1"
                   aria-label="Close details"
                 >
                   ✕
@@ -697,7 +697,7 @@ export default function LandingPage() {
                     {selectedArtwork.category.replace('-', ' ')}
                   </span>
                   {selectedArtwork.subCategory && (
-                    <span className="font-mono text-[7.5px] text-zinc-500 uppercase tracking-[0.2em]">
+                    <span className="font-mono text-[7.5px] text-chic-muted uppercase tracking-[0.2em]">
                       • {selectedArtwork.subCategory.replace('-', ' ')}
                     </span>
                   )}
@@ -708,7 +708,7 @@ export default function LandingPage() {
                   <h3 className="font-sans text-[15px] font-medium text-exhibition-bone tracking-wide leading-tight">
                     {selectedArtwork.title}
                   </h3>
-                  <p className="font-sans text-[11px] text-zinc-400 mt-0.5">
+                  <p className="font-sans text-[11px] text-chic-primary mt-0.5">
                     By <span className="text-zinc-200 font-medium">{selectedArtwork.artist.name}</span>
                     {selectedArtwork.artist.college && ` (${selectedArtwork.artist.college})`}
                   </p>
@@ -720,20 +720,20 @@ export default function LandingPage() {
                     <p className="font-serif italic text-[11px] text-exhibition-gold text-center tracking-wide leading-relaxed">
                       "Great things are done by a series of small things brought together."
                     </p>
-                    <p className="font-mono text-[8px] text-zinc-500 text-center mt-0.5 uppercase tracking-widest">
+                    <p className="font-mono text-[8px] text-chic-muted text-center mt-0.5 uppercase tracking-widest">
                       — Vincent van Gogh
                     </p>
                   </div>
                 )}
 
                 {/* Description */}
-                <p className="font-sans text-[11px] text-zinc-400 leading-normal max-h-16 overflow-y-auto pr-2 scrollbar-thin">
+                <p className="font-sans text-[11px] text-chic-primary leading-normal max-h-16 overflow-y-auto pr-2 scrollbar-thin">
                   {selectedArtwork.description}
                 </p>
 
                 {/* Bottom Bar: Action buttons */}
-                <div className="flex items-center justify-between mt-0.5 pt-2 border-t border-zinc-900">
-                  <span className="font-mono text-[9.5px] text-zinc-500">
+                <div className="flex items-center justify-between mt-0.5 pt-2 border-t border-chic-muted/30">
+                  <span className="font-mono text-[9.5px] text-chic-muted">
                     {selectedArtwork.id === 'starry-night-popular' ? 'Featured Masterpiece' : 'Hall of Fame · 2024'}
                   </span>
                   
@@ -749,7 +749,7 @@ export default function LandingPage() {
 
                     <button
                       onClick={() => setSelectedArtwork(null)}
-                      className="font-mono text-[9.5px] text-zinc-400 hover:text-exhibition-gold uppercase tracking-wider hover:underline transition-all pointer-events-auto"
+                      className="font-mono text-[9.5px] text-chic-primary hover:text-exhibition-gold uppercase tracking-wider hover:underline transition-all pointer-events-auto"
                     >
                       Back to Gallery
                     </button>
@@ -766,7 +766,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0, y: 30, x: '-50%' }}
                 onClick={() => setShowPlacard(true)}
-                className="fixed bottom-6 left-1/2 bg-black/95 hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-bone border border-exhibition-gold/30 px-4 py-2 text-[10px] font-mono tracking-widest uppercase transition-all rounded-sm shadow-2xl z-[100] flex items-center gap-1.5 pointer-events-auto"
+                className="fixed bottom-6 left-1/2 bg-chic-bg/95 hover:bg-exhibition-gold hover:text-exhibition-void text-exhibition-bone border border-exhibition-gold/30 px-4 py-2 text-[10px] font-mono tracking-widest uppercase transition-all rounded-sm shadow-2xl z-[100] flex items-center gap-1.5 pointer-events-auto"
               >
                 <Info size={12} className="text-exhibition-gold" />
                 <span>Show Details</span>
@@ -781,7 +781,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-8 pointer-events-auto"
+                className="fixed inset-0 z-[200] bg-chic-bg/95 backdrop-blur-md flex items-center justify-center p-4 md:p-8 pointer-events-auto"
                 onClick={() => setShowVideoModal(false)}
               >
                 {/* Screen-level Close button (easy to touch on mobile) */}
@@ -794,7 +794,7 @@ export default function LandingPage() {
                 </button>
 
                 <div 
-                  className="relative w-full max-w-4xl aspect-video bg-black border border-exhibition-gold/30 shadow-2xl flex items-center justify-center"
+                  className="relative w-full max-w-4xl aspect-video bg-chic-bg border border-exhibition-gold/30 shadow-2xl flex items-center justify-center"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {selectedArtwork.videoUrl.includes('drive.google.com') || selectedArtwork.videoUrl.includes('/preview') ? (

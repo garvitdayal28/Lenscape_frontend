@@ -32,7 +32,7 @@ const StarField: React.FC = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.fillStyle = '#C9A84C'
+      ctx.fillStyle = '#9B7EC8'   // soft mauve — visible on pastel lavender bg
       for (const s of stars) {
         ctx.globalAlpha = s.a
         ctx.fillRect(s.x - s.r, s.y - s.r, s.r * 2, s.r * 2)
@@ -85,7 +85,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
         even before React hydrates or framer-motion kicks in.
       */}
       {phase !== 'exit' && (
-        <div className="fixed inset-0 z-[999] bg-[#050505]" aria-hidden />
+        <div className="fixed inset-0 z-[999] bg-chic-bg" aria-hidden />
       )}
 
       <AnimatePresence>
@@ -98,28 +98,27 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
             exit={{ opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.76, 0, 0.24, 1] }}
             onAnimationComplete={() => { if (phase === 'enter') setPhase('idle') }}
-            className="fixed inset-0 z-[1000] bg-[#050505] flex flex-col items-center justify-center select-none overflow-hidden"
+            className="fixed inset-0 z-[1000] bg-exhibition-void flex flex-col items-center justify-center select-none overflow-hidden"
           >
             <StarField />
 
-            {/* Radial vignette */}
             <div
               className="absolute inset-0 pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%)' }}
+              style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(155,126,200,0.18) 100%)' }}
             />
 
             {/* Content */}
             <div className="relative z-10 text-center px-4">
               {/* Logo — starts visible immediately, no opacity-0 flash */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ delay: 0.2, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-[0.2em] text-exhibition-bone uppercase"
-                style={{ textShadow: '0 0 40px rgba(201,168,76,0.28)' }}
-              >
-                Lenscape
-              </motion.h1>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ delay: 0.2, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-[0.2em] text-exhibition-bone uppercase"
+                  style={{ textShadow: '0 0 40px rgba(155,126,200,0.30)' }}
+                >
+                  Lenscape
+                </motion.h1>
 
               {/* Divider */}
               <motion.div
@@ -134,7 +133,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
                 initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ delay: 1.3, duration: 1.0, ease: 'easeOut' }}
-                className="text-base md:text-xl font-light tracking-wide text-zinc-400 font-mono mb-12"
+                className="text-base md:text-xl font-light tracking-wide text-chic-primary font-mono mb-12"
               >
                 Every frame tells a story.
               </motion.p>
@@ -166,7 +165,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.05 }}
-            className="fixed inset-0 z-[999] bg-[#050505] pointer-events-none"
+            className="fixed inset-0 z-[999] bg-exhibition-void pointer-events-none"
           />
         )}
       </AnimatePresence>
