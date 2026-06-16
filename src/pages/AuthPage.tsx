@@ -171,7 +171,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-exhibition-void text-exhibition-bone relative overflow-hidden py-16 px-4 flex items-center justify-center select-none">
-      <ParticleField color="rgba(155, 126, 200, 0.45)" count={70} />
+      <ParticleField color="rgba(201, 168, 76, 0.2)" count={70} />
 
       <div className="max-w-md w-full z-10">
         <Link to="/">

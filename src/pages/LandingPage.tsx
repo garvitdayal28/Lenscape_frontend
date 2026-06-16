@@ -316,7 +316,7 @@ export default function LandingPage() {
   const useScrollY = useTransform(scrollY, [0, 400], [0, -80])
 
   return (
-    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold/30 selection:text-exhibition-bone relative">
+    <div className="min-h-screen bg-exhibition-void text-exhibition-bone selection:bg-exhibition-gold selection:text-exhibition-void relative">
 
       {/* 1. Cinematic Preloader Intro — sits on top (z-1000), 3D scene loads behind it */}
       <AnimatePresence>
@@ -395,7 +395,7 @@ export default function LandingPage() {
           </div>
 
           {/* Main scrollable section overlays */}
-          <div className="relative z-10 bg-exhibition-void border-t border-chic-muted/30 py-32 px-6 md:px-12">
+          <div className="relative z-10 bg-exhibition-void/90 backdrop-blur-md border-t border-exhibition-gold/15 py-32 px-6 md:px-12">
             
             {/* Section: Event Info */}
             <section className="max-w-4xl mx-auto mb-40">
@@ -411,25 +411,25 @@ export default function LandingPage() {
 
                 <div className="space-y-6 text-sm font-mono text-chic-primary leading-relaxed">
                   <div className="flex gap-4">
-                    <span className="text-chic-primary font-bold flex-shrink-0">01</span>
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">01</span>
                     <div>
-                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Submit Your Work</h3>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Submit Your Work</h3>
                       <p>Create and submit your artwork in any of our 4 categories. Each submission goes through curation before being displayed in the gallery.</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <span className="text-chic-primary font-bold flex-shrink-0">02</span>
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">02</span>
                     <div>
-                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Community Voting</h3>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Community Voting</h3>
                       <p>Vote for your favorite artwork in each category. <span className="text-exhibition-bone font-bold">You can cast one vote per category</span> — choose wisely!</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <span className="text-chic-primary font-bold flex-shrink-0">03</span>
+                    <span className="text-exhibition-gold font-bold flex-shrink-0">03</span>
                     <div>
-                      <h3 className="text-chic-primary font-bold mb-2 uppercase tracking-wide">Winners Announced</h3>
+                      <h3 className="text-exhibition-gold font-bold mb-2 uppercase tracking-wide">Winners Announced</h3>
                       <p>The artworks with the most votes in each category will be crowned winners and showcased in our Hall of Honor.</p>
                     </div>
                   </div>
@@ -437,7 +437,7 @@ export default function LandingPage() {
 
                 <div className="mt-10 pt-8 border-t border-chic-muted/40 text-center">
                   <p className="text-xs font-mono text-chic-muted">
-                    <span className="text-chic-primary">4 Categories</span> · <span className="text-chic-primary">4 Votes Total</span> · <span className="text-chic-primary">Fair Competition</span>
+                    <span className="text-exhibition-gold">4 Categories</span> · <span className="text-exhibition-gold">4 Votes Total</span> · <span className="text-exhibition-gold">Fair Competition</span>
                   </p>
                 </div>
               </div>
@@ -465,7 +465,7 @@ export default function LandingPage() {
               </div>
 
               {/* Categories overview */}
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-chic-muted/20">
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-exhibition-gold/10">
                 {[
                   { room: '01', cat: 'Photography', subs: ['Portrait', 'Landscape'] },
                   { room: '02', cat: 'Digital Art', subs: ['Concept Art', 'Character Design'] },
@@ -473,12 +473,12 @@ export default function LandingPage() {
                   { room: '04', cat: 'Motion Graphics', subs: ['Logo Animation', 'Explainer Video'] },
                 ].map(item => (
                   <div key={item.room} className="bg-exhibition-void p-6">
-                    <span className="font-mono text-[9px] text-chic-muted block mb-2 uppercase tracking-widest">Room {item.room}</span>
-                    <h4 className="font-mono text-sm font-bold text-chic-primary uppercase tracking-wide mb-3">{item.cat}</h4>
+                    <span className="font-mono text-[9px] text-zinc-600 block mb-2 uppercase tracking-widest">Room {item.room}</span>
+                    <h4 className="font-mono text-sm font-bold text-exhibition-gold uppercase tracking-wide mb-3">{item.cat}</h4>
                     <ul className="space-y-1">
                       {item.subs.map(s => (
                         <li key={s} className="font-mono text-[9px] text-chic-muted uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-1 h-1 bg-chic-primary/40 rounded-full flex-shrink-0" />
+                          <span className="w-1 h-1 bg-exhibition-gold/40 rounded-full flex-shrink-0" />
                           {s}
                         </li>
                       ))}
@@ -541,7 +541,7 @@ export default function LandingPage() {
             {/* Section: Exhibition Rooms CTA */}
             <section ref={chambersRef} className="max-w-5xl mx-auto mb-32">
               <div className="text-center mb-20">
-                <span className="font-mono text-xs text-chic-primary uppercase tracking-[0.25em] block mb-3">
+                <span className="font-mono text-xs text-exhibition-gold uppercase tracking-[0.25em] block mb-3">
                   Select a Room
                 </span>
                 <h2 className="editorial-text text-4xl md:text-5xl font-light">
@@ -553,17 +553,17 @@ export default function LandingPage() {
                 {/* Photography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=photography')}
-                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-chic-bg/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 01</span>
-                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
+                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
                     Photography
                   </h3>
-                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-primary mt-2 font-mono leading-relaxed">
                     Portrait Photography · Landscape Photography
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -572,17 +572,17 @@ export default function LandingPage() {
                 {/* Digital Art wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=digital-art')}
-                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-chic-bg/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 02</span>
-                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
+                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
                     Digital Art
                   </h3>
-                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-primary mt-2 font-mono leading-relaxed">
                     Concept Art · Character Design
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -591,17 +591,17 @@ export default function LandingPage() {
                 {/* Cinematography wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=cinematography')}
-                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-chic-bg/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 03</span>
-                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
+                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
                     Cinematography
                   </h3>
-                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-primary mt-2 font-mono leading-relaxed">
                     Short Film · Travel Film
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -610,17 +610,17 @@ export default function LandingPage() {
                 {/* Motion Graphics wing */}
                 <div
                   onClick={() => navigate('/gallery?cat=motion-graphics')}
-                  className="spot-md group cursor-pointer border border-chic-muted/30 bg-chic-bg/60 p-8 rounded-none hover:border-chic-primary/60 transition-all duration-500 relative overflow-hidden"
+                  className="spot-md group cursor-pointer border border-exhibition-gold/15 bg-chic-bg/40 p-8 rounded-none hover:border-exhibition-gold/60 transition-all duration-500 relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-chic-primary/8 to-transparent pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-exhibition-gold/5 to-transparent pointer-events-none" />
                   <span className="font-mono text-[10px] text-chic-muted tracking-widest uppercase">Room 04</span>
-                  <h3 className="editorial-text text-2xl font-bold text-chic-primary mt-2 group-hover:text-exhibition-bone transition-colors">
+                  <h3 className="editorial-text text-2xl font-bold text-exhibition-bone mt-2 group-hover:text-exhibition-gold transition-colors">
                     Motion Graphics
                   </h3>
-                  <p className="text-xs text-chic-muted mt-2 font-mono leading-relaxed">
+                  <p className="text-xs text-chic-primary mt-2 font-mono leading-relaxed">
                     Logo Animation · Explainer Video
                   </p>
-                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-chic-primary uppercase tracking-widest">
+                  <div className="flex items-center gap-2 mt-6 font-mono text-[10px] text-exhibition-gold uppercase tracking-widest">
                     <span>Enter Wing</span>
                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -628,18 +628,18 @@ export default function LandingPage() {
               </div>
 
               {/* Submit portal callout */}
-              <div className="mt-16 border border-chic-muted/30 p-10 bg-chic-bg/60 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="mt-16 border border-exhibition-gold/25 p-10 bg-chic-bg/60 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
-                  <h4 className="editorial-text text-xl font-bold text-chic-primary">
+                  <h4 className="editorial-text text-xl font-bold text-exhibition-gold">
                     Have your artwork shown in the corridor?
                   </h4>
-                  <p className="text-xs text-chic-muted font-mono mt-1">
+                  <p className="text-xs text-chic-primary font-mono mt-1">
                     Submit your creations to be curated and voted on by peers.
                   </p>
                 </div>
                 <button
                   onClick={() => navigate('/submit')}
-                  className="px-6 py-3 bg-chic-primary text-white font-mono font-bold text-xs uppercase tracking-widest hover:bg-exhibition-bone hover:text-chic-primary transition-colors self-start md:self-auto"
+                  className="px-6 py-3 bg-exhibition-gold text-exhibition-void font-mono font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors self-start md:self-auto"
                 >
                   Add Your Canvas
                 </button>
