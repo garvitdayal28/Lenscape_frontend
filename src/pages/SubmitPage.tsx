@@ -303,7 +303,7 @@ export default function SubmitPage() {
                 <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-3">
                   Orientation &amp; Dimension
                 </label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                   {ORIENTATIONS.map(o => (
                     <button key={o.id} type="button" onClick={() => setOrientation(o.id)}
                       className={`flex flex-col items-center gap-1.5 py-3 px-1 border transition-all ${
