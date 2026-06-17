@@ -33,11 +33,18 @@ const STATUS_CONFIG = {
 
 function formatDate(raw: any): string {
   if (!raw) return '—'
-  const ms = typeof raw === 'object' && raw._seconds
-    ? raw._seconds * 1000
-    : typeof raw === 'string' || typeof raw === 'number'
-      ? new Date(raw).getTime()
-      : NaN
+  let ms: number
+  if (typeof raw === 'object' && raw._seconds) {
+    // Firestore Timestamp object: { _seconds, _nanoseconds }
+    ms = raw._seconds * 1000
+  } else if (raw instanceof Date) {
+    // Already a JS Date object
+    ms = raw.getTime()
+  } else if (typeof raw === 'string' || typeof raw === 'number') {
+    ms = new Date(raw).getTime()
+  } else {
+    ms = NaN
+  }
   return isNaN(ms) ? '—' : new Date(ms).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 

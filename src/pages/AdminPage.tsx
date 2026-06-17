@@ -155,9 +155,11 @@ export default function AdminPage() {
       'Banned':            u.isBanned ? 'Yes' : 'No',
       'Voted Categories':  (u.votedCategories || []).join(', ') || 'None',
       'Votes Cast':        (u.votedCategories || []).length,
-      'Joined Date':       u.joinedDate
-                             ? new Date(u.joinedDate._seconds ? u.joinedDate._seconds * 1000 : u.joinedDate).toLocaleDateString('en-IN')
-                             : '',
+      'Joined Date':       (() => {
+                             if (!u.joinedDate) return ''
+                             const ms = u.joinedDate._seconds ? u.joinedDate._seconds * 1000 : new Date(u.joinedDate).getTime()
+                             return isNaN(ms) ? '' : new Date(ms).toLocaleDateString('en-IN')
+                           })(),
     }))
     const wsUsers = XLSX.utils.json_to_sheet(usersData)
     wsUsers['!cols'] = [20, 30, 30, 20, 10, 15, 15, 8, 40, 12, 15].map(w => ({ wch: w }))
@@ -179,9 +181,11 @@ export default function AdminPage() {
       'Has Image':      a.imageUrl ? 'Yes' : 'No',
       'Has Video':      a.videoUrl ? 'Yes' : 'No',
       'Rejection Note': a.rejectionReason || '',
-      'Submitted':      a.createdAt
-                          ? new Date(a.createdAt._seconds ? a.createdAt._seconds * 1000 : a.createdAt).toLocaleDateString('en-IN')
-                          : '',
+      'Submitted':      (() => {
+                          if (!a.createdAt) return ''
+                          const ms = a.createdAt._seconds ? a.createdAt._seconds * 1000 : new Date(a.createdAt).getTime()
+                          return isNaN(ms) ? '' : new Date(ms).toLocaleDateString('en-IN')
+                        })(),
     }))
     const wsArtworks = XLSX.utils.json_to_sheet(artworksData)
     wsArtworks['!cols'] = [30, 16, 18, 10, 25, 30, 25, 20, 8, 8, 10, 10, 30, 15].map(w => ({ wch: w }))
