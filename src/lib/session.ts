@@ -93,3 +93,34 @@ export async function verifySession(): Promise<SessionData | null> {
     return null
   }
 }
+
+/**
+ * Fetch the full user profile from the backend and sync all fields into the store.
+ * Login/signup endpoints only return token, userId, name, email, profileComplete —
+ * everything else (college, branch, bio, avatar, votedCategories) comes from the
+ * profile endpoint. Call this on app boot and after every auth action.
+ */
+export async function syncUserProfile(): Promise<void> {
+  const token = getToken()
+  if (!token) return
+  try {
+    const res = await fetch(`${API}/api/users/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) return
+    const p = await res.json()
+    // Only update fields that actually exist in the response
+    const updates: Partial<import('../store/authStore').AuthUser> = {}
+    if (p.name != null)             updates.name = p.name
+    if (p.email != null)            updates.email = p.email
+    if (p.college != null)          updates.college = p.college
+    if (p.branch != null)           updates.branch = p.branch
+    if (p.bio != null)              updates.bio = p.bio
+    if (p.avatar != null)           updates.avatar = p.avatar
+    if (p.votedCategories != null)  updates.votedCategories = p.votedCategories
+    if (p.profileComplete != null)  updates.profileComplete = p.profileComplete
+    useAuthStore.getState().updateProfile(updates)
+  } catch {
+    // Silently ignore — profile will stay stale until next sync
+  }
+}
