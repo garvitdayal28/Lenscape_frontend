@@ -368,7 +368,7 @@ export default function GalleryPage() {
               </button>
 
               {/* Left Side: Media display */}
-              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
+              <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-r border-zinc-900 overflow-hidden">
                 <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
                 
                 {selectedArtwork.videoUrl ? (
@@ -398,7 +398,7 @@ export default function GalleryPage() {
                   <img
                     src={selectedArtwork.imageUrl}
                     alt={selectedArtwork.title}
-                    className="max-w-full max-h-full object-contain shadow-2xl border border-white/5"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="text-zinc-500 font-mono text-sm">Media Unavailable</div>
