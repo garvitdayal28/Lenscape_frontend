@@ -352,11 +352,11 @@ export default function LandingPage() {
 
           {/* 
             Scroll-jacked 3D corridor.
-            The outer div is 300vh tall — this is the "scroll budget" for the camera walk.
+            The outer div is 400vh tall — this is the "scroll budget" for the camera walk.
             The inner div is sticky, so the canvas stays fixed while the user scrolls
-            through the 300vh. Once past it, normal page content resumes.
+            through the 400vh. Once past it, normal page content resumes.
           */}
-          <div className="relative" style={{ height: '300vh' }} data-corridor="true">
+          <div className="relative" style={{ height: '400vh' }} data-corridor="true">
             <div className="sticky top-0 w-full h-screen overflow-hidden">
               {/* 3D scene — delayed mount so intro overlay always paints first */}
               <div className="absolute inset-0 w-full h-full pointer-events-auto">

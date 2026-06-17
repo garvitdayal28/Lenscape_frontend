@@ -411,11 +411,17 @@ const CameraController: React.FC<CameraControllerProps> = ({ scrollPercent, focu
         lookTarget.current.set(px, py, pz)
       }
     } else {
+      // Re-map the scroll percentage so the camera reaches its destination at 80% of the total scroll.
+      // This leaves the remaining 20% of the scroll container to just hold the view, 
+      // ensuring the lerp completes and the painting fully covers the screen 
+      // BEFORE the sticky container releases and scrolls up.
+      const effectiveScroll = Math.min(1.0, scrollPercent / 0.8);
+
       // End the scroll very close to Starry Night so it fills the screen completely.
       // Starry Night is located at MIN_Z - 1.96. 
-      // A distance of ~0.6 units guarantees it covers both mobile and desktop viewports.
-      const END_Z = MIN_Z - 1.96 + 0.6;
-      const targetZ = MAX_Z - scrollPercent * (MAX_Z - END_Z)
+      // A distance of ~0.5 units guarantees it covers both mobile and desktop viewports.
+      const END_Z = MIN_Z - 1.96 + 0.5;
+      const targetZ = MAX_Z - effectiveScroll * (MAX_Z - END_Z)
       
       camTarget.current.set(0, 1, targetZ)
       lookTarget.current.set(0, 1, targetZ - 10)
