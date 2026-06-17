@@ -91,6 +91,15 @@ export default function LandingPage() {
           setShowNav(false)
         }
       }
+
+      // Close artwork details if user scrolls past the 3D corridor
+      const corridor = document.querySelector('[data-corridor="true"]')
+      if (corridor) {
+        const bottom = corridor.getBoundingClientRect().bottom
+        if (bottom < window.innerHeight * 0.8) {
+          setSelectedArtwork(prev => prev !== null ? null : prev)
+        }
+      }
     }
     window.addEventListener('scroll', handleScroll)
     // Trigger once on mount to set initial state
