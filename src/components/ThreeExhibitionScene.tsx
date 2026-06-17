@@ -6,7 +6,7 @@ import { TextureLoader } from 'three'
 import { Artwork } from '../types'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const MAX_Z = 5
+const MAX_Z = 8
 const MIN_Z = -35
 
 // Shared gold material — created once, reused everywhere
@@ -485,13 +485,13 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({
   const paintings = useMemo(() => {
     const wallX    = isMobile ? 3.4 : 5.0
     const paintX   = wallX - 0.04
-    const stepZ    = (MAX_Z - MIN_Z - 12) / Math.max(approvedArtworks.length, 1)
+    const stepZ    = (MAX_Z - MIN_Z - 16) / Math.max(approvedArtworks.length, 1)
     const list: { pos: [number, number, number]; rot: [number, number, number]; artwork: Artwork }[] = []
 
     approvedArtworks.forEach((artwork, i) => {
       const isLeft = i % 2 === 0
       list.push({
-        pos: [isLeft ? -paintX : paintX, 1.0, MAX_Z - 6 - i * stepZ],
+        pos: [isLeft ? -paintX : paintX, 1.0, MAX_Z - 10 - i * stepZ],
         rot: [0, isLeft ? Math.PI / 2 : -Math.PI / 2, 0],
         artwork,
       })

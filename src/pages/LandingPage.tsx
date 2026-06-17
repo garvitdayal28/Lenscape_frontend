@@ -217,6 +217,31 @@ export default function LandingPage() {
       comments: [],
       createdAt: new Date('2024-10-20'),
     },
+    {
+  id: 'winner-photo-pranjal-waadiyan-2025',
+  title: 'Waadiyan',
+  category: 'photography',
+  subCategory: 'landscape-photography',
+  artist: {
+    id: 'pranjal',
+    name: 'Pranjal',
+    email: '',
+    college: 'Lenscape 2024',
+    branch: '',
+    year: '',
+    avatar: null,
+    bio: 'A photographer passionate about capturing the grandeur of nature and the serenity of mountain landscapes.',
+    joinedDate: new Date('2024-10-20')
+  },
+  votes: 26,
+  imageUrl: 'https://res.cloudinary.com/dsjhcv06g/image/upload/v1781708427/Waadiyan.jpg',
+  thumbnailUrl: null,
+  videoUrl: null,
+  description: 'A breathtaking panoramic view of a Himalayan valley where towering snow-capped peaks surround a winding river below. The dramatic clouds and rugged terrain create a powerful sense of scale, tranquility, and the raw beauty of the mountains.',
+  status: 'approved' as const,
+  comments: [],
+  createdAt: new Date('2024-10-20'),
+}
   ]
   
 
