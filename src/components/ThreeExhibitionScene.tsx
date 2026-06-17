@@ -209,6 +209,83 @@ const WallLamp: React.FC<{ position: [number, number, number]; isLeft?: boolean;
   )
 }
 
+// ─── Chandelier Component ─────────────────────────────────────────────────────
+const Chandelier: React.FC<{ position: [number, number, number] }> = ({ position }) => {
+  return (
+    <group position={position}>
+      {/* Chain attaching to ceiling (ceiling is at y=4, if Chandelier is at y=3.2, distance is 0.8) */}
+      <mesh position={[0, 0.4, 0]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.8, 8]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+      </mesh>
+      
+      {/* Upper small ring */}
+      <mesh position={[0, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.3, 0.03, 16, 32]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+      </mesh>
+
+      {/* Main Body / Ring */}
+      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.8, 0.05, 16, 64]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+      </mesh>
+
+      {/* Spoke connections from center to main ring */}
+      {Array.from({ length: 4 }).map((_, i) => {
+        const angle = (i / 4) * Math.PI * 2;
+        return (
+          <group key={`spoke-${i}`} rotation={[0, angle, 0]}>
+            <mesh position={[0.4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.015, 0.015, 0.8, 8]} />
+              <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+            </mesh>
+          </group>
+        );
+      })}
+
+      {/* Center piece */}
+      <mesh position={[0, -0.2, 0]}>
+        <cylinderGeometry args={[0.1, 0.01, 0.6, 16]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+      </mesh>
+      <mesh position={[0, -0.5, 0]}>
+        <sphereGeometry args={[0.05, 16, 16]} />
+        <meshPhysicalMaterial color="#ffffff" transmission={0.9} opacity={1} transparent roughness={0.1} />
+      </mesh>
+
+      {/* Crystals/Lights around the ring */}
+      {Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const x = Math.cos(angle) * 0.8;
+        const z = Math.sin(angle) * 0.8;
+        return (
+          <group key={`bulb-${i}`} position={[x, 0.1, z]}>
+            {/* Bulb holder */}
+            <mesh position={[0, -0.05, 0]}>
+              <cylinderGeometry args={[0.03, 0.02, 0.1, 8]} />
+              <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+            </mesh>
+            {/* Crystal / Bulb */}
+            <mesh position={[0, 0.05, 0]}>
+              <sphereGeometry args={[0.04, 16, 16]} />
+              <meshStandardMaterial color="#fff" emissive="#ffe8cc" emissiveIntensity={2} />
+            </mesh>
+            {/* Soft point light for each bulb */}
+            <pointLight position={[0, 0, 0]} intensity={0.4} distance={6} color="#ffe8cc" />
+          </group>
+        );
+      })}
+      
+      {/* Central big light to illuminate the hall softly */}
+      <pointLight position={[0, -0.5, 0]} intensity={3} distance={15} color="#ffe8cc" />
+      
+      {/* Additional Sparkles for glamour */}
+      <Sparkles position={[0, 0, 0]} count={30} scale={[1.8, 0.5, 1.8]} size={1.5} color="#ffd700" speed={0.2} opacity={0.8} />
+    </group>
+  );
+}
+
 // ─── Gallery Environment ──────────────────────────────────────────────────────
 const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.CanvasTexture | null }> = ({
   isMobile,
@@ -231,6 +308,12 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       {/* Front Wall Lamps (Back of the hall, facing camera) */}
       <WallLamp position={[-2.5, 3.5, -36.98]} rotationY={0} />
       <WallLamp position={[ 2.5, 3.5, -36.98]} rotationY={0} />
+
+      {/* Grand Chandeliers */}
+      <Chandelier position={[0, 3.2, -4]} />
+      <Chandelier position={[0, 3.2, -14]} />
+      <Chandelier position={[0, 3.2, -24]} />
+      <Chandelier position={[0, 3.2, -34]} />
 
       {/* 2 floor uplights instead of 3 */}
       <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
