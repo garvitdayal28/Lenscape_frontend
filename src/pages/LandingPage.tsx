@@ -377,7 +377,7 @@ export default function LandingPage() {
                     <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] mb-4">
                       Glimpse of 2024
                     </span>
-                    <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
+                    <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-bold">
                       Hall of Fame
                     </h1>
                     <p className="font-sans text-xs text-exhibition-bone mt-3 max-w-sm tracking-wide">

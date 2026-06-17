@@ -156,6 +156,58 @@ const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSele
   )
 }
 
+// ─── Wall Lamp Component ──────────────────────────────────────────────────────
+const WallLamp: React.FC<{ position: [number, number, number]; isLeft: boolean }> = ({ position, isLeft }) => {
+  return (
+    <group position={position} rotation={[0, isLeft ? Math.PI / 2 : -Math.PI / 2, 0]}>
+      {/* Base on wall */}
+      <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.1, 0.1, 0.04, 32]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.1} />
+      </mesh>
+
+      {/* Golden Halo Ring */}
+      <mesh position={[0, 0, 0.1]} rotation={[0, 0, 0]}>
+        <torusGeometry args={[0.25, 0.03, 16, 64]} />
+        <meshStandardMaterial color="#fff" emissive="#ffe8cc" emissiveIntensity={1} metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Arched Arm */}
+      <mesh position={[0, 0.25, 0.15]} rotation={[0, 0, 0]}>
+        <torusGeometry args={[0.15, 0.015, 16, 32, Math.PI]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.1} />
+      </mesh>
+
+      {/* Hanging Lamp Cap */}
+      <mesh position={[0, 0.1, 0.3]} rotation={[0, 0, 0]}>
+        <cylinderGeometry args={[0.08, 0.08, 0.08, 32]} />
+        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.1} />
+      </mesh>
+
+      {/* Cascading Glass Shade */}
+      <mesh position={[0, -0.15, 0.3]} rotation={[0, 0, 0]}>
+        <coneGeometry args={[0.22, 0.45, 32, 1, true]} />
+        <meshPhysicalMaterial 
+          color="#ffffff" 
+          transmission={0.9} 
+          opacity={1} 
+          transparent 
+          roughness={0.15} 
+          ior={1.5} 
+          thickness={0.02} 
+          side={THREE.DoubleSide} 
+        />
+      </mesh>
+
+      {/* Gold Flakes (Sparkles inside the shade) */}
+      <Sparkles position={[0, -0.15, 0.3]} count={40} scale={[0.3, 0.4, 0.3]} size={1.5} color="#ffd700" speed={0.2} opacity={0.8} />
+
+      {/* Light Source */}
+      <pointLight position={[0, 0.05, 0.3]} intensity={6} color="#ffe8cc" distance={12} />
+    </group>
+  )
+}
+
 // ─── Gallery Environment ──────────────────────────────────────────────────────
 const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.CanvasTexture | null }> = ({
   isMobile,
@@ -170,11 +222,11 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       <ambientLight intensity={isMobile ? 0.9 : 0.7} color="#fff1e6" />
       <directionalLight position={[0, 10, 0]} intensity={0.5} color="#ffe8cc" />
 
-      {/* Top wall lights for elite hall look */}
-      <pointLight position={[-wallX + 0.5, 3.5, -10]} intensity={3} color="#ffe8cc" distance={8} />
-      <pointLight position={[ wallX - 0.5, 3.5, -16]} intensity={3} color="#ffe8cc" distance={8} />
-      <pointLight position={[-wallX + 0.5, 3.5, -24]} intensity={3} color="#ffe8cc" distance={8} />
-      <pointLight position={[ wallX - 0.5, 3.5, -30]} intensity={3} color="#ffe8cc" distance={8} />
+      {/* Realistic Wall Lamps */}
+      <WallLamp position={[-wallX, 3.5, -10]} isLeft={true} />
+      <WallLamp position={[ wallX, 3.5, -16]} isLeft={false} />
+      <WallLamp position={[-wallX, 3.5, -24]} isLeft={true} />
+      <WallLamp position={[ wallX, 3.5, -30]} isLeft={false} />
 
       {/* 2 floor uplights instead of 3 */}
       <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
@@ -189,7 +241,7 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4, -20]}>
         <planeGeometry args={[fcW, 80]} />
-        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
+        <meshStandardMaterial color="#2e2b26" roughness={0.85} />
       </mesh>
       {/* Starry sparkles on ceiling */}
       <Sparkles position={[0, 3.8, -20]} scale={[fcW, 1, 80]} count={250} speed={0.4} opacity={0.6} color="#ffe8cc" size={1.5} />
@@ -197,21 +249,21 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       {/* Walls */}
       <mesh rotation={[0,  Math.PI / 2, 0]} position={[-wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
+        <meshStandardMaterial color="#2e2b26" roughness={0.85} />
       </mesh>
       {/* Starry sparkles on left wall */}
       <Sparkles position={[-wallX + 0.1, 1, -20]} scale={[1, 6, 80]} count={200} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
 
       <mesh rotation={[0, -Math.PI / 2, 0]} position={[ wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
+        <meshStandardMaterial color="#2e2b26" roughness={0.85} />
       </mesh>
       {/* Starry sparkles on right wall */}
       <Sparkles position={[wallX - 0.1, 1, -20]} scale={[1, 6, 80]} count={200} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
 
       <mesh position={[0, 1, -37]}>
         <planeGeometry args={[fcW, 6]} />
-        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
+        <meshStandardMaterial color="#2e2b26" roughness={0.85} />
       </mesh>
       {/* Starry sparkles on back wall */}
       <Sparkles position={[0, 1, -36.9]} scale={[fcW, 6, 1]} count={50} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
@@ -223,6 +275,9 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
           <mesh position={[x,  3.9, -20]} material={GOLD_MAT}><boxGeometry args={[0.04, 0.2, 80]} /></mesh>
         </React.Fragment>
       ))}
+      {/* Back wall gold trims */}
+      <mesh position={[0, -1.9, -36.98]} material={GOLD_MAT}><boxGeometry args={[fcW, 0.2, 0.04]} /></mesh>
+      <mesh position={[0,  3.9, -36.98]} material={GOLD_MAT}><boxGeometry args={[fcW, 0.2, 0.04]} /></mesh>
 
       {/* Quote above Starry Night */}
       <Suspense fallback={null}>
@@ -230,7 +285,7 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
           position={[0, 2.65, -36.9]}
           fontSize={0.13}
           maxWidth={isMobile ? 5.5 : 7.5}
-          color="#1c1c1c"
+          color="#C9A84C"
           textAlign="center"
           anchorX="center"
           anchorY="middle"
