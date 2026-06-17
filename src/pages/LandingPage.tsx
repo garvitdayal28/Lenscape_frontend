@@ -380,7 +380,7 @@ export default function LandingPage() {
                     <h1 className="editorial-text text-4xl md:text-6xl text-exhibition-bone max-w-2xl font-light">
                       Hall of Fame
                     </h1>
-                    <p className="font-sans text-xs text-zinc-500 mt-3 max-w-sm tracking-wide">
+                    <p className="font-sans text-xs text-exhibition-bone mt-3 max-w-sm tracking-wide">
                       Walk through the glimpse of 2024. Click on any frame to inspect the artwork.
                     </p>
                     <motion.div
