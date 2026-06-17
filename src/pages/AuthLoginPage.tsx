@@ -6,6 +6,7 @@ import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../lib/firebase'
 import { saveSession } from '../lib/session'
 import ParticleField from '../components/ParticleField'
+import InstagramBrowserWarning from '../components/InstagramBrowserWarning'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -75,6 +76,8 @@ export default function AuthLoginPage() {
             <ArrowLeft size={14} /> Exhibition Hall
           </button>
         </Link>
+
+        <InstagramBrowserWarning />
 
         <AnimatePresence mode="wait">
           {done ? (
