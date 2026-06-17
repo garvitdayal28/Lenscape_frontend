@@ -13,6 +13,7 @@ export interface SessionData {
   profileComplete: boolean
   college?: string
   branch?: string
+  year?: string
   bio?: string
   avatar?: string
 }
@@ -27,6 +28,7 @@ export function saveSession(data: SessionData) {
     token: data.token,
     college: data.college,
     branch: data.branch,
+    year: data.year,
     bio: data.bio,
     avatar: data.avatar,
   })
@@ -39,6 +41,7 @@ export function saveSession(data: SessionData) {
   localStorage.setItem('lenscape_profile_complete', data.profileComplete ? 'true' : 'false')
   if (data.college) localStorage.setItem('lenscape_user_college', data.college)
   if (data.branch)  localStorage.setItem('lenscape_user_branch', data.branch)
+  if (data.year)    localStorage.setItem('lenscape_user_year', data.year)
   if (data.bio)     localStorage.setItem('lenscape_user_bio', data.bio)
   if (data.avatar)  localStorage.setItem('lenscape_user_avatar', data.avatar)
 }
@@ -61,6 +64,7 @@ export function clearSession() {
   localStorage.removeItem('lenscape_profile_complete')
   localStorage.removeItem('lenscape_user_college')
   localStorage.removeItem('lenscape_user_branch')
+  localStorage.removeItem('lenscape_user_year')
   localStorage.removeItem('lenscape_user_bio')
   localStorage.removeItem('lenscape_user_avatar')
   localStorage.removeItem('lenscape-auth')
@@ -115,11 +119,20 @@ export async function syncUserProfile(): Promise<void> {
     if (p.email != null)            updates.email = p.email
     if (p.college != null)          updates.college = p.college
     if (p.branch != null)           updates.branch = p.branch
+    if (p.year != null)             updates.year = p.year
     if (p.bio != null)              updates.bio = p.bio
     if (p.avatar != null)           updates.avatar = p.avatar
     if (p.votedCategories != null)  updates.votedCategories = p.votedCategories
     if (p.profileComplete != null)  updates.profileComplete = p.profileComplete
+    
     useAuthStore.getState().updateProfile(updates)
+    
+    // Also sync to legacy local storage so components reading directly from it get updates immediately
+    if (p.college != null) localStorage.setItem('lenscape_user_college', p.college)
+    if (p.branch != null) localStorage.setItem('lenscape_user_branch', p.branch)
+    if (p.year != null) localStorage.setItem('lenscape_user_year', p.year)
+    if (p.bio != null) localStorage.setItem('lenscape_user_bio', p.bio)
+    if (p.avatar != null) localStorage.setItem('lenscape_user_avatar', p.avatar)
   } catch {
     // Silently ignore — profile will stay stale until next sync
   }

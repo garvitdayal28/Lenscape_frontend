@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { LogOut, School, BookOpen, User, Award, Compass, Rocket, MessageSquare, Crown, Gem, Clock, CheckCircle, XCircle, Star, Medal } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { clearSession, getToken, authHeaders } from '../lib/session'
+import { clearSession, getToken, authHeaders, syncUserProfile } from '../lib/session'
 import { useAuthStore } from '../store/authStore'
 import ExhibitionNav from '../components/ExhibitionNav'
 
@@ -85,6 +85,8 @@ export default function ProfilePage() {
       setLoading(false)
     }
     fetchSubmissions()
+    // Trigger a background sync of the user profile so data is always fresh
+    syncUserProfile()
   }, [token])
 
   const handleLogout = () => { clearSession(); navigate('/') }
