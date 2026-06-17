@@ -66,7 +66,7 @@ export default function AdminPage() {
   }
 
   const fetchApproved = async () => {
-    const res = await fetch(`${API}/api/artworks`, { headers: authHeaders() })
+    const res = await fetch(`${API}/api/admin/artworks`, { headers: authHeaders() })
     if (res.ok) {
       const data = await res.json()
       setApprovedArtworks(data)
@@ -369,10 +369,30 @@ export default function AdminPage() {
                 <div className="p-4">
                   <h4 className="font-mono text-sm font-bold text-exhibition-bone truncate mb-1">{art.title}</h4>
                   <p className="font-mono text-[10px] text-chic-muted mb-2">by {art.artist?.name}</p>
-                  <div className="flex items-center justify-between text-[9px] font-mono text-zinc-600">
+                  <div className="flex items-center justify-between text-[9px] font-mono text-zinc-600 mb-2">
                     <span className="text-exhibition-gold uppercase">{art.category.replace('-', ' ')}</span>
                     <span>{art.votes || 0} votes</span>
                   </div>
+                  {art.approvedBy && (
+                    <div className="pt-2 border-t border-chic-muted/20 text-[8px] text-zinc-500 uppercase tracking-widest">
+                      Approved by: <span className="text-exhibition-gold">{art.approvedBy}</span>
+                    </div>
+                  )}
+                  {art.voterDetails && art.voterDetails.length > 0 && (
+                    <div className="pt-2 border-t border-chic-muted/20">
+                      <p className="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">Liked by:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {art.voterDetails.slice(0, 3).map((voter: any) => (
+                          <span key={voter.id} className="text-[7px] bg-exhibition-gold/10 text-exhibition-gold px-2 py-0.5 border border-exhibition-gold/20">
+                            {voter.name}
+                          </span>
+                        ))}
+                        {art.voterDetails.length > 3 && (
+                          <span className="text-[7px] text-zinc-500 px-2 py-0.5">+{art.voterDetails.length - 3} more</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -527,6 +547,26 @@ export default function AdminPage() {
                       : 'text-exhibition-gold border-exhibition-gold/20 bg-exhibition-gold/5'
                     }`}>{previewArtwork.status}</span>
                   </div>
+
+                  {previewArtwork.approvedBy && (
+                    <div className="mt-3 pt-3 border-t border-chic-muted/20 text-[9px] font-mono text-zinc-500">
+                      Approved by: <span className="text-exhibition-gold font-bold">{previewArtwork.approvedBy}</span>
+                    </div>
+                  )}
+
+                  {previewArtwork.voterDetails && previewArtwork.voterDetails.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-chic-muted/20">
+                      <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Liked by ({previewArtwork.voterDetails.length}):</p>
+                      <div className="space-y-1.5">
+                        {previewArtwork.voterDetails.map((voter: any) => (
+                          <div key={voter.id} className="text-[8px] font-mono bg-exhibition-gold/5 border border-exhibition-gold/15 px-3 py-1.5 rounded">
+                            <div className="text-exhibition-gold font-bold">{voter.name}</div>
+                            <div className="text-zinc-500">{voter.college || voter.email}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Admin quick actions inside modal */}
