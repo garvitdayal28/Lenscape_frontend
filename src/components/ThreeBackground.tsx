@@ -132,12 +132,12 @@ function ThreeBackground() {
 
   if (!mounted) {
     return (
-      <div className="fixed inset-0 -z-10 bg-chic-bg" />
+      <div className="fixed inset-0 -z-10 bg-[#020202]" />
     );
   }
 
   return (
-    <div className="fixed inset-0 -z-10 bg-chic-bg">
+    <div className="fixed inset-0 -z-10 bg-[#020202]">
       <Canvas camera={{ position: [0, 0, 5], fof: 75 }}>
         <color attach="background" args={['#030303']} />
         <ambientLight intensity={0.7} />

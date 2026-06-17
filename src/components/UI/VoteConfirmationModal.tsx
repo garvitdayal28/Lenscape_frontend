@@ -16,7 +16,7 @@ export default function VoteConfirmationModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[1100] bg-chic-bg/90 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={() => setShowVoteConfirmation(false)}
     >
       <motion.div
@@ -24,7 +24,7 @@ export default function VoteConfirmationModal({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="relative w-full max-w-md bg-chic-bg border border-exhibition-gold/30 shadow-2xl p-8"
+        className="relative w-full max-w-md bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Warning Icon */}
@@ -40,10 +40,10 @@ export default function VoteConfirmationModal({
         </h3>
 
         {/* Message */}
-        <p className="text-sm text-chic-primary font-mono text-center leading-relaxed mb-2">
+        <p className="text-sm text-zinc-400 font-mono text-center leading-relaxed mb-2">
           You can only vote <span className="text-exhibition-gold font-bold">once</span> per category.
         </p>
-        <p className="text-xs text-chic-muted font-mono text-center leading-relaxed mb-8">
+        <p className="text-xs text-zinc-500 font-mono text-center leading-relaxed mb-8">
           This action cannot be undone. Are you sure you want to cast your vote?
         </p>
 
@@ -51,7 +51,7 @@ export default function VoteConfirmationModal({
         <div className="flex gap-3">
           <button
             onClick={() => setShowVoteConfirmation(false)}
-            className="flex-1 px-4 py-3 border border-chic-muted/50 text-chic-primary font-mono text-xs uppercase tracking-wider hover:border-zinc-500 hover:text-chic-primary transition-all"
+            className="flex-1 px-4 py-3 border border-zinc-700 text-zinc-400 font-mono text-xs uppercase tracking-wider hover:border-zinc-500 hover:text-zinc-300 transition-all"
           >
             Cancel
           </button>

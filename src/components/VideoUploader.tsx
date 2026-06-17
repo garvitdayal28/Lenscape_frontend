@@ -118,7 +118,7 @@ export default function VideoUploader({
         {!videoFile ? (
           <div
             onClick={() => videoInputRef.current?.click()}
-            className="border-2 border-dashed border-exhibition-gold/30 hover:border-exhibition-gold/60 bg-chic-bg/20 p-8 rounded-none cursor-pointer transition-colors group"
+            className="border-2 border-dashed border-exhibition-gold/30 hover:border-exhibition-gold/60 bg-black/20 p-8 rounded-none cursor-pointer transition-colors group"
           >
             <input
               ref={videoInputRef}
@@ -129,31 +129,31 @@ export default function VideoUploader({
             />
             <div className="flex flex-col items-center justify-center text-center">
               <Film size={48} className="text-exhibition-gold/40 group-hover:text-exhibition-gold/60 transition-colors mb-4" />
-              <p className="font-mono text-sm text-chic-primary mb-1">Click to upload video</p>
+              <p className="font-mono text-sm text-zinc-400 mb-1">Click to upload video</p>
               <p className="font-mono text-xs text-zinc-600">MP4 or MKV, max 500MB</p>
             </div>
           </div>
         ) : (
-          <div className="border border-exhibition-gold/30 bg-chic-bg/40 p-4 rounded-none relative">
+          <div className="border border-exhibition-gold/30 bg-black/40 p-4 rounded-none relative">
             <button
               onClick={handleRemoveVideo}
               className="absolute top-2 right-2 w-8 h-8 bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
             >
-              <X size={16} className="text-chic-primary" />
+              <X size={16} className="text-white" />
             </button>
             
             {videoPreview && (
               <video
                 src={videoPreview}
                 controls
-                className="w-full max-h-64 bg-chic-bg mb-3 relative z-[40]"
+                className="w-full max-h-64 bg-black mb-3 relative z-[40]"
               />
             )}
             
             <div className="flex items-center gap-2 text-sm">
               <Film size={16} className="text-exhibition-gold" />
-              <span className="font-mono text-chic-primary truncate flex-1">{videoFile.name}</span>
-              <span className="font-mono text-xs text-chic-muted">
+              <span className="font-mono text-zinc-300 truncate flex-1">{videoFile.name}</span>
+              <span className="font-mono text-xs text-zinc-500">
                 {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
               </span>
               <CheckCircle size={16} className="text-green-500" />
@@ -171,7 +171,7 @@ export default function VideoUploader({
         {!coverFile ? (
           <div
             onClick={() => coverInputRef.current?.click()}
-            className="border-2 border-dashed border-exhibition-gold/30 hover:border-exhibition-gold/60 bg-chic-bg/20 p-8 rounded-none cursor-pointer transition-colors group"
+            className="border-2 border-dashed border-exhibition-gold/30 hover:border-exhibition-gold/60 bg-black/20 p-8 rounded-none cursor-pointer transition-colors group"
           >
             <input
               ref={coverInputRef}
@@ -182,31 +182,31 @@ export default function VideoUploader({
             />
             <div className="flex flex-col items-center justify-center text-center">
               <ImageIcon size={48} className="text-exhibition-gold/40 group-hover:text-exhibition-gold/60 transition-colors mb-4" />
-              <p className="font-mono text-sm text-chic-primary mb-1">Click to upload cover image</p>
+              <p className="font-mono text-sm text-zinc-400 mb-1">Click to upload cover image</p>
               <p className="font-mono text-xs text-zinc-600">JPG, PNG or WebP, max 10MB</p>
             </div>
           </div>
         ) : (
-          <div className="border border-exhibition-gold/30 bg-chic-bg/40 p-4 rounded-none relative">
+          <div className="border border-exhibition-gold/30 bg-black/40 p-4 rounded-none relative">
             <button
               onClick={handleRemoveCover}
               className="absolute top-2 right-2 w-8 h-8 bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
             >
-              <X size={16} className="text-chic-primary" />
+              <X size={16} className="text-white" />
             </button>
             
             {coverPreview && (
               <img
                 src={coverPreview}
                 alt="Cover preview"
-                className="w-full h-48 object-cover bg-chic-bg mb-3 relative z-[40]"
+                className="w-full h-48 object-cover bg-black mb-3 relative z-[40]"
               />
             )}
             
             <div className="flex items-center gap-2 text-sm">
               <ImageIcon size={16} className="text-exhibition-gold" />
-              <span className="font-mono text-chic-primary truncate flex-1">{coverFile.name}</span>
-              <span className="font-mono text-xs text-chic-muted">
+              <span className="font-mono text-zinc-300 truncate flex-1">{coverFile.name}</span>
+              <span className="font-mono text-xs text-zinc-500">
                 {(coverFile.size / (1024 * 1024)).toFixed(2)} MB
               </span>
               <CheckCircle size={16} className="text-green-500" />
@@ -217,7 +217,7 @@ export default function VideoUploader({
 
       {/* Help Text */}
       <div className="bg-exhibition-gold/5 border border-exhibition-gold/20 p-4">
-        <p className="font-mono text-xs text-chic-primary leading-relaxed">
+        <p className="font-mono text-xs text-zinc-400 leading-relaxed">
           <strong className="text-exhibition-gold">Note:</strong> For cinematography and motion graphics submissions, 
           both video file and cover image are required. The cover image will be displayed as a thumbnail in the gallery.
         </p>

@@ -82,7 +82,7 @@ export default function ProfileSetupPage() {
       <ParticleField color="rgba(201, 168, 76, 0.2)" count={70} />
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full z-10">
-        <div className="bg-chic-light/20 border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
+        <div className="bg-[#0c0c0c] border border-exhibition-gold/25 p-8 md:p-10 shadow-2xl relative">
           {['top-2 left-2','top-2 right-2','bottom-2 left-2','bottom-2 right-2'].map(p => (
             <div key={p} className={`absolute ${p} w-1.5 h-1.5 bg-exhibition-gold/30 rounded-full`} />
           ))}
@@ -90,52 +90,52 @@ export default function ProfileSetupPage() {
           <div className="text-center mb-8">
             <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-2">Almost There</span>
             <h2 className="editorial-text text-4xl font-light">Complete Profile</h2>
-            <p className="font-mono text-[10px] text-chic-muted mt-2">Tell us who you are to join the exhibition</p>
+            <p className="font-mono text-[10px] text-zinc-500 mt-2">Tell us who you are to join the exhibition</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-2">Creator Name</label>
+              <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Creator Name</label>
               <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Tanisha"
-                className="w-full bg-white border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
+                className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-2">College</label>
+                <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">College</label>
                 <input type="text" value={college} onChange={e => setCollege(e.target.value)} required placeholder="e.g. JNEC"
-                  className="w-full bg-white border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
+                  className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
               </div>
               <div>
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-2">Branch</label>
+                <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Branch</label>
                 <input type="text" value={branch} onChange={e => setBranch(e.target.value)} required placeholder="e.g. CS"
-                  className="w-full bg-white border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
+                  className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-2">Year</label>
+                <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Year</label>
                 <select value={year} onChange={e => setYear(e.target.value)}
-                  className="w-full bg-white border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50">
+                  className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50">
                   {['1st Year','2nd Year','3rd Year','4th Year'].map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-2">Bio</label>
+                <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Bio</label>
                 <input type="text" value={bio} onChange={e => setBio(e.target.value)} placeholder="e.g. 3D Animator"
-                  className="w-full bg-white border border-chic-muted/40 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
+                  className="w-full bg-[#121212] border border-zinc-800 text-xs font-mono px-4 py-3 text-exhibition-bone focus:outline-none focus:border-exhibition-gold/50" />
               </div>
             </div>
 
             <div>
-              <label className="block font-mono text-[9px] uppercase tracking-widest text-chic-primary mb-3">Identity Avatar</label>
+              <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-3">Identity Avatar</label>
               <div className="flex gap-3 justify-center flex-wrap">
                 {avatarSeeds.map(seed => {
                   const url = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`
                   return (
                     <div key={seed} onClick={() => setAvatar(url)}
-                      className={`w-10 h-10 border cursor-pointer relative transition-all ${avatar === url ? 'border-exhibition-gold scale-105' : 'border-chic-muted/40 hover:border-chic-muted/50'}`}>
+                      className={`w-10 h-10 border cursor-pointer relative transition-all ${avatar === url ? 'border-exhibition-gold scale-105' : 'border-zinc-800 hover:border-zinc-700'}`}>
                       <img src={url} alt={seed} className="w-full h-full object-contain" />
                       {avatar === url && <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-exhibition-gold rounded-full" />}
                     </div>

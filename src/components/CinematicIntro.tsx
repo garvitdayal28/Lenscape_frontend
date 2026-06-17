@@ -85,7 +85,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
         even before React hydrates or framer-motion kicks in.
       */}
       {phase !== 'exit' && (
-        <div className="fixed inset-0 z-[999] bg-chic-bg" aria-hidden />
+        <div className="fixed inset-0 z-[999] bg-[#050505]" aria-hidden />
       )}
 
       <AnimatePresence>
@@ -98,7 +98,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
             exit={{ opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.76, 0, 0.24, 1] }}
             onAnimationComplete={() => { if (phase === 'enter') setPhase('idle') }}
-            className="fixed inset-0 z-[1000] bg-chic-bg flex flex-col items-center justify-center select-none overflow-hidden"
+            className="fixed inset-0 z-[1000] bg-[#050505] flex flex-col items-center justify-center select-none overflow-hidden"
           >
             <StarField />
 
@@ -134,7 +134,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
                 initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ delay: 1.3, duration: 1.0, ease: 'easeOut' }}
-                className="text-base md:text-xl font-light tracking-wide text-chic-primary font-mono mb-12"
+                className="text-base md:text-xl font-light tracking-wide text-zinc-400 font-mono mb-12"
               >
                 Every frame tells a story.
               </motion.p>
@@ -166,7 +166,7 @@ const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete, preloadUrls
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.05 }}
-            className="fixed inset-0 z-[999] bg-chic-bg pointer-events-none"
+            className="fixed inset-0 z-[999] bg-[#050505] pointer-events-none"
           />
         )}
       </AnimatePresence>

@@ -105,17 +105,17 @@ export default function ProfilePage() {
       <ExhibitionNav />
 
       {/* Header */}
-      <div className="relative border-b border-chic-muted/30/60 bg-chic-bg/10 py-24">
+      <div className="relative border-b border-zinc-900/60 bg-black/10 py-24">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-end justify-between gap-12">
           <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="w-32 h-32 bg-chic-light/20 border border-exhibition-gold p-2 relative flex-shrink-0 shadow-2xl">
+            <div className="w-32 h-32 bg-[#0c0c0c] border border-exhibition-gold p-2 relative flex-shrink-0 shadow-2xl">
               <img src={avatar} className="w-full h-full object-cover" alt={userName} />
               <div className="absolute -bottom-2 -right-2 bg-exhibition-gold text-exhibition-void px-2 py-0.5 text-[8px] font-mono font-bold tracking-widest uppercase">Active</div>
             </div>
             <div>
               <span className="font-mono text-[10px] text-exhibition-gold uppercase tracking-[0.3em] block mb-2">Registered Student Artist</span>
               <h1 className="editorial-text text-5xl md:text-7xl font-light text-exhibition-bone tracking-wide leading-none">{userName}</h1>
-              <p className="text-xs font-mono text-chic-muted mt-3 max-w-xl italic">
+              <p className="text-xs font-mono text-zinc-500 mt-3 max-w-xl italic">
                 {bio ? `"${bio}"` : `"Exploring new visual dimensions in Lenscape."`}
               </p>
             </div>
@@ -129,12 +129,12 @@ export default function ProfilePage() {
       <div className="max-w-6xl mx-auto px-6 mt-16">
 
         {/* Info placard — always show (falls back to email if college/branch not set) */}
-        <div className="border border-chic-muted/30 p-6 bg-chic-light/20 mb-12 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between shadow-lg">
+        <div className="border border-zinc-900 p-6 bg-[#0c0c0c] mb-12 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between shadow-lg">
           {college ? (
             <div className="flex items-start gap-3">
               <School size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
               <div>
-                <span className="text-[8px] text-chic-muted font-mono block">INSTITUTION</span>
+                <span className="text-[8px] text-zinc-500 font-mono block">INSTITUTION</span>
                 <span className="text-xs font-mono uppercase tracking-wider text-exhibition-bone">{college}</span>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
             <div className="flex items-start gap-3">
               <BookOpen size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
               <div>
-                <span className="text-[8px] text-chic-muted font-mono block">CREATIVE DISCIPLINE</span>
+                <span className="text-[8px] text-zinc-500 font-mono block">CREATIVE DISCIPLINE</span>
                 <span className="text-xs font-mono uppercase tracking-wider text-exhibition-bone">{branch}</span>
               </div>
             </div>
@@ -151,14 +151,14 @@ export default function ProfilePage() {
           <div className="flex items-start gap-3">
             <User size={16} className="text-exhibition-gold mt-0.5 flex-shrink-0" />
             <div>
-              <span className="text-[8px] text-chic-muted font-mono block">EMAIL</span>
+              <span className="text-[8px] text-zinc-500 font-mono block">EMAIL</span>
               <span className="text-xs font-mono text-exhibition-bone">{userEmail}</span>
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-px bg-zinc-900 border border-chic-muted/30 mb-12">
+        <div className="grid grid-cols-3 gap-px bg-zinc-900 border border-zinc-900 mb-12">
           {[
             { label: 'Submitted', value: submissions.length },
             { label: 'Approved',  value: approved.length },
@@ -166,15 +166,15 @@ export default function ProfilePage() {
           ].map(s => (
             <div key={s.label} className="bg-exhibition-void py-6 text-center">
               <span className="editorial-text text-4xl font-bold text-exhibition-gold">{s.value}</span>
-              <span className="font-mono text-[9px] text-chic-muted uppercase tracking-widest block mt-1">{s.label}</span>
+              <span className="font-mono text-[9px] text-zinc-500 uppercase tracking-widest block mt-1">{s.label}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-chic-muted/30 mb-8 font-mono text-[10px] uppercase tracking-[0.25em]">
+        <div className="flex border-b border-zinc-900 mb-8 font-mono text-[10px] uppercase tracking-[0.25em]">
           <button onClick={() => setActiveTab('submissions')}
-            className={`py-3 px-6 border-b-2 transition-all ${activeTab === 'submissions' ? 'border-exhibition-gold text-exhibition-gold' : 'border-transparent text-chic-muted hover:text-chic-primary'}`}>
+            className={`py-3 px-6 border-b-2 transition-all ${activeTab === 'submissions' ? 'border-exhibition-gold text-exhibition-gold' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}>
             My Submissions ({submissions.length})
           </button>
         </div>
@@ -183,13 +183,13 @@ export default function ProfilePage() {
         {activeTab === 'submissions' && (
           <div>
             {loadingSubmissions ? (
-              <div className="text-center py-20 border border-chic-muted/30">
+              <div className="text-center py-20 border border-zinc-900">
                 <span className="font-mono text-xs text-exhibition-gold animate-pulse uppercase tracking-widest">Loading...</span>
               </div>
             ) : submissions.length === 0 ? (
-              <div className="text-center py-20 border border-chic-muted/30 bg-chic-bg/10">
+              <div className="text-center py-20 border border-zinc-900 bg-black/10">
                 <Compass className="w-8 h-8 text-zinc-700 mx-auto mb-4" />
-                <p className="font-mono text-xs uppercase tracking-widest text-chic-muted mb-6">No artworks submitted yet</p>
+                <p className="font-mono text-xs uppercase tracking-widest text-zinc-500 mb-6">No artworks submitted yet</p>
                 <Link to="/submit">
                   <button className="px-6 py-2.5 bg-exhibition-gold text-exhibition-void font-mono text-xs uppercase font-bold tracking-widest hover:bg-white transition-colors">
                     Submit Your Artwork
@@ -203,9 +203,9 @@ export default function ProfilePage() {
                   return (
                     <div key={art.id}
                       onClick={() => setSelectedArtwork(art)}
-                      className="border border-chic-muted/30 bg-chic-bg flex flex-col group cursor-pointer hover:border-exhibition-gold/40 transition-colors">
+                      className="border border-zinc-900 bg-[#0d0d0d] flex flex-col group cursor-pointer hover:border-exhibition-gold/40 transition-colors">
                       {/* Image */}
-                      <div className="aspect-[4/3] overflow-hidden relative bg-chic-bg">
+                      <div className="aspect-[4/3] overflow-hidden relative bg-black">
                         {art.thumbnailUrl || art.imageUrl ? (
                           <img src={art.thumbnailUrl || art.imageUrl || ''} alt={art.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -213,7 +213,7 @@ export default function ProfilePage() {
                           <div className="w-full h-full flex items-center justify-center text-zinc-700 font-mono text-xs">No Image</div>
                         )}
                         {/* Status badge - hidden on small screens */}
-                        <div className={`hidden md:flex absolute top-3 left-3 items-center gap-1.5 border px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.15em] bg-chic-bg/80 backdrop-blur-sm ${cfg.color}`}>
+                        <div className={`hidden md:flex absolute top-3 left-3 items-center gap-1.5 border px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.15em] bg-black/80 backdrop-blur-sm ${cfg.color}`}>
                           <cfg.Icon size={10} />
                           {cfg.label}
                         </div>
@@ -226,13 +226,13 @@ export default function ProfilePage() {
                           <span className="font-mono text-[8px] text-exhibition-gold uppercase tracking-widest">{art.category.replace('-', ' ')}</span>
                           {art.subcategory && <>
                             <span className="text-zinc-700">·</span>
-                            <span className="font-mono text-[8px] text-chic-muted uppercase">{art.subcategory}</span>
+                            <span className="font-mono text-[8px] text-zinc-500 uppercase">{art.subcategory}</span>
                           </>}
                         </div>
 
                         {/* Date + votes/status row */}
-                        <div className="mt-auto flex justify-between items-center pt-3 border-t border-chic-muted/30 font-mono text-[9px]">
-                          <span className="text-chic-muted">{formatDate(art.createdAt)}</span>
+                        <div className="mt-auto flex justify-between items-center pt-3 border-t border-zinc-900 font-mono text-[9px]">
+                          <span className="text-zinc-500">{formatDate(art.createdAt)}</span>
                           {/* Status badge on mobile, votes/status on desktop */}
                           <div className="flex items-center gap-1.5">
                             {/* vote count hidden from regular users */}
@@ -246,7 +246,7 @@ export default function ProfilePage() {
 
                         {art.status === 'rejected' && (
                           <p className="mt-2 font-mono text-[9px] text-red-400/70 bg-red-500/5 border border-red-500/15 px-3 py-2">
-                            Not selected.{art.rejectionReason && <span className="block mt-0.5 text-chic-muted">Reason: {art.rejectionReason}</span>}
+                            Not selected.{art.rejectionReason && <span className="block mt-0.5 text-zinc-500">Reason: {art.rejectionReason}</span>}
                           </p>
                         )}
                       </div>
@@ -275,13 +275,13 @@ export default function ProfilePage() {
       {selectedArtwork && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[1000] bg-chic-bg/98 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-[1000] bg-black/98 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setSelectedArtwork(null)}
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="relative w-full max-w-5xl max-h-[90vh] md:h-[80vh] bg-chic-bg border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
+            className="relative w-full max-w-5xl max-h-[90vh] md:h-[80vh] bg-[#0d0d0d] border border-exhibition-gold/30 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <button onClick={() => setSelectedArtwork(null)}
@@ -290,18 +290,18 @@ export default function ProfilePage() {
             </button>
 
             {/* Left: image */}
-            <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-chic-bg flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-chic-muted/30">
+            <div className="w-full md:w-[65%] h-64 sm:h-80 md:h-full flex-shrink-0 bg-black flex items-center justify-center relative p-6 border-b md:border-b-0 md:border-r border-zinc-900">
               <div className="absolute top-0 w-32 h-32 bg-exhibition-gold/10 blur-xl rounded-full" />
               {selectedArtwork.imageUrl ? (
                 <img src={selectedArtwork.imageUrl} alt={selectedArtwork.title}
                   className="max-w-full max-h-full object-contain shadow-2xl border border-white/5" />
               ) : (
-                <div className="text-chic-muted font-mono text-sm">Image Unavailable</div>
+                <div className="text-zinc-500 font-mono text-sm">Image Unavailable</div>
               )}
             </div>
 
             {/* Right: details */}
-            <div className="w-full md:w-[35%] flex flex-col bg-chic-light/30 flex-grow overflow-y-auto">
+            <div className="w-full md:w-[35%] flex flex-col bg-[#0b0b0b] flex-grow overflow-y-auto">
               <div className="p-6 flex-1">
                 {/* Status badge - moved above to avoid close button */}
                 {(() => {
@@ -317,13 +317,13 @@ export default function ProfilePage() {
                   {selectedArtwork.subcategory && ` · ${selectedArtwork.subcategory}`}
                 </span>
                 <h3 className="editorial-text text-2xl md:text-3xl font-light text-exhibition-bone mt-2">{selectedArtwork.title}</h3>
-                <p className="text-xs font-mono text-chic-primary mt-2 uppercase tracking-wide">{userName}</p>
-                {college && <p className="text-[10px] text-chic-muted font-mono">{college}</p>}
+                <p className="text-xs font-mono text-zinc-400 mt-2 uppercase tracking-wide">{userName}</p>
+                {college && <p className="text-[10px] text-zinc-500 font-mono">{college}</p>}
                 {selectedArtwork.description && (
-                  <p className="text-xs text-chic-primary mt-4 font-mono font-light leading-relaxed">{selectedArtwork.description}</p>
+                  <p className="text-xs text-zinc-400 mt-4 font-mono font-light leading-relaxed">{selectedArtwork.description}</p>
                 )}
 
-                <div className="mt-6 pt-4 border-t border-chic-muted/30 flex items-center justify-between font-mono text-xs text-chic-muted">
+                <div className="mt-6 pt-4 border-t border-zinc-900 flex items-center justify-between font-mono text-xs text-zinc-500">
                   <span>{formatDate(selectedArtwork.createdAt)}</span>
                 </div>
 
@@ -335,18 +335,18 @@ export default function ProfilePage() {
 
                 {/* Comments - HIDDEN (kept for future use) */}
                 {false && (selectedArtwork.comments?.length ?? 0) > 0 && (
-                  <div className="mt-6 border-t border-chic-muted/30 pt-4">
-                    <h4 className="font-mono text-[10px] text-chic-muted uppercase tracking-widest mb-3">
+                  <div className="mt-6 border-t border-zinc-900 pt-4">
+                    <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-3">
                       Feedbacks ({selectedArtwork.comments!.length})
                     </h4>
                     <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
                       {selectedArtwork.comments!.map((c: any) => (
-                        <div key={c.id} className="text-xs font-mono bg-chic-bg/20 p-2.5 border border-chic-muted/30">
+                        <div key={c.id} className="text-xs font-mono bg-black/20 p-2.5 border border-zinc-900">
                           <div className="flex justify-between text-[10px] text-exhibition-gold mb-1">
                             <span>{c.userName}</span>
                             <span className="text-zinc-600">{formatDate(c.createdAt)}</span>
                           </div>
-                          <p className="text-chic-primary font-sans">{c.content}</p>
+                          <p className="text-zinc-300 font-sans">{c.content}</p>
                         </div>
                       ))}
                     </div>

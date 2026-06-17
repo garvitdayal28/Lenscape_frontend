@@ -62,14 +62,14 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
       {/* Frame Container — flexible sizing, natural aspect ratio */}
       <div
         onClick={onClick}
-        className={`museum-frame cursor-pointer relative overflow-hidden group select-none bg-chic-bg w-full`}
+        className={`museum-frame cursor-pointer relative overflow-hidden group select-none bg-black w-full`}
       >
         {/* Visual highlight on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-[45] pointer-events-none" />
 
         {/* The Media - Video or Image */}
         {isVideo ? (
-          <div className="w-full h-auto bg-chic-bg relative z-[40]">
+          <div className="w-full h-auto bg-black relative z-[40]">
             {/* Video thumbnail with play button overlay */}
             {displayImage ? (
               <>
@@ -96,8 +96,8 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
               </>
             ) : (
               <div className="w-full aspect-video flex items-center justify-center bg-zinc-900">
-                <div className="text-chic-muted text-center">
-                  <div className="w-20 h-20 mx-auto mb-3 border-2 border-chic-muted/50 rounded-full flex items-center justify-center">
+                <div className="text-zinc-500 text-center">
+                  <div className="w-20 h-20 mx-auto mb-3 border-2 border-zinc-700 rounded-full flex items-center justify-center">
                     <svg className="w-8 h-8 text-exhibition-gold" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                     </svg>
@@ -115,7 +115,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
             loading="lazy"
           />
         ) : (
-          <div className="w-full aspect-square flex items-center justify-center bg-zinc-900 text-chic-muted text-sm">
+          <div className="w-full aspect-square flex items-center justify-center bg-zinc-900 text-zinc-500 text-sm">
             No media available
           </div>
         )}
@@ -127,7 +127,7 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
       </div>
 
       {/* Placard / Museum Tag */}
-      <div className="mt-4 px-4 py-3 bg-chic-bg border border-exhibition-gold/20 w-full text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
+      <div className="mt-4 px-4 py-3 bg-[#0d0d0d] border border-exhibition-gold/20 w-full text-center shadow-lg relative transition-all duration-300 hover:border-exhibition-gold/50">
         {/* Small screw heads in corners to look like a metal placard */}
         <div className="absolute top-1 left-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />
         <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-exhibition-gold/40" />
@@ -137,15 +137,15 @@ const ArtworkFrame: React.FC<ArtworkFrameProps> = ({
         <h3 className="editorial-text text-xl font-bold text-exhibition-bone tracking-wide">
           {title}
         </h3>
-        <p className="text-xs font-mono text-chic-primary mt-1 uppercase tracking-wider">
+        <p className="text-xs font-mono text-zinc-400 mt-1 uppercase tracking-wider">
           {artist?.name || 'Unknown Artist'}
         </p>
-        <p className="text-[10px] text-chic-muted font-mono mt-0.5">
+        <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
           {artist?.college || 'Institution'}
         </p>
 
         {/* Quick stats / Interaction bar */}
-        <div className="flex items-center justify-center gap-6 mt-3 pt-2 border-t border-chic-muted/40 text-chic-primary text-xs font-mono">
+        <div className="flex items-center justify-center gap-6 mt-3 pt-2 border-t border-zinc-800 text-zinc-400 text-xs font-mono">
           {hideVoteButton ? (
             <div className="flex items-center gap-1.5">
               <Heart size={14} className="opacity-50" />

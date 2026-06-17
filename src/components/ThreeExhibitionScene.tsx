@@ -10,10 +10,10 @@ const MAX_Z = 5
 const MIN_Z = -35
 
 // Shared gold material — created once, reused everywhere
-const GOLD_MAT = new THREE.MeshStandardMaterial({ color: '#7091E6', metalness: 0.85, roughness: 0.15 })
-const GOLD_HOVERED_MAT = new THREE.MeshStandardMaterial({ color: '#ADBBDA', metalness: 0.85, roughness: 0.15 })
+const GOLD_MAT = new THREE.MeshStandardMaterial({ color: '#C9A84C', metalness: 0.85, roughness: 0.15 })
+const GOLD_HOVERED_MAT = new THREE.MeshStandardMaterial({ color: '#E5C158', metalness: 0.85, roughness: 0.15 })
 const WIRE_MAT = new THREE.MeshBasicMaterial({ color: '#111111' })
-const SHADOW_MAT = new THREE.MeshBasicMaterial({ color: '#3D52A0', transparent: true, opacity: 0.25 })
+const SHADOW_MAT = new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.25 })
 
 // Shared geometries — created once, reused everywhere
 const FRAME_GEO = new THREE.BoxGeometry(3.2, 2.4, 0.08)
@@ -60,7 +60,7 @@ const useProceduralTileTexture = () =>
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
 
-    ctx.fillStyle = '#EDE8F5'
+    ctx.fillStyle = '#f2eae1'
     ctx.fillRect(0, 0, 512, 512)
 
     const cols = 4, rows = 4
@@ -69,11 +69,11 @@ const useProceduralTileTexture = () =>
       for (let c = 0; c < cols; c++) {
         const x = c * tw, y = r * th
         const b = (Math.random() - 0.5) * 8
-        ctx.fillStyle = `rgb(${237 + b},${232 + b},${245 + b})`
+        ctx.fillStyle = `rgb(${242 + b},${234 + b},${225 + b})`
         ctx.fillRect(x + 2, y + 2, tw - 4, th - 4)
       }
     }
-    ctx.strokeStyle = '#ADBBDA'
+    ctx.strokeStyle = '#d8cdbf'
     ctx.lineWidth = 3
     for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo(i * tw, 0); ctx.lineTo(i * tw, 512); ctx.stroke() }
     for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, i * th); ctx.lineTo(512, i * th); ctx.stroke() }
@@ -110,7 +110,7 @@ const PaintingInner: React.FC<{ url: string; hovered: boolean }> = ({ url, hover
 
 const FallbackPlane: React.FC = () => (
   <mesh position={[0, 0, 0.06]} geometry={PAINTING_GEO}>
-    <meshBasicMaterial color="#ADBBDA" />
+    <meshBasicMaterial color="#1a1a1a" />
   </mesh>
 )
 
@@ -150,7 +150,7 @@ const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSele
         position={[0, 0, 1.2]}
         intensity={hovered ? 5 : (isMobile ? 2.2 : 1.5)}
         distance={isMobile ? 5 : 4}
-        color="#FFFFFF"
+        color="#FFE8A0"
       />
     </group>
   )
@@ -167,12 +167,12 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
 
   return (
     <>
-      <ambientLight intensity={isMobile ? 0.9 : 0.7} color="#FFFFFF" />
-      <directionalLight position={[0, 10, 0]} intensity={0.5} color="#FFFFFF" />
+      <ambientLight intensity={isMobile ? 0.9 : 0.7} color="#fff1e6" />
+      <directionalLight position={[0, 10, 0]} intensity={0.5} color="#ffe8cc" />
 
       {/* 2 floor uplights instead of 3 */}
-      <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ADBBDA" distance={7} />
-      <pointLight position={[ wallX - 0.5, -1.8, -26]} intensity={3} color="#ADBBDA" distance={7} />
+      <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
+      <pointLight position={[ wallX - 0.5, -1.8, -26]} intensity={3} color="#ff9d00" distance={7} />
 
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, -20]}>
@@ -183,21 +183,21 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4, -20]}>
         <planeGeometry args={[fcW, 80]} />
-        <meshStandardMaterial color="#EDE8F5" roughness={0.85} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
 
       {/* Walls */}
       <mesh rotation={[0,  Math.PI / 2, 0]} position={[-wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#EDE8F5" roughness={0.85} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
       <mesh rotation={[0, -Math.PI / 2, 0]} position={[ wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#EDE8F5" roughness={0.85} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
       <mesh position={[0, 1, -37]}>
         <planeGeometry args={[fcW, 6]} />
-        <meshStandardMaterial color="#EDE8F5" roughness={0.85} />
+        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
       </mesh>
 
       {/* Gold trims — shared material */}
@@ -214,7 +214,7 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
           position={[0, 2.65, -36.9]}
           fontSize={0.13}
           maxWidth={isMobile ? 5.5 : 7.5}
-          color="#3D52A0"
+          color="#1c1c1c"
           textAlign="center"
           anchorX="center"
           anchorY="middle"
@@ -224,7 +224,7 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       </Suspense>
 
       {/* Grid helper — keep but low density */}
-      <gridHelper args={[80, 20, '#7091E6', '#ADBBDA']} position={[0, -1.98, -20]} />
+      <gridHelper args={[80, 20, '#C9A84C', '#1a1a1a']} position={[0, -1.98, -20]} />
     </>
   )
 }
@@ -349,7 +349,7 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({
     <div ref={containerRef} className="w-full h-full">
       <Canvas
         camera={{ position: [0, 1.0, MAX_Z], fov: 60 }}
-        style={{ background: '#EDE8F5' }}
+        style={{ background: '#080808' }}
         // Key performance options:
         // - flat: disables tone-mapping pass (saves a GPU pass)
         // - frameloop demand: only re-renders when something changes — but we need 'always' for smooth scroll
@@ -358,7 +358,7 @@ const ThreeExhibitionScene: React.FC<ThreeExhibitionSceneProps> = ({
         gl={{ antialias: false, powerPreference: 'high-performance', stencil: false, depth: true }}
         flat
       >
-        <fog attach="fog" args={['#EDE8F5', isMobile ? 8 : 6, isMobile ? 38 : 28]} />
+        <fog attach="fog" args={['#080808', isMobile ? 8 : 6, isMobile ? 38 : 28]} />
 
         <GalleryEnvironment isMobile={isMobile} floorTexture={floorTexture} />
 
