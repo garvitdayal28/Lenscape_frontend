@@ -157,9 +157,10 @@ const Painting: React.FC<PaintingProps> = ({ artwork, position, rotation, onSele
 }
 
 // ─── Wall Lamp Component ──────────────────────────────────────────────────────
-const WallLamp: React.FC<{ position: [number, number, number]; isLeft: boolean }> = ({ position, isLeft }) => {
+const WallLamp: React.FC<{ position: [number, number, number]; isLeft?: boolean; rotationY?: number }> = ({ position, isLeft, rotationY }) => {
+  const yRot = rotationY !== undefined ? rotationY : (isLeft ? Math.PI / 2 : -Math.PI / 2);
   return (
-    <group position={position} rotation={[0, isLeft ? Math.PI / 2 : -Math.PI / 2, 0]}>
+    <group position={position} rotation={[0, yRot, 0]}>
       {/* Base on wall */}
       <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.1, 0.1, 0.04, 32]} />
@@ -227,6 +228,9 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       <WallLamp position={[ wallX, 3.5, -16]} isLeft={false} />
       <WallLamp position={[-wallX, 3.5, -24]} isLeft={true} />
       <WallLamp position={[ wallX, 3.5, -30]} isLeft={false} />
+      {/* Front Wall Lamps (Back of the hall, facing camera) */}
+      <WallLamp position={[-2.5, 3.5, -36.98]} rotationY={0} />
+      <WallLamp position={[ 2.5, 3.5, -36.98]} rotationY={0} />
 
       {/* 2 floor uplights instead of 3 */}
       <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
