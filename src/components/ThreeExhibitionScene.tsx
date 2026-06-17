@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, Suspense, useMemo, useCallback } from 'react'
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber'
-import { Text } from '@react-three/drei'
+import { Text, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 import { TextureLoader } from 'three'
 import { Artwork } from '../types'
@@ -189,22 +189,32 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4, -20]}>
         <planeGeometry args={[fcW, 80]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
       </mesh>
+      {/* Starry sparkles on ceiling */}
+      <Sparkles position={[0, 3.8, -20]} scale={[fcW, 1, 80]} count={250} speed={0.4} opacity={0.6} color="#ffe8cc" size={1.5} />
 
       {/* Walls */}
       <mesh rotation={[0,  Math.PI / 2, 0]} position={[-wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
       </mesh>
+      {/* Starry sparkles on left wall */}
+      <Sparkles position={[-wallX + 0.1, 1, -20]} scale={[1, 6, 80]} count={200} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
+
       <mesh rotation={[0, -Math.PI / 2, 0]} position={[ wallX, 1, -20]}>
         <planeGeometry args={[80, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
       </mesh>
+      {/* Starry sparkles on right wall */}
+      <Sparkles position={[wallX - 0.1, 1, -20]} scale={[1, 6, 80]} count={200} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
+
       <mesh position={[0, 1, -37]}>
         <planeGeometry args={[fcW, 6]} />
-        <meshStandardMaterial color="#f2eae1" roughness={0.85} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.85} />
       </mesh>
+      {/* Starry sparkles on back wall */}
+      <Sparkles position={[0, 1, -36.9]} scale={[fcW, 6, 1]} count={50} speed={0.3} opacity={0.5} color="#ffe8cc" size={2} />
 
       {/* Gold trims — shared material */}
       {[-wallX + 0.02, wallX - 0.02].map((x) => (

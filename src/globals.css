@@ -374,3 +374,30 @@
   50% { text-shadow: -1px 1px 0 var(--color-gold), 1px -1px 0 #FFF; }
   100% { text-shadow: 1px 1px 0 var(--color-gold), -1px -1px 0 #FFF; }
 }
+
+/* Golden Hover Effects for Texts and Boxes */
+a, button, .glass-panel, .museum-frame, .border, h1, h2, h3, p, span, .editorial-text {
+  transition: all 0.3s ease-out;
+}
+
+a:hover, button:hover, .glass-panel:hover, .museum-frame:hover, .group:hover > .border, div[class*="border-"]:hover {
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25) !important;
+  border-color: rgba(201, 168, 76, 0.6) !important;
+}
+
+h1:hover, h2:hover, h3:hover, p:hover, span:hover, .editorial-text:hover {
+  text-shadow: 0 0 15px rgba(201, 168, 76, 0.6) !important;
+}
+
+/* Global Color Overrides */
+/* Change all grey text to white */
+.text-zinc-300, .text-zinc-400, .text-zinc-500, .text-zinc-600, .text-zinc-700,
+.text-gray-300, .text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700,
+.text-zinc-800 {
+  color: #ffffff !important;
+}
+
+/* Darken black backgrounds */
+.bg-zinc-800, .bg-zinc-900, .bg-zinc-950, .bg-\[\#0c0c0c\], .bg-\[\#111\], .bg-\[\#111111\], .bg-\[\#0a0a0a\], .bg-\[\#0d0d0d\] {
+  background-color: #000000 !important;
+}
