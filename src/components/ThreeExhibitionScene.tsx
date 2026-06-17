@@ -411,8 +411,12 @@ const CameraController: React.FC<CameraControllerProps> = ({ scrollPercent, focu
         lookTarget.current.set(px, py, pz)
       }
     } else {
-      const targetZ = MAX_Z - scrollPercent * (MAX_Z - MIN_Z)
-      // Removed bobbing sine wave — no perceptible loss, saves sin() per frame
+      // End the scroll very close to Starry Night so it fills the screen completely.
+      // Starry Night is located at MIN_Z - 1.96. 
+      // A distance of ~0.6 units guarantees it covers both mobile and desktop viewports.
+      const END_Z = MIN_Z - 1.96 + 0.6;
+      const targetZ = MAX_Z - scrollPercent * (MAX_Z - END_Z)
+      
       camTarget.current.set(0, 1, targetZ)
       lookTarget.current.set(0, 1, targetZ - 10)
     }
