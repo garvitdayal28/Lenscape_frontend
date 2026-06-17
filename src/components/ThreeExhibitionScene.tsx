@@ -213,75 +213,120 @@ const WallLamp: React.FC<{ position: [number, number, number]; isLeft?: boolean;
 const Chandelier: React.FC<{ position: [number, number, number] }> = ({ position }) => {
   return (
     <group position={position}>
-      {/* Chain attaching to ceiling (ceiling is at y=4, if Chandelier is at y=3.2, distance is 0.8) */}
-      <mesh position={[0, 0.4, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.8, 8]} />
-        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
-      </mesh>
+      {/* 1. Fluted Golden Rope / Stem */}
+      <group position={[0, 0.8, 0]}>
+        <mesh>
+          <cylinderGeometry args={[0.03, 0.03, 1.2, 16]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        {/* Fluted ridges to simulate twist/rope */}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const angle = (i / 6) * Math.PI * 2;
+          return (
+            <mesh key={`rib-${i}`} position={[Math.cos(angle)*0.03, 0, Math.sin(angle)*0.03]}>
+              <cylinderGeometry args={[0.015, 0.015, 1.2, 8]} />
+              <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+            </mesh>
+          );
+        })}
+      </group>
+
+      {/* 2. Top Golden Spiky Crown */}
+      <group position={[0, 0.2, 0]}>
+        {/* Base ring */}
+        <mesh>
+          <cylinderGeometry args={[0.3, 0.25, 0.15, 32]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        {/* Spikes */}
+        {Array.from({ length: 16 }).map((_, i) => {
+          const angle = (i / 16) * Math.PI * 2;
+          const x = Math.cos(angle) * 0.3;
+          const z = Math.sin(angle) * 0.3;
+          return (
+            <mesh key={`spike1-${i}`} position={[x, 0.1, z]} rotation={[0.1, -angle + Math.PI/4, 0]}>
+              <coneGeometry args={[0.08, 0.25, 4]} />
+              <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.1} />
+            </mesh>
+          )
+        })}
+      </group>
+
+      {/* 3. Small upper crystal tier */}
+      <group position={[0, 0.0, 0]}>
+        {Array.from({ length: 28 }).map((_, i) => {
+          const angle = (i / 28) * Math.PI * 2;
+          const x = Math.cos(angle) * 0.25;
+          const z = Math.sin(angle) * 0.25;
+          return (
+            <mesh key={`upper-glass-${i}`} position={[x, 0, z]}>
+              <cylinderGeometry args={[0.012, 0.012, 0.3, 6]} />
+              <meshPhysicalMaterial color="#ffffff" transmission={0.95} opacity={1} transparent roughness={0.05} ior={1.5} thickness={0.05} />
+            </mesh>
+          )
+        })}
+      </group>
+
+      {/* 4. Main Wide Golden Spiky Crown */}
+      <group position={[0, -0.15, 0]}>
+        <mesh>
+          <cylinderGeometry args={[0.7, 0.65, 0.15, 64]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        {Array.from({ length: 36 }).map((_, i) => {
+          const angle = (i / 36) * Math.PI * 2;
+          const x = Math.cos(angle) * 0.7;
+          const z = Math.sin(angle) * 0.7;
+          return (
+            <mesh key={`spike2-${i}`} position={[x, 0.12, z]} rotation={[0.1, -angle + Math.PI/4, 0]}>
+              <coneGeometry args={[0.1, 0.3, 4]} />
+              <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.1} />
+            </mesh>
+          )
+        })}
+      </group>
+
+      {/* 5. Cascading Crystal Tiers */}
+      {[
+        { radius: 0.65, y: -0.45, length: 0.5, count: 64 },
+        { radius: 0.52, y: -0.75, length: 0.45, count: 52 },
+        { radius: 0.39, y: -1.0,  length: 0.4,  count: 40 },
+        { radius: 0.26, y: -1.25, length: 0.35, count: 28 },
+        { radius: 0.13, y: -1.45, length: 0.3,  count: 14 },
+      ].map((tier, tIdx) => (
+        <group key={`tier-${tIdx}`} position={[0, tier.y, 0]}>
+          {Array.from({ length: tier.count }).map((_, i) => {
+            const angle = (i / tier.count) * Math.PI * 2;
+            const x = Math.cos(angle) * tier.radius;
+            const z = Math.sin(angle) * tier.radius;
+            return (
+              <mesh key={`glass-${tIdx}-${i}`} position={[x, 0, z]}>
+                <cylinderGeometry args={[0.012, 0.012, tier.length, 6]} />
+                <meshPhysicalMaterial color="#ffffff" transmission={0.95} opacity={1} transparent roughness={0.05} ior={1.5} thickness={0.05} />
+              </mesh>
+            )
+          })}
+          {/* Inner golden ring for each tier */}
+          <mesh position={[0, tier.length / 2 - 0.05, 0]}>
+             <torusGeometry args={[tier.radius - 0.02, 0.008, 8, 32]} />
+             <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* 6. Internal Lighting & Core */}
+      <pointLight position={[0, 0, 0]} intensity={5} distance={15} color="#ffe8b3" />
+      <pointLight position={[0, -0.6, 0]} intensity={4} distance={12} color="#ffe8b3" />
+      <pointLight position={[0, -1.2, 0]} intensity={3} distance={10} color="#ffe8b3" />
       
-      {/* Upper small ring */}
-      <mesh position={[0, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.3, 0.03, 16, 32]} />
-        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
+      {/* Central glowing core to simulate bulbs */}
+      <mesh position={[0, -0.6, 0]}>
+        <cylinderGeometry args={[0.04, 0.02, 1.6, 16]} />
+        <meshStandardMaterial color="#fff" emissive="#ffe8b3" emissiveIntensity={2} />
       </mesh>
-
-      {/* Main Body / Ring */}
-      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.8, 0.05, 16, 64]} />
-        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
-      </mesh>
-
-      {/* Spoke connections from center to main ring */}
-      {Array.from({ length: 4 }).map((_, i) => {
-        const angle = (i / 4) * Math.PI * 2;
-        return (
-          <group key={`spoke-${i}`} rotation={[0, angle, 0]}>
-            <mesh position={[0.4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.015, 0.015, 0.8, 8]} />
-              <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
-            </mesh>
-          </group>
-        );
-      })}
-
-      {/* Center piece */}
-      <mesh position={[0, -0.2, 0]}>
-        <cylinderGeometry args={[0.1, 0.01, 0.6, 16]} />
-        <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
-      </mesh>
-      <mesh position={[0, -0.5, 0]}>
-        <sphereGeometry args={[0.05, 16, 16]} />
-        <meshPhysicalMaterial color="#ffffff" transmission={0.9} opacity={1} transparent roughness={0.1} />
-      </mesh>
-
-      {/* Crystals/Lights around the ring */}
-      {Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const x = Math.cos(angle) * 0.8;
-        const z = Math.sin(angle) * 0.8;
-        return (
-          <group key={`bulb-${i}`} position={[x, 0.1, z]}>
-            {/* Bulb holder */}
-            <mesh position={[0, -0.05, 0]}>
-              <cylinderGeometry args={[0.03, 0.02, 0.1, 8]} />
-              <meshStandardMaterial color="#C9A84C" metalness={1} roughness={0.2} />
-            </mesh>
-            {/* Crystal / Bulb */}
-            <mesh position={[0, 0.05, 0]}>
-              <sphereGeometry args={[0.04, 16, 16]} />
-              <meshStandardMaterial color="#fff" emissive="#ffe8cc" emissiveIntensity={2} />
-            </mesh>
-            {/* Soft point light for each bulb */}
-            <pointLight position={[0, 0, 0]} intensity={0.4} distance={6} color="#ffe8cc" />
-          </group>
-        );
-      })}
-      
-      {/* Central big light to illuminate the hall softly */}
-      <pointLight position={[0, -0.5, 0]} intensity={3} distance={15} color="#ffe8cc" />
       
       {/* Additional Sparkles for glamour */}
-      <Sparkles position={[0, 0, 0]} count={30} scale={[1.8, 0.5, 1.8]} size={1.5} color="#ffd700" speed={0.2} opacity={0.8} />
+      <Sparkles position={[0, -0.6, 0]} count={50} scale={[1.5, 2.5, 1.5]} size={2} color="#ffd700" speed={0.3} opacity={0.8} />
     </group>
   );
 }
