@@ -170,6 +170,12 @@ const GalleryEnvironment: React.FC<{ isMobile: boolean; floorTexture: THREE.Canv
       <ambientLight intensity={isMobile ? 0.9 : 0.7} color="#fff1e6" />
       <directionalLight position={[0, 10, 0]} intensity={0.5} color="#ffe8cc" />
 
+      {/* Top wall lights for elite hall look */}
+      <pointLight position={[-wallX + 0.5, 3.5, -10]} intensity={3} color="#ffe8cc" distance={8} />
+      <pointLight position={[ wallX - 0.5, 3.5, -16]} intensity={3} color="#ffe8cc" distance={8} />
+      <pointLight position={[-wallX + 0.5, 3.5, -24]} intensity={3} color="#ffe8cc" distance={8} />
+      <pointLight position={[ wallX - 0.5, 3.5, -30]} intensity={3} color="#ffe8cc" distance={8} />
+
       {/* 2 floor uplights instead of 3 */}
       <pointLight position={[-wallX + 0.5, -1.8, -12]} intensity={3} color="#ff9d00" distance={7} />
       <pointLight position={[ wallX - 0.5, -1.8, -26]} intensity={3} color="#ff9d00" distance={7} />
