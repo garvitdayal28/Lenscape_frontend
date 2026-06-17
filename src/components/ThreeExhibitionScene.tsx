@@ -213,56 +213,68 @@ const WallLamp: React.FC<{ position: [number, number, number]; isLeft?: boolean;
 const Chandelier: React.FC<{ position: [number, number, number] }> = ({ position }) => {
   return (
     <group position={position}>
-      {/* 1. Golden Stem */}
-      <mesh position={[0, 0.5, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 1.0, 8]} />
+      {/* 1. Golden Base Mount on Ceiling */}
+      <mesh position={[0, 0.75, 0]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.05, 32]} />
         <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
       </mesh>
 
-      {/* 2. Elegant Wide Golden Base/Cap */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.6, 0.6, 0.05, 32]} />
-        <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
-      </mesh>
+      {/* 2. Thin suspension wires holding the rings */}
+      {[0, 1, 2].map((i) => {
+        const angle = (i / 3) * Math.PI * 2;
+        const x = Math.cos(angle) * 0.1;
+        const z = Math.sin(angle) * 0.1;
+        return (
+          <mesh key={`wire-${i}`} position={[x, 0.35, z]} rotation={[0.05, angle, 0]}>
+            <cylinderGeometry args={[0.003, 0.003, 0.8, 4]} />
+            <meshStandardMaterial color="#aaa" metalness={0.8} roughness={0.4} />
+          </mesh>
+        );
+      })}
 
-      {/* 3. Three Solid Faceted Crystal Tiers */}
-      {/* Using 16 segments makes it look like heavy, ribbed glass while keeping poly count extremely low */}
-      <mesh position={[0, -0.2, 0]}>
-        <cylinderGeometry args={[0.55, 0.45, 0.35, 16]} />
-        <meshPhysicalMaterial color="#ffffff" transmission={0.95} transparent roughness={0.15} ior={1.5} thickness={0.5} />
-      </mesh>
+      {/* 3. Intersecting / Tilted Modern Halo Rings */}
+      {/* Ring 1 (Large, tilted) */}
+      <group position={[0, 0, 0]} rotation={[0.3, 0.5, -0.2]}>
+        <mesh>
+          <torusGeometry args={[0.8, 0.02, 16, 64]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        <mesh position={[0, -0.015, 0]}>
+          <torusGeometry args={[0.78, 0.015, 16, 64]} />
+          <meshStandardMaterial color="#fff" emissive="#ffe8b3" emissiveIntensity={3} />
+        </mesh>
+      </group>
 
-      <mesh position={[0, -0.5, 0]}>
-        <cylinderGeometry args={[0.4, 0.3, 0.3, 16]} />
-        <meshPhysicalMaterial color="#ffffff" transmission={0.95} transparent roughness={0.15} ior={1.5} thickness={0.5} />
-      </mesh>
+      {/* Ring 2 (Medium, tilted opposite) */}
+      <group position={[0, -0.3, 0]} rotation={[-0.4, -0.6, 0.3]}>
+        <mesh>
+          <torusGeometry args={[0.55, 0.02, 16, 64]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        <mesh position={[0, -0.015, 0]}>
+          <torusGeometry args={[0.53, 0.015, 16, 64]} />
+          <meshStandardMaterial color="#fff" emissive="#ffe8b3" emissiveIntensity={3} />
+        </mesh>
+      </group>
 
-      <mesh position={[0, -0.75, 0]}>
-        <cylinderGeometry args={[0.25, 0.15, 0.25, 12]} />
-        <meshPhysicalMaterial color="#ffffff" transmission={0.95} transparent roughness={0.15} ior={1.5} thickness={0.5} />
-      </mesh>
+      {/* Ring 3 (Small, horizontal) */}
+      <group position={[0, -0.6, 0]} rotation={[0.1, 0, -0.1]}>
+        <mesh>
+          <torusGeometry args={[0.3, 0.02, 16, 64]} />
+          <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
+        </mesh>
+        <mesh position={[0, -0.015, 0]}>
+          <torusGeometry args={[0.28, 0.015, 16, 64]} />
+          <meshStandardMaterial color="#fff" emissive="#ffe8b3" emissiveIntensity={3} />
+        </mesh>
+      </group>
 
-      {/* 4. Golden rings separating the tiers */}
-      <mesh position={[0, -0.36, 0]}>
-        <cylinderGeometry args={[0.42, 0.42, 0.04, 32]} />
-        <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
-      </mesh>
-      <mesh position={[0, -0.63, 0]}>
-        <cylinderGeometry args={[0.27, 0.27, 0.03, 32]} />
-        <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0.2} />
-      </mesh>
+      {/* 4. Core Light */}
+      {/* Real illumination comes from a single point light */}
+      <pointLight position={[0, -0.3, 0]} intensity={3} distance={15} color="#ffe8b3" />
 
-      {/* 5. Central Glowing Core (The light bulb/tube) */}
-      <mesh position={[0, -0.3, 0]}>
-        <cylinderGeometry args={[0.08, 0.04, 0.8, 12]} />
-        <meshStandardMaterial color="#fff" emissive="#ffe8b3" emissiveIntensity={3} />
-      </mesh>
-
-      {/* 6. Single Ambient Point Light (covers the area efficiently) */}
-      <pointLight position={[0, -0.4, 0]} intensity={4} distance={15} color="#ffe8b3" />
-      
-      {/* 7. Subtle Sparkles */}
-      <Sparkles position={[0, -0.4, 0]} count={15} scale={[1.2, 1.5, 1.2]} size={2} color="#ffd700" speed={0.2} opacity={0.6} />
+      {/* 5. Dust / Sparkles inside the rings for magic ambiance */}
+      <Sparkles position={[0, -0.3, 0]} count={30} scale={[1.6, 1.2, 1.6]} size={1.5} color="#ffd700" speed={0.3} opacity={0.6} />
     </group>
   );
 }
