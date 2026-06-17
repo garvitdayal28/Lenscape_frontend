@@ -243,7 +243,7 @@ export default function SubmitPage() {
         <div className="text-center lg:text-left mb-12">
           <span className="font-mono text-[9px] text-exhibition-gold uppercase tracking-[0.3em] block mb-2">Curation Submission</span>
           <h1 className="editorial-text text-4xl md:text-6xl font-light">Hang Your Work</h1>
-          <p className="text-xs font-mono text-zinc-500 mt-2 max-w-sm">Configure your canvas below. All uploads are moderated.</p>
+          <p className="text-xs font-mono text-zinc-500 mt-2 max-w-sm mx-auto lg:mx-0">Configure your canvas below. All uploads are moderated.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -270,7 +270,12 @@ export default function SubmitPage() {
                 />
               ) : (
                 <div>
-                  <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400 mb-2">Cover Image</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block font-mono text-[9px] uppercase tracking-widest text-zinc-400">Artwork Image</label>
+                    <span className="text-[9px] font-mono text-exhibition-gold lg:hidden uppercase tracking-widest animate-pulse">
+                      ↓ Scroll down for preview ↓
+                    </span>
+                  </div>
                   {!imagePreview ? (
                     <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-zinc-800 cursor-pointer hover:border-exhibition-gold/50 transition-colors">
                       <UploadCloud className="w-8 h-8 text-zinc-600 mb-3" />
@@ -279,8 +284,8 @@ export default function SubmitPage() {
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
                   ) : (
-                    <div className="relative w-full h-44 border border-zinc-800 overflow-hidden">
-                      <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                    <div className="relative w-full h-44 border border-zinc-800 overflow-hidden bg-black/20">
+                      <img src={imagePreview} alt="preview" className="w-full h-full object-contain" />
                       {uploading && (
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                           <span className="font-mono text-[10px] text-exhibition-gold animate-pulse uppercase tracking-widest">Uploading...</span>
