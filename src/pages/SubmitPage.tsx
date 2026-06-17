@@ -233,7 +233,7 @@ export default function SubmitPage() {
     <div className="min-h-screen bg-exhibition-void text-exhibition-bone pb-32">
       <ExhibitionNav />
 
-      <div className="max-w-6xl mx-auto px-6 pt-24">
+      <div className="max-w-6xl mx-auto px-3 md:px-6 pt-24">
         <Link to="/">
           <button className="flex items-center gap-2 text-zinc-500 hover:text-exhibition-gold transition-colors mb-8 font-mono text-xs uppercase tracking-widest bg-transparent border-0 cursor-pointer">
             <ArrowLeft size={14} /> Exhibition Hall
@@ -248,7 +248,7 @@ export default function SubmitPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* ── Form ── */}
-          <div className="lg:col-span-7 bg-[#0c0c0c] border border-zinc-900 p-8">
+          <div className="lg:col-span-7 bg-[#0c0c0c] border border-zinc-900 p-4 md:p-8">
             <form onSubmit={handleFormSubmit} className="space-y-6">
 
               {/* Title */}
@@ -324,7 +324,7 @@ export default function SubmitPage() {
                         o.id === 'widescreen' ? 'w-9 h-[20px]' :
                         /* vertical */          'w-[14px] h-[25px]'
                       }`} style={{ backgroundColor: 'currentColor' }} />
-                      <span className="font-mono text-[8px] uppercase tracking-wide leading-none text-center">{o.label}</span>
+                      <span className="font-mono text-[6.5px] sm:text-[8px] uppercase tracking-tighter sm:tracking-wide leading-none text-center whitespace-nowrap">{o.label}</span>
                       <span className="font-mono text-[7px] text-zinc-600 leading-none">{o.ratio.replace('/', ':')}</span>
                     </button>
                   ))}
